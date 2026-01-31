@@ -13,14 +13,19 @@ from uagents import Agent, Context, Model
 #     breakdown: dict
 
 
+
 class ScoreResponse(Model):
     score: int
-
+    confidence: str 
+    breakdown: dict = {}
 
 class ScoreRequest(Model):
     neighborhood: str
     business_type: str
     target_demo: str
+    latitude: float
+    longitude: float
+
 
 orchestrator = Agent(
     name="orchestrator",
@@ -39,7 +44,9 @@ async def startup_function(ctx: Context):
     msg = ScoreRequest(
         neighborhood="Williamsburg, Brooklyn",
         business_type="Coffee Shop",
-        target_demo="Young professionals, ages 25-35")
+        target_demo="Young professionals, ages 25-35",
+        latitude=40.757998,
+        longitude= -73.984927)
     ctx.logger.info(f"Sending message to location_scout at {location_scout_address}")
     await ctx.send(location_scout_address, msg)
     
@@ -50,6 +57,9 @@ class Message(Model):
 async def handle_score_response(ctx: Context, sender: str, msg: ScoreResponse):
     ctx.logger.info(f'I have received a ScoreResponse from {sender}.')
     ctx.logger.info(f"Received score: {msg.score}")
+    ctx.logger.info(f"Confidence: {msg.confidence}")
+    ctx.logger.info(f"Breakdown: {msg.breakdown}")
+
 
 # @orchestrator.on_message(model=AnalyzeRequest)
 # async def handle_request(ctx: Context, sender: str, msg: AnalyzeRequest):
