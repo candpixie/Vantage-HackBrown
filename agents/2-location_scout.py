@@ -22,7 +22,9 @@ class ScoreResponse(Model):
 
 location_scout = Agent(
     name="location_scout",
-    seed="scout_seed_phrase"
+    seed="scout_seed_phrase",
+    port=8001,
+    endpoint=["http://localhost:8001/submit"]
 )
 
 
@@ -137,3 +139,6 @@ def calculate_competition_score(neighborhood, business_type):
         return 50  # Saturated
     else:
         return 30  # Oversaturated
+
+if __name__ == "__main__":
+    location_scout.run()
