@@ -19,14 +19,14 @@ export const NeuralMeshWorkflow: React.FC<NeuralMeshWorkflowProps> = ({ agents, 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'done': return '#10B981';
-      case 'active': return '#6366F1';
+      case 'active': return '#3B82F6';
       default: return '#6B7280';
     }
   };
 
   const getStatusGlow = (status: string) => {
     if (status === 'active') {
-      return 'shadow-[0_0_20px_rgba(99,102,241,0.5)]';
+      return 'shadow-[0_0_20px_rgba(59,130,246,0.5)]';
     }
     if (status === 'done') {
       return 'shadow-[0_0_15px_rgba(16,185,129,0.3)]';
@@ -41,8 +41,8 @@ export const NeuralMeshWorkflow: React.FC<NeuralMeshWorkflowProps> = ({ agents, 
         className="absolute inset-0 opacity-30"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(99, 102, 241, 0.15) 1.5px, transparent 1.5px),
-            linear-gradient(90deg, rgba(139, 92, 246, 0.15) 1.5px, transparent 1.5px)
+            linear-gradient(rgba(59, 130, 246, 0.15) 1.5px, transparent 1.5px),
+            linear-gradient(90deg, rgba(14, 165, 233, 0.15) 1.5px, transparent 1.5px)
           `,
           backgroundSize: '40px 40px'
         }}
@@ -231,7 +231,7 @@ export const NeuralMeshWorkflow: React.FC<NeuralMeshWorkflowProps> = ({ agents, 
               onClick={onRun}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-5 py-2.5 bg-gradient-to-r from-[#6366F1] via-[#8B5CF6] to-[#EC4899] text-white rounded-xl text-xs font-bold shadow-lg hover:shadow-2xl hover:shadow-[#6366F1]/60 transition-all flex items-center gap-2 neon-glow-hover"
+              className="px-5 py-2.5 bg-gradient-to-r from-[#3B82F6] via-[#2563EB] to-[#1D4ED8] text-white rounded-xl text-xs font-bold shadow-lg hover:shadow-2xl hover:shadow-[#3B82F6]/60 transition-all flex items-center gap-2 neon-glow-hover"
             >
               <Play className="w-4 h-4" />
               RE-RUN ANALYSIS

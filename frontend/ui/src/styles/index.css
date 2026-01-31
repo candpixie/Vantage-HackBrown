@@ -21,8 +21,9 @@
   --glass-white-strong: rgba(255, 255, 255, 0.9);
   --glass-border: rgba(255, 255, 255, 0.25);
   --glass-shadow: rgba(31, 38, 135, 0.08);
-  --accent-indigo: #6366F1;
-  --accent-purple: #8B5CF6;
+  --accent-blue: #3B82F6;
+  --accent-sky: #0EA5E9;
+  --accent-cyan: #38BDF8;
   --accent-emerald: #10B981;
   --text-primary: #0F172A;
   --text-secondary: #475569;

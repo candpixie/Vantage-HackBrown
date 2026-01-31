@@ -16,7 +16,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
     <div className="space-y-6">
       <div className="space-y-3">
         <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3B82F6] to-[#0EA5E9] flex items-center justify-center">
             <Search className="w-4 h-4 text-white" />
           </div>
           Business Type
@@ -25,7 +25,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
           <select
             value={businessType}
             onChange={(e) => setBusinessType(e.target.value)}
-            className="w-full glass-card border-2 border-white/40 rounded-2xl px-5 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-[#6366F1]/50 appearance-none cursor-pointer hover:border-[#6366F1]/60 transition-all premium-glow-hover backdrop-blur-xl"
+            className="w-full glass-card border-2 border-white/40 rounded-2xl px-5 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-[#3B82F6]/50 appearance-none cursor-pointer hover:border-[#3B82F6]/60 transition-all premium-glow-hover backdrop-blur-xl"
           >
             <option>Boba Tea Shop</option>
             <option>Coffee Roastery</option>
@@ -40,7 +40,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
 
       <div className="space-y-3">
         <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8B5CF6] to-[#EC4899] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0EA5E9] to-[#38BDF8] flex items-center justify-center">
             <Users className="w-4 h-4 text-white" />
           </div>
           Target Demographic
@@ -49,7 +49,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
           <select
             value={targetDemo}
             onChange={(e) => setTargetDemo(e.target.value)}
-            className="w-full glass-card border-2 border-white/40 rounded-2xl px-5 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] focus:border-[#8B5CF6]/50 appearance-none cursor-pointer hover:border-[#8B5CF6]/60 transition-all premium-glow-hover backdrop-blur-xl"
+            className="w-full glass-card border-2 border-white/40 rounded-2xl px-5 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0EA5E9] focus:border-[#0EA5E9]/50 appearance-none cursor-pointer hover:border-[#0EA5E9]/60 transition-all premium-glow-hover backdrop-blur-xl"
           >
             <option>Gen Z Students</option>
             <option>Young Professionals</option>
@@ -73,7 +73,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
             key={budget}
             initial={{ scale: 1.2, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] rounded-xl"
+            className="px-4 py-2 bg-gradient-to-r from-[#3B82F6] to-[#0EA5E9] rounded-xl"
           >
             <span className="text-lg font-black text-white">${budget.toLocaleString()}</span>
           </motion.div>
@@ -89,9 +89,9 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
             className="w-full h-3 rounded-full appearance-none cursor-pointer"
             style={{
               background: `linear-gradient(to right,
-                #6366F1 0%,
-                #8B5CF6 ${((budget - 2000) / (15000 - 2000)) * 50}%,
-                #EC4899 ${((budget - 2000) / (15000 - 2000)) * 100}%,
+                #3B82F6 0%,
+                #0EA5E9 ${((budget - 2000) / (15000 - 2000)) * 50}%,
+                #38BDF8 ${((budget - 2000) / (15000 - 2000)) * 100}%,
                 rgba(226, 232, 240, 0.5) ${((budget - 2000) / (15000 - 2000)) * 100}%,
                 rgba(226, 232, 240, 0.5) 100%)`,
             }}
@@ -112,7 +112,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
         className={`w-full py-5 rounded-2xl font-black text-base flex items-center justify-center gap-3 transition-all relative overflow-hidden ${
           isAnalyzing
             ? 'bg-gradient-to-r from-slate-200 to-slate-300 text-slate-400 cursor-not-allowed'
-            : 'bg-gradient-to-r from-[#6366F1] via-[#8B5CF6] to-[#EC4899] text-white shadow-2xl shadow-[#6366F1]/50 hover:shadow-3xl hover:shadow-[#6366F1]/70 neon-glow-hover'
+            : 'bg-gradient-to-r from-[#3B82F6] via-[#0EA5E9] to-[#38BDF8] text-white shadow-2xl shadow-[#3B82F6]/50 hover:shadow-3xl hover:shadow-[#3B82F6]/70 neon-glow-hover'
         }`}
       >
         {!isAnalyzing && (

@@ -31,14 +31,14 @@ export const RevenueTable: React.FC<RevenueTableProps> = ({ projections }) => {
               <tr
                 key={idx}
                 className={`hover:bg-slate-50 transition-colors ${
-                  row.isRecommended ? 'bg-gradient-to-r from-[#6366F1]/5 to-[#8B5CF6]/5' : ''
+                  row.isRecommended ? 'bg-gradient-to-r from-[#3B82F6]/5 to-[#2563EB]/5' : ''
                 }`}
               >
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-slate-900">{row.scenario}</span>
                     {row.isRecommended && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white text-xs font-semibold">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-white text-xs font-semibold">
                         <CheckCircle2 className="w-3 h-3" />
                         Best Fit
                       </span>

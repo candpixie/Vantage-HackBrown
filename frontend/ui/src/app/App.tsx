@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
+import { 
   MapPin,
-  Search,
+  Search, 
   DollarSign,
   Users,
   ChevronRight,
@@ -47,6 +47,7 @@ import { InputForm } from './components/InputForm';
 import { MapView } from './components/MapView';
 import { AgentWorkflow } from './components/AgentWorkflow';
 import { NeuralMeshWorkflow } from './components/NeuralMeshWorkflow';
+import { CityBackground } from './components/CityBackground';
 import { ScoreCard } from './components/ScoreCard';
 import { ScoreBreakdown } from './components/ScoreBreakdown';
 import { CompetitorCard } from './components/CompetitorCard';
@@ -267,11 +268,13 @@ export default function SiteSelect() {
   // Login Modal
   if (showLogin && !isAuthenticated) {
   return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-sky-900 via-blue-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+        {/* City Background */}
+        <CityBackground />
         {/* Animated background layers with aurora effect */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
-            className="absolute w-[600px] h-[600px] bg-[#6366F1] rounded-full blur-3xl opacity-20"
+            className="absolute w-[600px] h-[600px] bg-[#3B82F6] rounded-full blur-3xl opacity-20"
             animate={{
               x: [0, 100, 0],
               y: [0, -100, 0],
@@ -281,7 +284,7 @@ export default function SiteSelect() {
             style={{ top: '10%', right: '10%' }}
           />
           <motion.div
-            className="absolute w-[500px] h-[500px] bg-[#8B5CF6] rounded-full blur-3xl opacity-20"
+            className="absolute w-[500px] h-[500px] bg-[#0EA5E9] rounded-full blur-3xl opacity-20"
             animate={{
               x: [0, -100, 0],
               y: [0, 100, 0],
@@ -291,7 +294,7 @@ export default function SiteSelect() {
             style={{ bottom: '10%', left: '10%' }}
           />
           <motion.div
-            className="absolute w-[400px] h-[400px] bg-[#EC4899] rounded-full blur-3xl opacity-15"
+            className="absolute w-[400px] h-[400px] bg-[#38BDF8] rounded-full blur-3xl opacity-15"
             animate={{
               x: [0, 50, 0],
               y: [0, -50, 0],
@@ -300,7 +303,9 @@ export default function SiteSelect() {
             transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
             style={{ top: '50%', left: '50%' }}
           />
-        </div>
+              </div>
+        {/* City Background */}
+        <CityBackground />
 
         {/* Login Card */}
         <div className="relative z-10 w-full max-w-md">
@@ -315,33 +320,33 @@ export default function SiteSelect() {
 
             <div className="text-center mb-10 relative z-10">
               <motion.div
-                className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#6366F1] via-[#8B5CF6] to-[#EC4899] rounded-2xl mb-5 shadow-2xl neon-glow"
+                className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#3B82F6] via-[#0EA5E9] to-[#38BDF8] rounded-2xl mb-5 shadow-2xl neon-glow"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: 'spring', stiffness: 300 }}
               >
                 <Target className="w-10 h-10 text-white drop-shadow-lg" />
               </motion.div>
-              <h1 className="text-4xl font-black text-white mb-3 bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
+              <h1 className="text-4xl font-black text-white mb-3 bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent">
                 SiteSelect
               </h1>
               <p className="text-white/80 font-semibold">AI-Powered Retail Site Selection</p>
-            </div>
-
+              </div>
+              
             <form onSubmit={handleLogin} className="space-y-6 relative z-10">
               <div>
                 <label className="block text-sm font-bold text-white/95 mb-3">Email</label>
                 <div className="relative group">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60 group-focus-within:text-white transition-colors" />
-                  <input
+                  <input 
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
                     required
-                    className="w-full pl-12 pr-4 py-4 bg-white/10 border-2 border-white/30 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-[#6366F1]/50 backdrop-blur-xl transition-all premium-glow-hover font-semibold"
+                    className="w-full pl-12 pr-4 py-4 bg-white/10 border-2 border-white/30 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-[#3B82F6]/50 backdrop-blur-xl transition-all premium-glow-hover font-semibold"
                   />
-        </div>
-              </div>
+                  </div>
+                </div>
 
               <div>
                 <label className="block text-sm font-bold text-white/95 mb-3">Password</label>
@@ -353,7 +358,7 @@ export default function SiteSelect() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="w-full pl-12 pr-14 py-4 bg-white/10 border-2 border-white/30 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-[#6366F1]/50 backdrop-blur-xl transition-all premium-glow-hover font-semibold"
+                    className="w-full pl-12 pr-14 py-4 bg-white/10 border-2 border-white/30 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-[#3B82F6]/50 backdrop-blur-xl transition-all premium-glow-hover font-semibold"
                   />
                   <motion.button
                     type="button"
@@ -364,14 +369,14 @@ export default function SiteSelect() {
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </motion.button>
-                </div>
-              </div>
+                    </div>
+                  </div>
 
                 <motion.button
                 type="submit"
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
-                className="w-full py-4 bg-gradient-to-r from-[#6366F1] via-[#8B5CF6] to-[#EC4899] text-white rounded-2xl font-black text-lg shadow-2xl hover:shadow-3xl neon-glow-hover transition-all relative overflow-hidden"
+                className="w-full py-4 bg-gradient-to-r from-[#3B82F6] via-[#0EA5E9] to-[#38BDF8] text-white rounded-2xl font-black text-lg shadow-2xl hover:shadow-3xl neon-glow-hover transition-all relative overflow-hidden"
                 >
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
@@ -385,12 +390,12 @@ export default function SiteSelect() {
                 <a href="#" className="text-sm text-white/80 hover:text-white transition-colors font-semibold hover:underline">
                   Forgot password?
                 </a>
-              </div>
+                    </div>
             </form>
-          </div>
+                  </div>
           </motion.div>
-        </div>
-      </div>
+                    </div>
+                  </div>
     );
   }
 
@@ -398,7 +403,7 @@ export default function SiteSelect() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 flex relative overflow-hidden">
       {/* Multi-layer background effects - Subtle liquid glass ambiance */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute w-[800px] h-[800px] bg-gradient-to-br from-[#6366F1]/5 via-[#8B5CF6]/5 to-[#6366F1]/5 rounded-full blur-3xl" style={{ 
+        <div className="absolute w-[800px] h-[800px] bg-gradient-to-br from-[#3B82F6]/5 via-[#0EA5E9]/5 to-[#3B82F6]/5 rounded-full blur-3xl" style={{ 
           top: '-200px', 
           right: '-200px',
           animation: 'float 20s ease-in-out infinite'
@@ -408,7 +413,7 @@ export default function SiteSelect() {
           left: '-150px',
           animation: 'float 25s ease-in-out infinite reverse'
         }} />
-      </div>
+              </div>
 
       {/* Collapsible Sidebar */}
       <aside
@@ -424,7 +429,7 @@ export default function SiteSelect() {
               className="flex items-center gap-3"
             >
               <motion.div
-                className="w-12 h-12 bg-gradient-to-br from-[#6366F1] via-[#8B5CF6] to-[#EC4899] rounded-2xl flex items-center justify-center shadow-xl neon-glow"
+                className="w-12 h-12 bg-gradient-to-br from-[#3B82F6] via-[#0EA5E9] to-[#38BDF8] rounded-2xl flex items-center justify-center shadow-xl neon-glow"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: 'spring', stiffness: 300 }}
               >
@@ -439,11 +444,11 @@ export default function SiteSelect() {
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="p-2.5 hover:bg-gradient-to-br hover:from-[#6366F1]/10 hover:to-[#8B5CF6]/10 rounded-xl transition-all"
+            className="p-2.5 hover:bg-gradient-to-br hover:from-[#3B82F6]/10 hover:to-[#0EA5E9]/10 rounded-xl transition-all"
           >
             <ChevronLeft className={`w-5 h-5 text-slate-600 transition-transform duration-300 ${sidebarCollapsed ? 'rotate-180' : ''}`} />
           </motion.button>
-        </div>
+                  </div>
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2">
@@ -458,7 +463,7 @@ export default function SiteSelect() {
                 whileTap={{ scale: 0.97 }}
                 className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-bold relative overflow-hidden ${
                   isActive
-                    ? 'bg-gradient-to-r from-[#6366F1] via-[#8B5CF6] to-[#EC4899] text-white shadow-xl neon-glow'
+                    ? 'bg-gradient-to-r from-[#3B82F6] via-[#0EA5E9] to-[#38BDF8] text-white shadow-xl neon-glow'
                     : 'text-slate-700 hover:bg-gradient-to-br hover:from-slate-100 hover:to-slate-50 hover:shadow-md'
                 }`}
               >
@@ -472,8 +477,8 @@ export default function SiteSelect() {
                 <Icon className="w-5 h-5 flex-shrink-0 relative z-10" />
                 {!sidebarCollapsed && (
                   <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
                     className="relative z-10"
                   >
                     {item.label}
@@ -534,7 +539,7 @@ export default function SiteSelect() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="p-3 hover:bg-gradient-to-br hover:from-[#6366F1]/10 hover:to-[#8B5CF6]/10 rounded-2xl transition-all relative"
+              className="p-3 hover:bg-gradient-to-br hover:from-[#3B82F6]/10 hover:to-[#0EA5E9]/10 rounded-2xl transition-all relative"
             >
               <Bell className="w-5 h-5 text-slate-600" />
               <motion.span
@@ -579,7 +584,7 @@ export default function SiteSelect() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                       >
-                        <h1 className="text-5xl font-black tracking-tight bg-gradient-to-r from-[#6366F1] via-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent drop-shadow-lg">
+                        <h1 className="text-5xl font-black tracking-tight bg-gradient-to-r from-[#3B82F6] via-[#0EA5E9] to-[#38BDF8] bg-clip-text text-transparent drop-shadow-lg">
                           AI-Powered Retail Site Selection
                         </h1>
                         <p className="text-xl text-slate-700 font-semibold">Find the perfect location for your business in Manhattan</p>
@@ -609,15 +614,15 @@ export default function SiteSelect() {
                         <div className="space-y-6">
                           <div className="flex items-center justify-between">
                             <h3 className="text-lg font-semibold">Analyzing Locations...</h3>
-                            <span className="text-sm font-medium text-[#6366F1]">{loadingProgress}%</span>
+                            <span className="text-sm font-medium text-[#3B82F6]">{loadingProgress}%</span>
                   </div>
                           <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${loadingProgress}%` }}
-                    style={{ height: '100%', background: 'linear-gradient(to right, #6366F1, #8B5CF6)', borderRadius: '9999px' }}
+                    style={{ height: '100%', background: 'linear-gradient(to right, #3B82F6, #2563EB)', borderRadius: '9999px' }}
                   />
-                          </div>
+                </div>
                           <div className="pt-4">
                             <AgentWorkflow 
                               agents={AGENTS.map(agent => ({
@@ -627,10 +632,10 @@ export default function SiteSelect() {
                                        AGENTS.findIndex(a => a.id === activeAgent) > AGENTS.findIndex(a => a.id === agent.id) ? 'done' : 'idle'
                               }))}
                   />
-                </div>
-                        </div>
                       </div>
-              </div>
+                    </div>
+                </div>
+                </div>
                     </motion.div>
           )}
 
@@ -654,7 +659,7 @@ export default function SiteSelect() {
               </div>
                               <button
                                 onClick={startAnalysis}
-                                className="px-6 py-3 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all flex items-center gap-2"
+                                className="px-6 py-3 bg-gradient-to-r from-[#3B82F6] to-[#0EA5E9] text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all flex items-center gap-2"
                               >
                                 RE-RUN NEURAL MESH →
                           </button>
@@ -670,8 +675,8 @@ export default function SiteSelect() {
                               }))}
                               onRun={startAnalysis}
                             />
-                          </div>
-                        </div>
+                      </div>
+                    </div>
 
                         {/* NYC Hyper-Density Card */}
                         {selectedLocationData && (
@@ -683,29 +688,29 @@ export default function SiteSelect() {
                                   <div className="flex items-center gap-2 mb-4">
                                     <Globe className="w-5 h-5 text-white" />
                                     <span className="text-xs font-bold text-white/70 uppercase tracking-wider">NYC HYPER-DENSITY</span>
-                                  </div>
+                          </div>
                                   <div className="text-xs font-bold text-white/50 uppercase mb-2">SELECTED CORE</div>
                                   <h3 className="text-3xl font-black text-white mb-3">{selectedLocationData.name}</h3>
                                   <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#10B981] rounded-lg mb-4">
                                     <span className="text-sm font-black text-white">{selectedLocationData.score}% FIT</span>
-                                  </div>
+                        </div>
                                   <div className="space-y-2 text-white">
                                     <div className="text-sm">
                                       <span className="text-white/60">LTV PROJECTION</span>
                                       <div className="text-xl font-black">$2.4M /yr</div>
-                                    </div>
+                    </div>
                                     <div className="text-sm">
                                       <span className="text-white/60">RENT ALPHA</span>
                                       <div className="text-xl font-black">-12.4% vs Market</div>
-                                    </div>
-                                  </div>
-                                </div>
+                        </div>
+                      </div>
+                          </div>
                                 <button className="w-full mt-6 px-4 py-3 bg-slate-800 text-white rounded-xl font-bold text-sm hover:bg-slate-700 transition-colors">
                                   ANALYZE MICRO-LEASE
                                 </button>
-                              </div>
-                            </div>
                           </div>
+                          </div>
+                        </div>
                         )}
 
                         {/* Real-Time Analytics - Bento Grid */}
@@ -714,57 +719,57 @@ export default function SiteSelect() {
                             <div className="flex items-center gap-2 mb-6">
                               <BarChart3 className="w-5 h-5 text-[#6366F1]" />
                               <h3 className="text-lg font-bold">REAL-TIME ANALYTICS</h3>
-                            </div>
+                          </div>
                             <div className="space-y-4">
                               {selectedLocationData ? selectedLocationData.metrics.map((metric, idx) => (
                                 <div key={idx} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
                                   <div className="flex-1">
                                     <div className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">{metric.label}</div>
                                     <div className="text-lg font-black text-slate-900">{metric.score}/100</div>
-                                  </div>
+                        </div>
                                   <div className={`px-3 py-1 rounded-lg text-xs font-bold ${
                                     metric.confidence === 'HIGH' ? 'bg-[#10B981]/10 text-[#10B981]' :
                                     metric.confidence === 'MEDIUM' ? 'bg-yellow-50 text-yellow-600' :
                                     'bg-orange-50 text-orange-600'
                                   }`}>
                                     {metric.confidence}
-                                  </div>
-                                </div>
+                          </div>
+                        </div>
                               )) : (
                                 <>
                                   <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
                                     <div className="flex-1">
                                       <div className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">ELITE DENSITY</div>
                                       <div className="text-lg font-black text-slate-900">14.2k/mi² <span className="text-[#10B981] text-sm">+18.4%</span></div>
-                                    </div>
+                      </div>
                                     <div className="px-3 py-1 bg-[#10B981]/10 text-[#10B981] rounded-lg text-xs font-bold">98</div>
-                                  </div>
+                        </div>
                                   <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
                                     <div className="flex-1">
                                       <div className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">NET DISPOSABLE</div>
                                       <div className="text-lg font-black text-slate-900">$242k <span className="text-[#10B981] text-sm">+12.1%</span></div>
-                                    </div>
+                      </div>
                                     <div className="px-3 py-1 bg-[#10B981]/10 text-[#10B981] rounded-lg text-xs font-bold">92</div>
-                                  </div>
+                    </div>
                                   <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
                                     <div className="flex-1">
                                       <div className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">FOOT VELOCITY</div>
                                       <div className="text-lg font-black text-slate-900">84k/hr <span className="text-[#10B981] text-sm">+42%</span></div>
-                                    </div>
+                  </div>
                                     <div className="px-3 py-1 bg-[#10B981]/10 text-[#10B981] rounded-lg text-xs font-bold">95</div>
-                                  </div>
+                      </div>
                                   <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
                                     <div className="flex-1">
                                       <div className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">LEASE ALPHA</div>
                                       <div className="text-lg font-black text-slate-900">-8.2% <span className="text-orange-600 text-sm">Opportunity</span></div>
-                                    </div>
+                    </div>
                                     <div className="px-3 py-1 bg-orange-50 text-orange-600 rounded-lg text-xs font-bold">74</div>
-                                  </div>
+                      </div>
                                 </>
                               )}
+                          </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
 
                         {/* Map View */}
                         <div className="col-span-12 lg:col-span-6 space-y-4">
@@ -774,7 +779,7 @@ export default function SiteSelect() {
                               onMarkerClick={handleMarkerClick}
                               selectedId={selectedLocation}
                             />
-                          </div>
+                      </div>
 
                           {/* Location Report Card */}
                           {selectedLocationData && (
@@ -790,16 +795,16 @@ export default function SiteSelect() {
                                     score={selectedLocationData.score} 
                                     confidence={selectedLocationData.status}
                                   />
-                                </div>
+                    </div>
                                 <button
                                   onClick={() => setSelectedLocation(null)}
                                   className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
                                 >
                                   <X className="w-5 h-5 text-slate-400" />
                                 </button>
-                        </div>
+                  </div>
                                 <ScoreBreakdown metrics={selectedLocationData.metrics} />
-                        </div>
+                </div>
                       </motion.div>
                           )}
 
@@ -833,14 +838,14 @@ export default function SiteSelect() {
                                       <div className="p-4 glass-gradient rounded-xl border border-white/20">
                                         <p className="text-sm text-slate-600 mb-1">Address</p>
                                         <p className="font-medium">{selectedLocationData.name}, Manhattan, NY</p>
-                                      </div>
+                      </div>
                                       <div className="p-4 glass-gradient rounded-xl border border-white/20">
                                         <p className="text-sm text-slate-600 mb-1">Score</p>
                                         <p className="font-semibold text-2xl text-[#6366F1]">{selectedLocationData.score}/100</p>
-                                      </div>
-                                    </div>
-                                    <ScoreBreakdown metrics={selectedLocationData.metrics} />
                     </div>
+                            </div>
+                                    <ScoreBreakdown metrics={selectedLocationData.metrics} />
+                          </div>
                                 </TabsContent>
                                 
                                 <TabsContent value="competitors" className="p-6">
@@ -849,9 +854,9 @@ export default function SiteSelect() {
                                     <div className="grid gap-4">
                                       {selectedLocationData.competitors.map((competitor, idx) => (
                                         <CompetitorCard key={idx} competitor={competitor} />
-                                      ))}
-                        </div>
-                      </div>
+                      ))}
+                    </div>
+                  </div>
                                 </TabsContent>
                                 
                                 <TabsContent value="revenue" className="p-6">
@@ -880,12 +885,12 @@ export default function SiteSelect() {
                                         </label>
                                       );
                                     })}
-                          </div>
+                        </div>
                                 </TabsContent>
                               </Tabs>
-                          </div>
-                          )}
                         </div>
+                          )}
+                      </div>
 
                         {/* Right: Workflow Sidebar */}
                         <div className="col-span-12 lg:col-span-3">
@@ -904,7 +909,7 @@ export default function SiteSelect() {
                                     <div className="flex flex-col items-center">
                                       <div className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center transition-all ${
                                         status === 'done' ? 'bg-[#10B981]/10 border-[#10B981] text-[#10B981]' :
-                                        status === 'active' ? 'bg-[#6366F1]/10 border-[#6366F1] text-[#6366F1] animate-pulse' :
+                                        status === 'active' ? 'bg-[#3B82F6]/10 border-[#3B82F6] text-[#3B82F6] animate-pulse' :
                                         'bg-slate-50 border-[#E5E7EB] text-slate-300'
                                       }`}>
                                         {status === 'done' ? (
@@ -914,13 +919,13 @@ export default function SiteSelect() {
                                         ) : (
                                           <agent.icon className="w-6 h-6" />
                                         )}
-                                      </div>
+                          </div>
                                       {index < AGENTS.length - 1 && (
                                         <div className={`w-0.5 h-8 mt-2 ${
                                           status === 'done' ? 'bg-[#10B981]' : 'bg-[#E5E7EB]'
                                         }`} />
                                       )}
-                                    </div>
+                        </div>
                                     <div className="flex-1 pt-1">
                                       <p className="text-xs font-medium text-slate-500 mb-1">Agent {index + 1}</p>
                                       <p className={`text-sm font-semibold ${
@@ -928,15 +933,15 @@ export default function SiteSelect() {
                                       }`}>
                                         {agent.name}
                                       </p>
-                          </div>
-                        </div>
-                                );
-                              })}
                             </div>
                           </div>
+                                );
+                              })}
                         </div>
                       </div>
+                      </div>
                     </div>
+                  </div>
                     </motion.div>
                   )}
                   </AnimatePresence>
@@ -970,11 +975,11 @@ export default function SiteSelect() {
                           'bg-orange-50 text-orange-600'
                         }`}>
                           {location.status}
-                        </div>
-                      </div>
+                    </div>
+                    </div>
                         <div className="text-3xl font-bold text-[#6366F1] mb-2">{location.score}/100</div>
                         <p className="text-sm text-slate-600">Click to view detailed analysis</p>
-                    </div>
+                  </div>
                     ))}
                   </div>
                 </div>
@@ -982,7 +987,7 @@ export default function SiteSelect() {
             )}
 
             {activeTab === 'analytics' && (
-              <motion.div
+                    <motion.div 
                 key="analytics"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -992,25 +997,25 @@ export default function SiteSelect() {
                   <div className="glass-card rounded-3xl p-8 premium-glow">
                     <h3 className="text-2xl font-bold mb-6">Analytics Dashboard</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="p-6 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] rounded-2xl text-white">
+                      <div className="p-6 bg-gradient-to-br from-[#3B82F6] to-[#0EA5E9] rounded-2xl text-white">
                         <p className="text-sm opacity-90 mb-2">Total Locations</p>
                         <p className="text-4xl font-bold">{LOCATIONS.length}</p>
-                      </div>
+                              </div>
                       <div className="p-6 bg-gradient-to-br from-[#10B981] to-emerald-500 rounded-2xl text-white">
                         <p className="text-sm opacity-90 mb-2">Avg. Score</p>
                         <p className="text-4xl font-bold">
                           {Math.round(LOCATIONS.reduce((acc, l) => acc + l.score, 0) / LOCATIONS.length)}
                         </p>
-                      </div>
+                            </div>
                       <div className="p-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl text-white">
                         <p className="text-sm opacity-90 mb-2">Analyses Run</p>
                         <p className="text-4xl font-bold">24</p>
+                        </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
+                    </motion.div>
+                  )}
 
             {activeTab === 'reports' && (
               <motion.div
@@ -1030,11 +1035,11 @@ export default function SiteSelect() {
                             <h4 className="font-semibold">{location.name} Analysis Report</h4>
                             <p className="text-sm text-slate-600">Generated 2 hours ago</p>
                           </div>
-                          <button className="px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-colors">
+                          <button className="px-4 py-2 bg-[#3B82F6] text-white rounded-lg hover:bg-[#2563EB] transition-colors">
                             Download
-                          </button>
-                        </div>
-                      </div>
+              </button>
+            </div>
+          </div>
                     ))}
                   </div>
                 </div>
@@ -1056,7 +1061,7 @@ export default function SiteSelect() {
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">Email Notifications</label>
                       <input type="checkbox" className="w-5 h-5 rounded border-[#E5E7EB] text-[#6366F1]" defaultChecked />
-                    </div>
+          </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">Theme</label>
                       <select className="w-full px-4 py-2 border border-[#E5E7EB] rounded-xl">
@@ -1064,8 +1069,8 @@ export default function SiteSelect() {
                         <option>Dark</option>
                         <option>Auto</option>
                       </select>
-                    </div>
-                          </div>
+          </div>
+        </div>
                         </div>
                       </div>
                     </motion.div>
