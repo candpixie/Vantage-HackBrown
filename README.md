@@ -155,17 +155,6 @@ Change parameters and re-run analysis in real-time:
 
 ---
 
-## Team
-
-| Member | Role |
-|--------|------|
-| **Candy** | Frontend Dev + Strategy |
-| **Karen** | UI/UX Design |
-| **Yolanda** | Backend + Agents |
-| **[4th Member]** | UI Design |
-
----
-
 ## Local Development
 
 ```bash
