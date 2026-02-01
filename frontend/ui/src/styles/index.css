@@ -1,7 +1,7 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
-@import './glass.css';
+@import './vantage.css';
 
 @keyframes float {
   0%, 100% {

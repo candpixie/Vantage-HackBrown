@@ -160,7 +160,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                SiteSelect
+                VANTAGE
               </h1>
               <p className="text-xs text-gray-500">AI-Powered Location Intelligence</p>
             </div>
@@ -775,7 +775,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                     const shareUrl = `${window.location.origin}/share/${loc.id}`;
                     if (navigator.share) {
                       navigator.share({
-                        title: `SiteSelect Analysis: ${loc.name}`,
+                        title: `Vantage Analysis: ${loc.name}`,
                         text: `Check out this location analysis for ${loc.name} with a score of ${loc.score}/100!`,
                         url: shareUrl,
                       }).catch(err => console.log('Share cancelled:', err));

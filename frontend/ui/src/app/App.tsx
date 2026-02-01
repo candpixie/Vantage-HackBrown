@@ -46,8 +46,8 @@ import {
 import { InputForm } from './components/InputForm';
 import { MapView } from './components/MapView';
 import { AgentWorkflow } from './components/AgentWorkflow';
-import { NeuralMeshWorkflow } from './components/NeuralMeshWorkflow';
-import { CityBackground } from './components/CityBackground';
+import { LinearPipeline } from './components/LinearPipeline';
+import { SimpleBackground } from './components/SimpleBackground';
 import { ScoreCard } from './components/ScoreCard';
 import { ScoreBreakdown } from './components/ScoreBreakdown';
 import { CompetitorCard } from './components/CompetitorCard';
@@ -155,7 +155,7 @@ const SIDEBAR_ITEMS = [
 type AppState = 'initial' | 'loading' | 'results';
 type ActiveTab = 'dashboard' | 'locations' | 'analytics' | 'reports' | 'settings';
 
-export default function SiteSelect() {
+export default function Vantage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLogin, setShowLogin] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -308,104 +308,61 @@ export default function SiteSelect() {
   // Login Modal
   if (showLogin && !isAuthenticated) {
   return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-900 via-blue-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-        {/* City Background */}
-        <CityBackground />
-        {/* Animated background layers with aurora effect */}
-        <div className="absolute inset-0 overflow-hidden">
-          <motion.div
-            className="absolute w-[600px] h-[600px] bg-[#3B82F6] rounded-full blur-3xl opacity-20"
-            animate={{
-              x: [0, 100, 0],
-              y: [0, -100, 0],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ top: '10%', right: '10%' }}
-          />
-          <motion.div
-            className="absolute w-[500px] h-[500px] bg-[#0EA5E9] rounded-full blur-3xl opacity-20"
-            animate={{
-              x: [0, -100, 0],
-              y: [0, 100, 0],
-              scale: [1, 1.3, 1],
-            }}
-            transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ bottom: '10%', left: '10%' }}
-          />
-          <motion.div
-            className="absolute w-[400px] h-[400px] bg-[#38BDF8] rounded-full blur-3xl opacity-15"
-            animate={{
-              x: [0, 50, 0],
-              y: [0, -50, 0],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ top: '50%', left: '50%' }}
-          />
-              </div>
-        {/* City Background */}
-        <CityBackground />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-slate-50 to-white flex items-center justify-center p-4 relative overflow-hidden">
+        <SimpleBackground />
 
         {/* Login Card */}
         <div className="relative z-10 w-full max-w-md">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
           >
-          <div className="glass-card-dark premium-glow border-2 border-white/30 rounded-3xl p-10 shadow-2xl liquid-shine relative overflow-hidden">
-            {/* Shimmer effect */}
-            <div className="absolute inset-0 shimmer opacity-30" />
-
-            <div className="text-center mb-10 relative z-10">
-              <motion.div
-                className="inline-flex items-center justify-center w-20 h-20 bg-blue-300 rounded-2xl mb-5 shadow-2xl neon-glow"
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                <Target className="w-10 h-10 text-white drop-shadow-lg" />
-              </motion.div>
-              <h1 className="text-4xl font-black text-white mb-3">
-                SiteSelect
+          <div className="bg-white border border-slate-200 rounded-2xl p-10 shadow-lg">
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-xl mb-5">
+                <span className="text-3xl font-bold text-white">▲</span>
+              </div>
+              <h1 className="text-4xl font-black text-slate-900 mb-2">
+                VANTAGE
               </h1>
-              <p className="text-white/80 font-semibold">AI-Powered Retail Site Selection</p>
+              <p className="text-slate-600 font-medium">Location Intelligence Platform</p>
               </div>
               
-            <form onSubmit={handleLogin} className="space-y-6 relative z-10">
+            <form onSubmit={handleLogin} className="space-y-5">
               <div>
-                <label className="block text-sm font-bold text-white/95 mb-3">Email</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Email</label>
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60 group-focus-within:text-white transition-colors" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                   <input 
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
                     required
-                    className="w-full pl-12 pr-4 py-4 bg-white/10 border-2 border-white/30 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-[#3B82F6]/50 backdrop-blur-xl transition-all premium-glow-hover font-semibold"
+                    className="w-full pl-12 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   />
                   </div>
                 </div>
 
               <div>
-                <label className="block text-sm font-bold text-white/95 mb-3">Password</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60 group-focus-within:text-white transition-colors" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="w-full pl-12 pr-14 py-4 bg-white/10 border-2 border-white/30 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-[#3B82F6]/50 backdrop-blur-xl transition-all premium-glow-hover font-semibold"
+                    className="w-full pl-12 pr-14 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   />
                   <motion.button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </motion.button>
@@ -414,20 +371,15 @@ export default function SiteSelect() {
 
                 <motion.button
                 type="submit"
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="w-full py-4 bg-blue-400 text-white rounded-2xl font-black text-lg shadow-2xl hover:shadow-3xl neon-glow-hover transition-all relative overflow-hidden"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-3 bg-blue-500 text-white rounded-xl font-semibold text-base shadow-sm hover:shadow-md hover:bg-blue-600 transition-all"
                 >
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                    animate={{ x: ['-100%', '200%'] }}
-                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-                  />
-                  <span className="relative z-10">Sign In</span>
+                  Sign In →
                 </motion.button>
 
               <div className="text-center pt-2">
-                <a href="#" className="text-sm text-white/80 hover:text-white transition-colors font-semibold hover:underline">
+                <a href="#" className="text-sm text-slate-600 hover:text-blue-600 transition-colors font-medium hover:underline">
                   Forgot password?
                 </a>
                     </div>
@@ -440,25 +392,13 @@ export default function SiteSelect() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 flex relative overflow-hidden">
-      {/* Multi-layer background effects - Subtle liquid glass ambiance */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute w-[800px] h-[800px] bg-gradient-to-br from-[#3B82F6]/5 via-[#0EA5E9]/5 to-[#3B82F6]/5 rounded-full blur-3xl" style={{ 
-          top: '-200px', 
-          right: '-200px',
-          animation: 'float 20s ease-in-out infinite'
-        }} />
-        <div className="absolute w-[600px] h-[600px] bg-gradient-to-br from-[#8B5CF6]/5 via-[#6366F1]/5 to-[#8B5CF6]/5 rounded-full blur-3xl" style={{ 
-          bottom: '-150px', 
-          left: '-150px',
-          animation: 'float 25s ease-in-out infinite reverse'
-        }} />
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-slate-50 to-white flex relative overflow-hidden">
+      <SimpleBackground />
 
       {/* Collapsible Sidebar */}
       <aside
         style={{ width: sidebarCollapsed ? 80 : 280 }}
-        className="relative z-30 glass-card premium-glow border-r-2 border-white/40 shadow-2xl flex flex-col transition-all duration-300 liquid-shine"
+        className="relative z-30 bg-white border-r border-slate-200 shadow-sm flex flex-col transition-all duration-300"
       >
         {/* Sidebar Header */}
         <div className="p-6 border-b-2 border-white/30 flex items-center justify-between">
@@ -475,8 +415,8 @@ export default function SiteSelect() {
               >
                 <Target className="w-7 h-7 text-white drop-shadow-lg" />
               </motion.div>
-              <span className="text-xl font-black text-slate-900 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                SiteSelect
+              <span className="text-xl font-black text-slate-900">
+                VANTAGE
               </span>
             </motion.div>
           )}
@@ -564,7 +504,7 @@ export default function SiteSelect() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col relative z-10">
         {/* Top Navigation Bar */}
-        <header className="sticky top-0 z-20 glass-card premium-glow border-b-2 border-white/40 h-20 flex items-center justify-between px-8 liquid-shine">
+        <header className="sticky top-0 z-20 bg-white border-b border-slate-200 shadow-sm h-20 flex items-center justify-between px-8">
           <div className="flex items-center gap-4">
             <motion.h2
               key={activeTab}
@@ -639,14 +579,14 @@ export default function SiteSelect() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                       >
-                        <h1 className="text-5xl font-black tracking-tight text-blue-600 drop-shadow-lg">
-                          AI-Powered Retail Site Selection
+                        <h1 className="text-5xl font-black tracking-tight text-slate-900">
+                          Find Your Next Location
                         </h1>
-                        <p className="text-xl text-slate-700 font-semibold">Find the perfect location for your business in Manhattan</p>
+                        <p className="text-xl text-slate-600 font-medium">Strategic site selection powered by AI</p>
               </motion.div>
 
                 <motion.div
-                  className="glass-card rounded-3xl p-10 premium-glow liquid-shine"
+                  className="bg-white border border-slate-200 rounded-xl p-10 shadow-sm"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 }}
@@ -665,7 +605,7 @@ export default function SiteSelect() {
               exit={{ opacity: 0 }}
             >
               <div className="space-y-8">
-                      <div className="glass-card rounded-3xl p-8 premium-glow">
+                      <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
                         <div className="space-y-6">
                           <div className="flex items-center justify-between">
                             <h3 className="text-lg font-semibold">Analyzing Locations...</h3>
@@ -679,14 +619,14 @@ export default function SiteSelect() {
                   />
                 </div>
                           <div className="pt-4">
-                            <AgentWorkflow 
-                              agents={AGENTS.map(agent => ({
-                                id: agent.id,
+                            <LinearPipeline
+                              agents={AGENTS.map((agent, idx) => ({
                                 name: agent.name,
                                 status: activeAgent === agent.id ? 'active' : 
-                                       AGENTS.findIndex(a => a.id === activeAgent) > AGENTS.findIndex(a => a.id === agent.id) ? 'done' : 'idle'
+                                       AGENTS.findIndex(a => a.id === activeAgent) > idx ? 'done' : 'pending',
+                                time: activeAgent === agent.id ? 'Running...' : undefined
                               }))}
-                  />
+                            />
                       </div>
                     </div>
                 </div>
@@ -728,30 +668,27 @@ export default function SiteSelect() {
                       <div className="grid grid-cols-12 gap-4">
                         {/* Neural Mesh Workflow - Large Card */}
                         <div className="col-span-12 lg:col-span-8">
-                          <div className="glass-card rounded-2xl p-6 premium-glow">
+                          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
                             <div className="flex items-center justify-between mb-4">
                               <div>
                                 <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">4 PARALLEL EXECUTION</div>
                                 <h2 className="text-2xl font-black tracking-tight">Multi-Agent Synthesis</h2>
-                                <p className="text-sm text-slate-600 mt-1">SiteSelect Pro agents are currently crunching Manhattan high-velocity data points.</p>
+                                <p className="text-sm text-slate-600 mt-1">Vantage agents are analyzing Manhattan locations with precision.</p>
               </div>
                               <button
                                 onClick={startAnalysis}
                                 className="px-6 py-3 bg-blue-400 text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all flex items-center gap-2"
                               >
-                                RE-RUN NEURAL MESH →
+                                RE-RUN ANALYSIS →
                           </button>
                         </div>
-                            <NeuralMeshWorkflow
+                            <LinearPipeline
                               agents={AGENTS.map((agent, idx) => ({
-                                id: agent.id,
                                 name: agent.name,
-                                icon: agent.icon,
                                 status: activeAgent === agent.id ? 'active' : 
-                                       AGENTS.findIndex(a => a.id === activeAgent) > idx ? 'done' : 'idle',
-                                position: { x: 15 + idx * 20, y: 50 }
+                                       AGENTS.findIndex(a => a.id === activeAgent) > idx ? 'done' : 'pending',
+                                time: idx === 0 ? '0.8s' : idx === 1 ? '1.2s' : idx === 2 ? '2.1s' : idx === 3 ? '1.5s' : '3.4s'
                               }))}
-                              onRun={startAnalysis}
                             />
                       </div>
                     </div>
@@ -759,7 +696,7 @@ export default function SiteSelect() {
                         {/* NYC Hyper-Density Card */}
                         {selectedLocationData && (
                           <div className="col-span-12 lg:col-span-4">
-                            <div className="glass-card-dark rounded-2xl overflow-hidden premium-glow h-full relative">
+                            <div className="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden h-full relative shadow-sm">
                               <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-slate-800/70 to-slate-900/70" />
                               <div className="relative z-10 p-6 h-full flex flex-col justify-between">
                                 <div>
@@ -793,7 +730,7 @@ export default function SiteSelect() {
 
                         {/* Real-Time Analytics - Bento Grid */}
                         <div className="col-span-12 lg:col-span-6">
-                          <div className="glass-card rounded-2xl p-6 premium-glow">
+                          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
                             <div className="flex items-center gap-2 mb-6">
                               <BarChart3 className="w-5 h-5 text-[#6366F1]" />
                               <h3 className="text-lg font-bold">REAL-TIME ANALYTICS</h3>
@@ -851,7 +788,7 @@ export default function SiteSelect() {
 
                         {/* Map View */}
                         <div className="col-span-12 lg:col-span-6 space-y-4">
-                          <div className="glass-card rounded-2xl overflow-hidden premium-glow">
+                          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                             <MapView
                               markers={LOCATIONS}
                               onMarkerClick={handleMarkerClick}
@@ -865,7 +802,7 @@ export default function SiteSelect() {
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                             >
-                              <div className="glass-card rounded-3xl p-6 premium-glow">
+                              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
                               <div className="flex items-start justify-between mb-6">
                                 <div>
                                   <h3 className="text-xl font-semibold mb-1">{selectedLocationData.name}</h3>
@@ -888,7 +825,7 @@ export default function SiteSelect() {
 
                           {/* Tabs Below Map */}
                           {selectedLocationData && (
-                            <div className="glass-card rounded-3xl premium-glow overflow-hidden">
+                            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                               <Tabs defaultValue="analysis" className="w-full">
                                 <TabsList className="w-full justify-start rounded-none border-b border-[#E5E7EB] bg-white/50">
                                   <TabsTrigger value="analysis" className="flex items-center gap-2">
@@ -949,7 +886,7 @@ export default function SiteSelect() {
                                       return (
                                         <label
                                           key={idx}
-                                          className="flex items-center gap-3 p-4 glass-gradient rounded-xl border border-white/20 hover:border-[#6366F1]/30 cursor-pointer premium-glow-hover transition-all"
+                                          className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 cursor-pointer hover:shadow-md transition-all"
                                         >
                                           <input
                                             type="checkbox"
@@ -972,7 +909,7 @@ export default function SiteSelect() {
 
                         {/* Right: Workflow Sidebar */}
                         <div className="col-span-12 lg:col-span-3">
-                          <div className="glass-card rounded-3xl premium-glow overflow-hidden sticky top-24">
+                          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm sticky top-24">
                             <div className="p-6 border-b border-white/20">
                               <h3 className="font-semibold">Agent Workflow</h3>
                             </div>
@@ -1044,7 +981,7 @@ export default function SiteSelect() {
                           setSelectedLocation(location.id);
                           setActiveTab('dashboard');
                         }}
-                        className="glass-card rounded-3xl p-6 premium-glow-hover cursor-pointer"
+                        className="bg-white border border-slate-200 rounded-xl p-6 hover:shadow-md cursor-pointer transition-shadow"
                       >
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-semibold">{location.name}</h3>
@@ -1073,7 +1010,7 @@ export default function SiteSelect() {
                 exit={{ opacity: 0, y: -20 }}
               >
                 <div className="space-y-6">
-                  <div className="glass-card rounded-3xl p-8 premium-glow">
+                  <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
                     <h3 className="text-2xl font-bold mb-6">Analytics Dashboard</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="p-6 bg-blue-400 rounded-2xl text-white">
@@ -1108,7 +1045,7 @@ export default function SiteSelect() {
                   <h3 className="text-2xl font-bold mb-6">Reports</h3>
                   <div className="space-y-4">
                     {LOCATIONS.map((location) => (
-                      <div key={location.id} className="p-4 glass-gradient rounded-xl border border-white/20 premium-glow-hover cursor-pointer">
+                      <div key={location.id} className="p-4 bg-slate-50 rounded-xl border border-slate-200 hover:shadow-md cursor-pointer transition-shadow">
                         <div className="flex items-center justify-between">
                         <div>
                             <h4 className="font-semibold">{location.name} Analysis Report</h4>

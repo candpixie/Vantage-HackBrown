@@ -25,7 +25,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
           <select
             value={businessType}
             onChange={(e) => setBusinessType(e.target.value)}
-            className="w-full glass-card border-2 border-white/40 rounded-2xl px-5 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-[#3B82F6]/50 appearance-none cursor-pointer hover:border-[#3B82F6]/60 transition-all premium-glow-hover backdrop-blur-xl"
+            className="w-full bg-white border border-slate-300 rounded-xl px-5 py-4 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer hover:border-blue-400 transition-all"
           >
             <option>Boba Tea Shop</option>
             <option>Coffee Roastery</option>
@@ -49,7 +49,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
           <select
             value={targetDemo}
             onChange={(e) => setTargetDemo(e.target.value)}
-            className="w-full glass-card border-2 border-white/40 rounded-2xl px-5 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0EA5E9] focus:border-[#0EA5E9]/50 appearance-none cursor-pointer hover:border-[#0EA5E9]/60 transition-all premium-glow-hover backdrop-blur-xl"
+            className="w-full bg-white border border-slate-300 rounded-xl px-5 py-4 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer hover:border-blue-400 transition-all"
           >
             <option>Gen Z Students</option>
             <option>Young Professionals</option>
@@ -108,19 +108,12 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
         whileTap={{ scale: 0.97 }}
         onClick={onAnalyze}
         disabled={isAnalyzing}
-        className={`w-full py-5 rounded-2xl font-black text-base flex items-center justify-center gap-3 transition-all relative overflow-hidden ${
+        className={`w-full py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-3 transition-all ${
           isAnalyzing
             ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-            : 'bg-blue-400 text-white shadow-2xl shadow-blue-300/50 hover:shadow-3xl hover:shadow-blue-400/70 neon-glow-hover'
+            : 'bg-blue-500 text-white shadow-sm hover:shadow-md hover:bg-blue-600'
         }`}
       >
-        {!isAnalyzing && (
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-            animate={{ x: ['-100%', '200%'] }}
-            transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-          />
-        )}
         {isAnalyzing ? (
           <>
             <motion.div
