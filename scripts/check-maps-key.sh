@@ -12,26 +12,26 @@ echo ""
 
 # Check if .env.local exists
 echo "1️⃣  Checking for .env.local file..."
-if [ -f "frontend/ui/.env.local" ]; then
+if [ -f "frontend/.env.local" ]; then
     echo "   ✅ .env.local exists"
     
     # Check if VITE_GOOGLE_MAPS_API_KEY is set
-    if grep -q "VITE_GOOGLE_MAPS_API_KEY" frontend/ui/.env.local; then
+    if grep -q "VITE_GOOGLE_MAPS_API_KEY" frontend/.env.local; then
         echo "   ✅ VITE_GOOGLE_MAPS_API_KEY is defined"
         
         # Check if it's still the placeholder
-        if grep -q "VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here" frontend/ui/.env.local; then
+        if grep -q "VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here" frontend/.env.local; then
             echo "   ⚠️  WARNING: Still using placeholder value!"
             echo "   ❌ You need to replace 'your_google_maps_api_key_here' with your actual Google Maps API key"
             echo ""
             echo "   To fix:"
             echo "   1. Get your API key from: https://console.cloud.google.com/"
-            echo "   2. Edit: frontend/ui/.env.local"
+            echo "   2. Edit: frontend/.env.local"
             echo "   3. Replace the placeholder with: VITE_GOOGLE_MAPS_API_KEY=AIzaSy..."
             echo ""
         else
             # Check if it's an actual key (starts with AIza)
-            KEY_VALUE=$(grep "VITE_GOOGLE_MAPS_API_KEY" frontend/ui/.env.local | cut -d '=' -f2)
+            KEY_VALUE=$(grep "VITE_GOOGLE_MAPS_API_KEY" frontend/.env.local | cut -d '=' -f2)
             if [[ $KEY_VALUE == AIza* ]]; then
                 echo "   ✅ API key looks valid (starts with AIza)"
                 echo "   🔑 Key preview: ${KEY_VALUE:0:10}..."
@@ -42,13 +42,13 @@ if [ -f "frontend/ui/.env.local" ]; then
         fi
     else
         echo "   ❌ VITE_GOOGLE_MAPS_API_KEY is NOT defined"
-        echo "   Add this line to frontend/ui/.env.local:"
+        echo "   Add this line to frontend/.env.local:"
         echo "   VITE_GOOGLE_MAPS_API_KEY=your_actual_api_key_here"
     fi
 else
     echo "   ❌ .env.local does NOT exist"
     echo "   Creating .env.local template..."
-    cat > frontend/ui/.env.local << 'EOF'
+    cat > frontend/.env.local << 'EOF'
 # Vantage Frontend Environment Variables (Local Development)
 
 # Backend API URL
@@ -61,7 +61,7 @@ VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
 # Optional: Google Maps Map ID for custom styling
 # VITE_GOOGLE_MAPS_MAP_ID=your_map_id_here
 EOF
-    echo "   ✅ Created frontend/ui/.env.local"
+    echo "   ✅ Created frontend/.env.local"
     echo "   ⚠️  Edit this file and add your Google Maps API key!"
 fi
 
@@ -95,7 +95,7 @@ echo "   • Google Maps API keys start with 'AIza'"
 echo ""
 
 echo "4️⃣  Testing locally:"
-echo "   cd frontend/ui"
+echo "   cd frontend"
 echo "   npm run dev"
 echo "   (Open http://localhost:5175 and run an analysis)"
 echo ""

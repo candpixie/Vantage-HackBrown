@@ -62,7 +62,7 @@ Visit: https://console.cloud.google.com/
 
 ### Create `.env.local` file
 
-In `frontend/ui/` directory, create `.env.local`:
+In `frontend/` directory, create `.env.local`:
 
 ```bash
 # Google Maps Configuration
@@ -77,7 +77,7 @@ This file is already in `.gitignore` and won't be committed.
 ### Restart Your Dev Server
 
 ```bash
-cd frontend/ui
+cd frontend
 npm run dev
 ```
 

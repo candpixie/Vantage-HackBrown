@@ -1,6 +1,6 @@
 {
-  "buildCommand": "cd frontend/ui && npm install && npm run build",
-  "outputDirectory": "frontend/ui/dist",
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
   "framework": null,
   "rewrites": [
     {

@@ -112,7 +112,7 @@ POST https://sandbox.api.visa.com/merchantsearch/v2/search
 ### Implementation Details
 
 **Frontend Integration:**
-- **Location:** `frontend/ui/src/app/components/GoogleMapView.tsx`
+- **Location:** `frontend/src/app/components/GoogleMapView.tsx`
 - **Library:** `@vis.gl/react-google-maps` (React wrapper for Google Maps)
 - **Overlay:** Deck.gl for heatmap visualizations
 
@@ -383,7 +383,7 @@ def generate_ai_insights(location_data: Dict) -> List[Dict]:
 ```
 
 **Frontend Integration:**
-- **Location:** `frontend/ui/src/app/components/AIInsights.tsx`
+- **Location:** `frontend/src/app/components/AIInsights.tsx`
 - **API Endpoint:** `POST /generate-insights`
 - **Features:**
   - Loading state with spinner

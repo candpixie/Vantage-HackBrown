@@ -110,22 +110,22 @@ else
     echo -e "${RED}❌ Frontend is NOT running${NC}"
     echo ""
     echo "   To start frontend:"
-    echo "   cd frontend/ui && npm run dev"
+    echo "   cd frontend && npm run dev"
 fi
 
 echo ""
 
 # Check frontend .env.local
-if [ -f "frontend/ui/.env.local" ]; then
-    echo -e "${GREEN}✅ frontend/ui/.env.local exists${NC}"
+if [ -f "frontend/.env.local" ]; then
+    echo -e "${GREEN}✅ frontend/.env.local exists${NC}"
     
-    if grep -q "VITE_API_URL" frontend/ui/.env.local 2>/dev/null; then
-        API_URL=$(grep "VITE_API_URL" frontend/ui/.env.local | cut -d '=' -f2)
+    if grep -q "VITE_API_URL" frontend/.env.local 2>/dev/null; then
+        API_URL=$(grep "VITE_API_URL" frontend/.env.local | cut -d '=' -f2)
         echo "   VITE_API_URL: $API_URL"
     fi
     
-    if grep -q "VITE_GOOGLE_MAPS_API_KEY" frontend/ui/.env.local 2>/dev/null; then
-        MAPS_KEY=$(grep "VITE_GOOGLE_MAPS_API_KEY" frontend/ui/.env.local | cut -d '=' -f2)
+    if grep -q "VITE_GOOGLE_MAPS_API_KEY" frontend/.env.local 2>/dev/null; then
+        MAPS_KEY=$(grep "VITE_GOOGLE_MAPS_API_KEY" frontend/.env.local | cut -d '=' -f2)
         if [ -n "$MAPS_KEY" ] && [ "$MAPS_KEY" != "your_google_maps_api_key_here" ]; then
             echo -e "${GREEN}   ✅ VITE_GOOGLE_MAPS_API_KEY configured${NC}"
         else
@@ -135,7 +135,7 @@ if [ -f "frontend/ui/.env.local" ]; then
         echo -e "${YELLOW}   ⚠️  VITE_GOOGLE_MAPS_API_KEY not found${NC}"
     fi
 else
-    echo -e "${RED}❌ frontend/ui/.env.local NOT found${NC}"
+    echo -e "${RED}❌ frontend/.env.local NOT found${NC}"
 fi
 
 echo ""
@@ -227,7 +227,7 @@ echo "Start Backend:"
 echo "  cd backend && python3 http_server.py"
 echo ""
 echo "Start Frontend:"
-echo "  cd frontend/ui && npm run dev"
+echo "  cd frontend && npm run dev"
 echo ""
 echo "Test API:"
 echo "  curl http://localhost:8020/health"

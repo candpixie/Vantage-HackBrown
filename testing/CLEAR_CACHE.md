@@ -48,7 +48,7 @@
 4. Restart the dev server:
    ```bash
    # Stop server (Ctrl+C in terminal)
-   cd frontend/ui
+   cd frontend
    npm run dev
    ```
 

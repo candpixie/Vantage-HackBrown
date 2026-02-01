@@ -10,7 +10,7 @@ This error appears when the `VITE_GOOGLE_MAPS_API_KEY` environment variable is n
 
 ### Step 1: Add API Key to `.env.local`
 
-Open `frontend/ui/.env.local` and **add or update** this line:
+Open `frontend/.env.local` and **add or update** this line:
 
 ```bash
 VITE_GOOGLE_MAPS_API_KEY=AIzaSyD...your_actual_key_here
@@ -24,7 +24,7 @@ After editing `.env.local`, you **MUST** restart:
 
 ```bash
 # Stop the dev server (Ctrl+C)
-cd frontend/ui
+cd frontend
 npm run dev
 ```
 
@@ -129,7 +129,7 @@ Click: **Save**
 ## 🧪 Testing Checklist
 
 ### Local Development
-- [ ] `.env.local` file exists in `frontend/ui/`
+- [ ] `.env.local` file exists in `frontend/`
 - [ ] `VITE_GOOGLE_MAPS_API_KEY` is defined in `.env.local`
 - [ ] API key starts with `AIza`
 - [ ] Dev server restarted after adding key
@@ -210,14 +210,14 @@ If it shows `undefined`, the env var isn't loaded properly.
 
 **Edit local env file:**
 ```bash
-code frontend/ui/.env.local
+code frontend/.env.local
 # or
-nano frontend/ui/.env.local
+nano frontend/.env.local
 ```
 
 **Restart dev server:**
 ```bash
-cd frontend/ui
+cd frontend
 npm run dev
 ```
 

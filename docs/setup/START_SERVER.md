@@ -6,7 +6,7 @@
 
 1. **Navigate to frontend directory:**
    ```bash
-   cd frontend/ui
+   cd frontend
    ```
 
 2. **Install dependencies (if not already installed):**
@@ -38,7 +38,7 @@ chmod +x run_backend.sh
 
 **Terminal 2 - Frontend:**
 ```bash
-cd frontend/ui
+cd frontend
 npm install  # if needed
 npm run dev
 ```
@@ -47,7 +47,7 @@ npm run dev
 
 ### If dependencies aren't installed:
 ```bash
-cd frontend/ui
+cd frontend
 npm install
 ```
 
@@ -58,7 +58,7 @@ npm install
 ### If you see module errors:
 ```bash
 # Clear cache and reinstall
-cd frontend/ui
+cd frontend
 rm -rf node_modules package-lock.json
 npm install
 ```

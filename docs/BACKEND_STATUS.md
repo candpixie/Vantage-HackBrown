@@ -310,7 +310,7 @@ This is a known MacOS security issue with Python packages.
 ### Frontend Blank or Not Loading?
 **Check:**
 1. Is backend running? (`curl http://localhost:8020/health`)
-2. Is `VITE_API_URL` set in `frontend/ui/.env.local`?
+2. Is `VITE_API_URL` set in `frontend/.env.local`?
 3. Did you restart frontend after changing `.env.local`?
 
 ### Tabs Appearing Blank?
@@ -320,7 +320,7 @@ This is a known MacOS security issue with Python packages.
 - Verify backend is returning data
 
 ### Maps Not Loading?
-**Add Google Maps API key to `frontend/ui/.env.local`:**
+**Add Google Maps API key to `frontend/.env.local`:**
 ```bash
 VITE_GOOGLE_MAPS_API_KEY=AIzaSy...your_key
 ```
@@ -335,7 +335,7 @@ VITE_GOOGLE_MAPS_API_KEY=AIzaSy...your_key
 cd backend && python3 http_server.py
 
 # Terminal 2: Frontend
-cd frontend/ui && npm run dev
+cd frontend && npm run dev
 ```
 
 ### Test Backend:

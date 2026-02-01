@@ -31,7 +31,7 @@
 ### 4. PDF Export
 - [x] Created pdfExport.ts utility
 - [x] PDF template with proper formatting
-- [ ] **TODO: Install html2pdf.js** - Run: `npm install html2pdf.js` in frontend/ui
+- [ ] **TODO: Install html2pdf.js** - Run: `npm install html2pdf.js` in frontend
 
 ## 🔄 In Progress
 
@@ -52,7 +52,7 @@
 
 1. **Install PDF library:**
    ```bash
-   cd frontend/ui
+   cd frontend
    npm install html2pdf.js
    ```
 

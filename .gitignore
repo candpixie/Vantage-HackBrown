@@ -1,9 +1,9 @@
-frontend/ui/dist
-frontend/ui/node_modules
-frontend/ui/package-lock.json
-frontend/ui/package.json
+frontend/dist
+frontend/node_modules
+frontend/package-lock.json
+frontend/package.json
 package-lock.json
-frontend/ui/.env.local
+frontend/.env.local
 
 # Environment variables (NEVER commit these!)
 .env

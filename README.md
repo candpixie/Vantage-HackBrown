@@ -225,7 +225,7 @@ The backend server will run on `http://localhost:8020` (or PORT from environment
 
 ```bash
 # Navigate to frontend directory
-cd frontend/ui
+cd frontend
 
 # Install dependencies
 npm install
@@ -273,17 +273,16 @@ hackbrown-2/
 │   ├── aws_data_service.py          # AWS S3 data service
 │   └── http_server.py               # Flask API bridge
 ├── frontend/
-│   └── ui/
-│       ├── src/
-│       │   ├── app/
-│       │   │   ├── components/      # React components
-│       │   │   ├── contexts/        # React contexts
-│       │   │   └── App.tsx          # Main app component
-│       │   ├── services/            # API service
-│       │   └── utils/               # Utilities (PDF export)
-│       ├── public/
-│       │   └── data/                # Public data files
-│       └── package.json
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── components/      # React components
+│   │   │   ├── contexts/        # React contexts
+│   │   │   └── App.tsx          # Main app component
+│   │   ├── services/            # API service
+│   │   └── utils/               # Utilities (PDF export)
+│   ├── public/
+│   │   └── data/                # Public data files
+│   └── package.json
 ├── app.py                           # Flask entrypoint
 ├── requirements.txt
 └── Procfile                         # Deployment config

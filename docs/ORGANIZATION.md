@@ -18,7 +18,6 @@ hackbrown-2/
 │   └── *.py                    # Backend services
 │
 ├── frontend/                    # Frontend code
-│   └── ui/                     # React application
 │
 ├── maps/                       # Alternative map implementation
 │

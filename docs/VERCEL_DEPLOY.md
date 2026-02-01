@@ -16,7 +16,7 @@
 3. **Configure Project**
    ```
    Framework Preset: Vite
-   Root Directory: frontend/ui
+   Root Directory: frontend
    Build Command: npm run build
    Output Directory: dist
    Install Command: npm install
@@ -52,7 +52,7 @@ vercel
 # - Which scope? Your account
 # - Link to existing project? No
 # - Project name? vantage-hackbrown
-# - Directory? ./frontend/ui
+# - Directory? ./frontend
 # - Override settings? Yes
 #   - Build Command: npm run build
 #   - Output Directory: dist
@@ -135,17 +135,17 @@ The following files are configured for you:
 ### `vercel.json`
 ```json
 {
-  "buildCommand": "cd frontend/ui && npm run build",
-  "outputDirectory": "frontend/ui/dist",
-  "installCommand": "cd frontend/ui && npm install",
-  "devCommand": "cd frontend/ui && npm run dev"
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "cd frontend && npm install",
+  "devCommand": "cd frontend && npm run dev"
 }
 ```
 
 ### `.vercelignore`
 Excludes backend, data, and other non-frontend files from deployment.
 
-### `frontend/ui/.env.production`
+### `frontend/.env.production`
 Production environment variables (edit with your backend URL).
 
 ## ✅ Post-Deployment Checklist
@@ -170,7 +170,7 @@ Production environment variables (edit with your backend URL).
 **Build fails on Vercel:**
 - Check build logs
 - Verify all dependencies are in package.json
-- Try building locally: `cd frontend/ui && npm run build`
+- Try building locally: `cd frontend && npm run build`
 
 **Backend not responding:**
 - Check backend logs
@@ -178,7 +178,7 @@ Production environment variables (edit with your backend URL).
 - Test backend health endpoint: `curl https://your-backend.com/health`
 
 **Heat map not showing:**
-- Check if neighborhoods.geojson is in `frontend/ui/public/data/`
+- Check if neighborhoods.geojson is in `frontend/public/data/`
 - Verify file is being served correctly
 
 ## 📞 Support

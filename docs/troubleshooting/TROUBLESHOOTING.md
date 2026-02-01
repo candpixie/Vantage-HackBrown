@@ -18,7 +18,7 @@ The server is confirmed running on `http://localhost:5173`
 **Solution:**
 ```bash
 # Stop server (Ctrl+C), then:
-cd frontend/ui
+cd frontend
 rm -rf node_modules package-lock.json
 npm install
 npm run dev
@@ -35,7 +35,7 @@ npm run dev
 
 **Check if React is installed:**
 ```bash
-cd frontend/ui
+cd frontend
 ls node_modules | grep react
 ```
 
@@ -63,7 +63,7 @@ npm install react@18.3.1 react-dom@18.3.1
 **Solution:**
 ```bash
 # Verify CSS files exist
-ls frontend/ui/src/styles/
+ls frontend/src/styles/
 ```
 
 ### 6. **Port Already in Use**
@@ -128,7 +128,7 @@ If you see errors here, share them!
 
 **Quick Fix Command:**
 ```bash
-cd /Users/candyxie/hackbrown-2/frontend/ui
+cd /Users/candyxie/hackbrown-2/frontend
 pkill -f vite
 rm -rf node_modules package-lock.json
 npm install

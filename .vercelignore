@@ -8,4 +8,4 @@ requirements.txt
 .gitignore
 .git/
 node_modules/
-frontend/ui/node_modules/
+frontend/node_modules/
