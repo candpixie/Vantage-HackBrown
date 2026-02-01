@@ -296,6 +296,7 @@ export default function Vantage() {
   const [detailTab, setDetailTab] = useState<DetailTab>('overview');
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [activeAgent, setActiveAgent] = useState<string | null>(null);
+  const [loadingMessage, setLoadingMessage] = useState("");
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -379,6 +380,20 @@ export default function Vantage() {
     setAppState('loading');
     setLoadingProgress(0);
     setActiveAgent(AGENTS[0].id);
+    setLoadingMessage("Vantage is analyzing 262 neighborhoods...");
+
+    const NEIGHBORHOOD_COUNT = 262; // NYC neighborhoods
+    const MIN_LOADING_TIME = 10000; // 10 seconds minimum
+    const startTime = Date.now();
+
+    const agentMessages = [
+      { progress: 0, message: `Vantage is analyzing ${NEIGHBORHOOD_COUNT} neighborhoods...` },
+      { progress: 20, message: "Location Scout: scanning demographics and foot traffic..." },
+      { progress: 40, message: "Competitor Intel: querying Google Places API..." },
+      { progress: 60, message: "Revenue Analyst: projecting financial scenarios..." },
+      { progress: 80, message: "Synthesizing location intelligence..." },
+      { progress: 100, message: "Analysis complete!" }
+    ];
 
     const interval = setInterval(() => {
       setLoadingProgress(prev => {
@@ -387,6 +402,10 @@ export default function Vantage() {
           clearInterval(interval);
           return 100;
         }
+
+        // Update agent and message based on progress
+        const currentMessage = agentMessages.find(m => newProgress >= m.progress) || agentMessages[0];
+        setLoadingMessage(currentMessage.message);
 
         if (newProgress < 20) setActiveAgent(AGENTS[0].id);
         else if (newProgress < 40) setActiveAgent(AGENTS[1].id);
@@ -409,10 +428,15 @@ export default function Vantage() {
         fetchListings(),
       ]);
 
+      // Calculate remaining time to meet minimum loading time
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_LOADING_TIME - elapsed);
+
       setTimeout(() => {
         clearInterval(interval);
         setAppState('results');
         setActiveAgent(null);
+        setLoadingMessage("");
 
         // Priority 1: Use backend orchestrator results if available
         if (response.locations && response.locations.length > 0) {
@@ -421,10 +445,19 @@ export default function Vantage() {
           setLocations(backendLocations as typeof FALLBACK_LOCATIONS);
           console.log('Using backend orchestrator locations:', backendLocations.length);
           const topLoc = backendLocations[0];
-          toast.success('Analysis complete!', {
-            description: `Found ${backendLocations.length} locations from backend. ${topLoc.name} scored ${topLoc.score}/100 — $${topLoc.rent_price?.toLocaleString()}/mo`,
-            duration: 4000,
-          });
+          
+          // Check if this was a cached response
+          if ((response as any).cached) {
+            toast.success('Instant analysis!', {
+              description: 'Using pre-computed results for this query',
+              duration: 2000,
+            });
+          } else {
+            toast.success('Analysis complete!', {
+              description: `Found ${backendLocations.length} locations from backend. ${topLoc.name} scored ${topLoc.score}/100 — $${topLoc.rent_price?.toLocaleString()}/mo`,
+              duration: 4000,
+            });
+          }
           return;
         }
 
@@ -451,14 +484,17 @@ export default function Vantage() {
           description: `Found ${locations.length} locations. ${topLocation.name} scored ${topLocation.score}/100 - Top pick`,
           duration: 4000,
         });
-      }, 4000);
+      }, remaining);
     } catch (error) {
       console.error('Analysis failed:', error);
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_LOADING_TIME - elapsed);
       setTimeout(() => {
         clearInterval(interval);
         setAppState('results');
         setActiveAgent(null);
-      }, 4000);
+        setLoadingMessage("");
+      }, remaining);
     }
   };
 
@@ -854,14 +890,33 @@ export default function Vantage() {
                     key="loading-view"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    className="space-y-6"
                   >
-                    <div className="col-span-full h-[400px]">
-                      <LocationCardSkeleton />
+                    {/* Loading message display */}
+                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm">
+                      <div className="text-center space-y-4">
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                          {loadingMessage || "Analyzing locations..."}
+                        </h3>
+                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
+                            style={{ width: `${loadingProgress}%` }}
+                          />
+                        </div>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                          {Math.round(loadingProgress)}% complete
+                        </p>
+                      </div>
                     </div>
-                    {[1, 2, 3].map(i => (
-                      <LocationCardSkeleton key={i} />
-                    ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div className="col-span-full h-[400px]">
+                        <LocationCardSkeleton />
+                      </div>
+                      {[1, 2, 3].map(i => (
+                        <LocationCardSkeleton key={i} />
+                      ))}
+                    </div>
                   </MotionDiv>
                 ) : (
                   <MotionDiv

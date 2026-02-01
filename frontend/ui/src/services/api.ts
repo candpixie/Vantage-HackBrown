@@ -74,6 +74,7 @@ export interface AnalysisResponse {
   agent_statuses: AgentProgress[];
   locations: LocationResult[];
   error?: string;
+  cached?: boolean; // Flag to indicate if results were from cache
 }
 
 class ApiService {
@@ -157,6 +158,7 @@ class ApiService {
       active_agent: data.active_agent,
       agent_statuses: data.agent_statuses || [],
       locations: data.locations || this.getMockLocations(),
+      cached: data.cached || false, // Preserve cached flag from backend
     };
   }
 
