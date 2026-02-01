@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Layers, ChevronLeft, ChevronRight, X, MapPin, DollarSign, TrendingUp, ExternalLink } from 'lucide-react';
 import type { LocationResult } from '../../services/api';
 
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+
 const MotionDiv = motion.div as any;
 const MotionAside = motion.aside as any;
 
@@ -21,12 +23,12 @@ interface MapSidebarProps {
   hoveredNeighborhood?: any;
 }
 
-export const MapSidebar: React.FC<MapSidebarProps> = ({
-  colorMode,
-  setColorMode,
-  isCollapsed,
+export const MapSidebar: React.FC<MapSidebarProps> = ({ 
+  colorMode, 
+  setColorMode, 
+  isCollapsed, 
   onToggle,
-  hoveredNeighborhood
+  hoveredNeighborhood 
 }) => {
   const activeLegend = LAYERS.find((l) => l.key === colorMode)?.legend;
 
@@ -72,10 +74,11 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
               {LAYERS.map(({ key, label }) => (
                 <label
                   key={key}
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors ${colorMode === key
-                    ? 'bg-teal-50 dark:bg-teal-500/20 border border-teal-300 dark:border-teal-500/30'
-                    : 'hover:bg-slate-50 dark:hover:bg-slate-700 border border-transparent'
-                    }`}
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
+                    colorMode === key
+                      ? 'bg-teal-50 dark:bg-teal-500/20 border border-teal-300 dark:border-teal-500/30'
+                      : 'hover:bg-slate-50 dark:hover:bg-slate-700 border border-transparent'
+                  }`}
                 >
                   <input
                     type="radio"
@@ -160,11 +163,11 @@ interface MapDetailPanelProps {
   onClose: () => void;
 }
 
-export const MapDetailPanel: React.FC<MapDetailPanelProps> = ({
-  location,
-  isCollapsed,
-  onToggle,
-  onClose
+export const MapDetailPanel: React.FC<MapDetailPanelProps> = ({ 
+  location, 
+  isCollapsed, 
+  onToggle, 
+  onClose 
 }) => {
   if (!location) return null;
 

@@ -11,6 +11,7 @@ interface DeckOverlayProps {
   neighborhoods?: any; // GeoJSON neighborhoods data
   colorMode?: string; // 'none' | 'population' | 'age' | 'income'
   onHoverNeighborhood?: (neighborhood: any) => void;
+  onHoverDot?: (hovering: boolean) => void;
 }
 
 // Convert x, y percentages to lat/lng (NYC bounds approximation)
@@ -74,13 +75,13 @@ function getFillColor(feature: any, colorMode: string): [number, number, number,
   if (!feature || !feature.properties) {
     return [200, 200, 200, 50];
   }
-
+  
   const props = feature.properties;
   // Get normalized values, with fallback to calculating from raw values if needed
   let popNorm = typeof props.popNorm === 'number' ? props.popNorm : 0;
   let incNorm = typeof props.incNorm === 'number' ? props.incNorm : 0;
   let ageNorm = typeof props.ageNorm === 'number' ? props.ageNorm : 0;
-
+  
   // If normalized values are missing but raw values exist, calculate them
   if (popNorm === 0 && props.population) {
     popNorm = Math.min(1, Math.max(0, props.population / 50000));
@@ -91,10 +92,10 @@ function getFillColor(feature: any, colorMode: string): [number, number, number,
   if (ageNorm === 0 && props.medianAge) {
     ageNorm = Math.min(1, Math.max(0, props.medianAge / 50));
   }
-
+  
   // Ensure we have at least a small value to show color (minimum 0.1 for visibility)
   const minValue = 0.1;
-
+  
   switch (colorMode) {
     case 'population':
       if (popNorm > 0) {
@@ -124,6 +125,7 @@ export default function DeckOverlay({
   neighborhoods,
   colorMode = 'none',
   onHoverNeighborhood,
+  onHoverDot,
 }: DeckOverlayProps) {
   const map = useMap();
   const [overlay, setOverlay] = useState<GoogleMapsOverlay | null>(null);
@@ -153,7 +155,7 @@ export default function DeckOverlay({
         hasIncNorm: !!neighborhoods.features[0]?.properties?.incNorm,
         hasAgeNorm: !!neighborhoods.features[0]?.properties?.ageNorm,
       });
-
+      
       try {
         result.push(
           new GeoJsonLayer({
@@ -193,8 +195,8 @@ export default function DeckOverlay({
                 onHoverNeighborhood(info.object.properties ?? null);
               }
             },
-            updateTriggers: {
-              getFillColor: [colorMode, neighborhoods?.features?.length]
+            updateTriggers: { 
+              getFillColor: [colorMode, neighborhoods?.features?.length] 
             },
           })
         );
@@ -258,6 +260,9 @@ export default function DeckOverlay({
           stroked: true,
           lineWidthMinPixels: 2,
           pickable: true,
+          onHover: (info: any) => {
+            onHoverDot?.(!!info.object);
+          },
           onClick: (info: any) => {
             if (info.object && onSelectLocation) {
               onSelectLocation(info.object.id);
@@ -272,7 +277,7 @@ export default function DeckOverlay({
     }
 
     return result;
-  }, [locations, selectedLocationId, onSelectLocation, neighborhoods, colorMode, onHoverNeighborhood]);
+  }, [locations, selectedLocationId, onSelectLocation, neighborhoods, colorMode, onHoverNeighborhood, onHoverDot, map]);
 
   useEffect(() => {
     if (overlay) {
