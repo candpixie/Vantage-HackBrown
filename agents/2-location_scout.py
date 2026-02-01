@@ -5,6 +5,9 @@ from math import radians, cos, sin, asin, sqrt
 with open("data/subway_stations.json") as f:
     subway_data = json.load(f)
 
+with open("data/Bi-Annual_Pedestrian_Counts.geojson") as f:
+    pedestrian_data = json.load(f)
+
 location_scout = Agent(
     name="location_scout",
     seed="scout_seed_phrase",
@@ -66,18 +69,106 @@ async def handle_message(ctx: Context, sender: str, scoreRequest: ScoreRequest):
             breakdown=location_result['breakdown']
         )
     )
-# def calculate_foot_traffic(neighborhood_code):
-#     """
-#     Based on business density from licenses data
-#     """
-#     businesses = [b for b in business_data if b['nta_code'] == neighborhood_code]
-#     density = len(businesses) / neighborhood_area
+
+def calculate_foot_traffic(lat, lng):
+    """
+    Calculate foot traffic based on nearby pedestrian counting locations
+    Returns score 0-100 based on average pedestrian counts within 0.25 miles
+    """
+    nearby_counts = []
     
-#     # Normalize to 0-100
-#     # High density = high foot traffic (proxy)
-#     max_density = 500  # businesses per sq km
-#     score = min(100, (density / max_density) * 100)
-#     return score
+    for feature in pedestrian_data['features']:
+        # Extract coordinates from GeoJSON
+        coords = feature['geometry']['coordinates']
+        count_lng, count_lat = coords[0], coords[1]
+        
+        # Calculate distance
+        distance = haversine(lat, lng, count_lat, count_lng)
+        
+        # Include locations within 0.25 miles
+        if distance <= 0.25:
+            props = feature['properties']
+            
+            # Extract recent count data (most recent available periods)
+            # Use oct24 (October 2024) and may25 (May 2025) as most recent
+            recent_counts = []
+            
+            # October 2024 data
+            if 'oct24_am' in props and props['oct24_am'] != "0":
+                try:
+                    recent_counts.append(int(props['oct24_am']))
+                except (ValueError, TypeError):
+                    pass
+            if 'oct24_pm' in props and props['oct24_pm'] != "0":
+                try:
+                    recent_counts.append(int(props['oct24_pm']))
+                except (ValueError, TypeError):
+                    pass
+            if 'oct24_md' in props and props['oct24_md'] != "0":
+                try:
+                    recent_counts.append(int(props['oct24_md']))
+                except (ValueError, TypeError):
+                    pass
+            
+            # May 2025 data
+            if 'may25_am' in props and props['may25_am'] != "0":
+                try:
+                    recent_counts.append(int(props['may25_am']))
+                except (ValueError, TypeError):
+                    pass
+            if 'may25_pm' in props and props['may25_pm'] != "0":
+                try:
+                    recent_counts.append(int(props['may25_pm']))
+                except (ValueError, TypeError):
+                    pass
+            if 'may25_md' in props and props['may25_md'] != "0":
+                try:
+                    recent_counts.append(int(props['may25_md']))
+                except (ValueError, TypeError):
+                    pass
+            
+            if recent_counts:
+                avg_count = sum(recent_counts) / len(recent_counts)
+                nearby_counts.append({
+                    'location': props.get('street_nam', 'Unknown'),
+                    'distance': round(distance, 2),
+                    'avg_count': round(avg_count),
+                    'borough': props.get('borough', 'Unknown')
+                })
+    
+    # Calculate score based on pedestrian traffic
+    if not nearby_counts:
+        return {
+            'score': 0,
+            'nearby_locations': [],
+            'average_pedestrians': 0,
+            'count': 0
+        }
+    
+    # Get average pedestrian count from all nearby locations
+    total_avg = sum(loc['avg_count'] for loc in nearby_counts) / len(nearby_counts)
+    
+    # Normalize to 0-100 score
+    # Based on pedestrian count ranges:
+    # 0-1000: Low traffic (0-40)
+    # 1000-3000: Medium traffic (40-70)
+    # 3000-5000: High traffic (70-90)
+    # 5000+: Very high traffic (90-100)
+    if total_avg <= 1000:
+        score = (total_avg / 1000) * 40
+    elif total_avg <= 3000:
+        score = 40 + ((total_avg - 1000) / 2000) * 30
+    elif total_avg <= 5000:
+        score = 70 + ((total_avg - 3000) / 2000) * 20
+    else:
+        score = 90 + min((total_avg - 5000) / 5000 * 10, 10)
+    
+    return {
+        'score': round(min(score, 100)),
+        'nearby_locations': nearby_counts,
+        'average_pedestrians': round(total_avg),
+        'count': len(nearby_counts)
+    }
 
 def haversine(lat1, lon1, lat2, lon2):
     """
@@ -140,31 +231,35 @@ def calculate_location_score(neighborhood, business_type, target_demo, latitude,
     """
     
     # Component scores (each 0-100)
-    # foot_traffic = calculate_foot_traffic(neighborhood)      # 30%
-    # demo_match = calculate_demo_match(neighborhood, target_demo)  # 25%
-    transit_result = calculate_transit_access(latitude, longitude)   # Currently 100% weight
-    # competition = calculate_competition(neighborhood)         # 15%
-    # rent_fit = calculate_rent_fit(neighborhood, budget)      # 10%
+    foot_traffic_result = calculate_foot_traffic(latitude, longitude)  # 40% weight
+    transit_result = calculate_transit_access(latitude, longitude)     # 60% weight
+    # demo_match = calculate_demo_match(neighborhood, target_demo)      # Future
     
-    # For now, use only transit score (other factors will be added later)
-    # Once more factors are added, calculate weighted total:
-    # total = (
-    #     foot_traffic * 0.30 +
-    #     demo_match * 0.25 +
-    #     transit_result['score'] * 0.20 +
-    #     competition * 0.15 +
-    #     rent_fit * 0.10
-    # )
-    
-    total = transit_result['score']  # Temporary: 100% weight on transit
+    # Calculate weighted total with current factors
+    total = (
+        foot_traffic_result['score'] * 0.40 +
+        transit_result['score'] * 0.60
+    )
     
     # Confidence based on available data
-    confidence = "high" if transit_result['count'] > 0 else "low"
+    data_points = 0
+    if transit_result['count'] > 0:
+        data_points += 1
+    if foot_traffic_result['count'] > 0:
+        data_points += 1
+    
+    if data_points >= 2:
+        confidence = "high"
+    elif data_points == 1:
+        confidence = "medium"
+    else:
+        confidence = "low"
     
     return {
         "score": round(total),
         "confidence": confidence,
         "breakdown": {
+            "foot_traffic": foot_traffic_result,
             "transit_access": transit_result,
             # Additional factors will be added here
         }

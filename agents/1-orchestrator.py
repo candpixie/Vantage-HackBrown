@@ -31,8 +31,8 @@ async def startup_function(ctx: Context):
         neighborhood="Williamsburg, Brooklyn",
         business_type="Coffee Shop",
         target_demo="Young professionals, ages 25-35",
-        latitude=40.757998,
-        longitude= -73.984927)
+        latitude=40.721990,
+        longitude= -73.927764)
     ctx.logger.info(f"Sending message to location_scout at {location_scout_address}")
     await ctx.send(location_scout_address, msg)
     
