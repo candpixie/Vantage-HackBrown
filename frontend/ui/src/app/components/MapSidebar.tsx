@@ -167,8 +167,8 @@ export const MapDetailPanel: React.FC<MapDetailPanelProps> = ({
   if (!location) return null;
 
   const coords = {
-    lat: 40.5 + (location.y / 100) * 0.4,
-    lng: -74.3 + (location.x / 100) * 0.6,
+    lat: location.lat || (40.5 + (location.y / 100) * 0.4),
+    lng: location.lng || (-74.3 + (location.x / 100) * 0.6),
   };
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`;
 
@@ -200,18 +200,28 @@ export const MapDetailPanel: React.FC<MapDetailPanelProps> = ({
             exit={{ opacity: 0 }}
             className="flex-1 overflow-y-auto"
           >
-            {/* Header */}
-            <div className="relative h-52 bg-gradient-to-br from-teal-500/20 to-emerald-600/20 dark:from-teal-500/10 dark:to-emerald-600/10 flex-none flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="w-12 h-12 text-teal-500 mx-auto mb-2" />
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">{location.name}</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Location Analysis</p>
+            {/* Header with Google Street View */}
+            <div className="relative h-52 flex-none overflow-hidden">
+              <img
+                src={`https://maps.googleapis.com/maps/api/streetview?size=600x400&location=${coords.lat},${coords.lng}&fov=90&pitch=10&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`}
+                alt={`Street view of ${location.name}`}
+                className="absolute inset-0 w-full h-full object-cover"
+                onError={(e) => {
+                  // Hide broken image and show fallback
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+              {/* Overlay gradient for text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute bottom-4 left-4 right-12">
+                <h2 className="text-lg font-bold text-white drop-shadow-lg">{location.name}</h2>
+                <p className="text-sm text-white/80 drop-shadow">Street View</p>
               </div>
               <button
                 onClick={onClose}
-                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-700/90 backdrop-blur-sm flex items-center justify-center hover:bg-white dark:hover:bg-slate-700 transition-colors shadow-sm"
+                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition-colors"
               >
-                <X size={16} className="text-slate-700 dark:text-slate-300" />
+                <X size={16} className="text-white" />
               </button>
             </div>
 
@@ -225,6 +235,39 @@ export const MapDetailPanel: React.FC<MapDetailPanelProps> = ({
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Status: {location.status}</p>
                 </div>
               </div>
+
+              {/* Rent & Property Details */}
+              {(location.rent_price || location.address) && (
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 px-3 py-2.5 space-y-1.5">
+                  {location.rent_price && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"><DollarSign size={10} />Rent</span>
+                      <span className="text-sm font-bold text-teal-600 dark:text-teal-400">${location.rent_price.toLocaleString()}/mo</span>
+                    </div>
+                  )}
+                  {location.sqft && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">Size</span>
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{location.sqft.toLocaleString()} sqft</span>
+                    </div>
+                  )}
+                  {location.bedrooms && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">Layout</span>
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{location.bedrooms}BR / {location.bathrooms || 1}BA</span>
+                    </div>
+                  )}
+                  {location.propertyType && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">Type</span>
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{location.propertyType}</span>
+                    </div>
+                  )}
+                  {location.address && (
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 pt-1 border-t border-slate-200 dark:border-slate-600 truncate">{location.address}</p>
+                  )}
+                </div>
+              )}
 
               {/* Metrics */}
               {location.metrics && location.metrics.length > 0 && (

@@ -14,14 +14,16 @@ export function useAI() {
   const [floorplanLoading, setFloorplanLoading] = useState(false);
   const [floorplanError, setFloorplanError] = useState<string | null>(null);
 
-  const generateStorefront = useCallback(async (address: string, businessType?: string) => {
+  const generateStorefront = useCallback(async (address: string, businessType?: string, sqft?: number, propertyType?: string) => {
     setStorefrontLoading(true);
     setStorefrontUrl(null);
     setStorefrontError(null);
     try {
+      const sizeDesc = sqft ? `${sqft} sq ft` : 'mid-size';
+      const buildingType = propertyType || 'commercial';
       const res = await client.images.generate({
         model: 'dall-e-3',
-        prompt: `A photorealistic street-level photograph of a modern renovated ${businessType || 'retail'} storefront at ${address}, New York City. Large glass windows, contemporary signage, warm lighting, clean modern materials. Golden hour, pedestrians walking by. Architectural photography.`,
+        prompt: `A photorealistic street-level photograph of the building at ${address}, New York City, reimagined as a modern ${businessType || 'retail'} storefront. The building is a ${buildingType} property, approximately ${sizeDesc}. Show the exact street facade with the actual NYC neighborhood character — neighboring buildings, sidewalk, street details. The storefront has been renovated with large glass windows, a stylish ${businessType || 'retail'} sign, warm interior lighting, modern materials. Daytime, natural light, pedestrians walking past. Shot on a professional camera, architectural photography style.`,
         n: 1,
         size: '1024x1024',
         quality: 'standard',
@@ -35,14 +37,16 @@ export function useAI() {
     }
   }, []);
 
-  const generateFloorplan = useCallback(async (sqft: number | string, businessType?: string) => {
+  const generateFloorplan = useCallback(async (sqft: number | string, businessType?: string, address?: string) => {
     setFloorplanLoading(true);
     setFloorplanUrl(null);
     setFloorplanError(null);
     try {
+      const area = sqft || 2000;
+      const locationHint = address ? ` at ${address}` : ' in New York City';
       const res = await client.images.generate({
         model: 'dall-e-3',
-        prompt: `A clean, professional architectural floor plan for a ${sqft || 2000} sq ft ${businessType || 'retail'} commercial space in New York City. Top-down blueprint view showing: entrance, sales floor, storage room, restroom, and counter area. Clean lines, labeled rooms with dimensions, minimalist style on white background. Technical drawing style.`,
+        prompt: `A clean, professional architectural floor plan for converting a ${area} sq ft space${locationHint} into a ${businessType || 'retail'} establishment. Top-down blueprint view showing: main entrance from street, customer seating area, service counter with ${businessType || 'retail'} equipment, prep/kitchen area, storage room, restroom, and emergency exit. Include dimensions for each room, clean lines, labeled areas. Minimalist technical drawing on white background. Professional architectural blueprint style with scale bar.`,
         n: 1,
         size: '1024x1024',
         quality: 'standard',

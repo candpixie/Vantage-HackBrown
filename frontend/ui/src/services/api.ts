@@ -44,6 +44,12 @@ export interface LocationResult {
   // Additional fields from backend
   rent_price?: number;
   address?: string;
+  lat?: number;
+  lng?: number;
+  sqft?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  propertyType?: string;
   demographics?: {
     median_income?: number;
     median_age?: number;

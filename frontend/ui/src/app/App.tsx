@@ -67,6 +67,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
 import { apiService, type LocationResult } from '../services/api';
+import { fetchListings, type RentCastListing } from '../services/nycData';
 import { exportToPDF } from '../utils/pdfExport';
 import { ComparisonView } from './components/ComparisonView';
 import { AIInsights } from './components/AIInsights';
@@ -81,9 +82,85 @@ import { useAI } from './hooks/useAI';
 import { Moon, Sun, LayoutDashboard, Plus } from 'lucide-react';
 import { LocationCardSkeleton } from './components/LoadingSkeleton';
 
-// Mock data - NYC/Manhattan locations
-const LOCATIONS = [
-  { id: 1, name: 'Chelsea Highline', score: 98, x: 35, y: 45, status: 'HIGH' as const,
+// Helper: convert lat/lng to x/y percentage (reverse of percentToLatLngArray)
+function latLngToXY(lat: number, lng: number): { x: number; y: number } {
+  const x = Math.max(0, Math.min(100, ((lng + 74.3) / 0.6) * 100));
+  const y = Math.max(0, Math.min(100, ((lat - 40.5) / 0.4) * 100));
+  return { x, y };
+}
+
+// Helper: generate a score based on listing attributes
+function computeScore(listing: RentCastListing): number {
+  let score = 70;
+  if (listing.price && listing.price < 3000) score += 10;
+  else if (listing.price && listing.price > 5000) score += 5;
+  if (listing.sqft && listing.sqft > 800) score += 8;
+  if (listing.bedrooms && listing.bedrooms >= 2) score += 5;
+  // Add deterministic variation based on address
+  let hash = 0;
+  for (let i = 0; i < (listing.address || '').length; i++) {
+    hash = ((hash << 5) - hash) + listing.address.charCodeAt(i);
+    hash |= 0;
+  }
+  score += (Math.abs(hash) % 15);
+  return Math.min(99, Math.max(60, score));
+}
+
+// Helper: convert RentCast listings to app location format
+function listingsToLocations(listings: RentCastListing[]): typeof FALLBACK_LOCATIONS {
+  return listings
+    .filter(l => l.lat && l.lng && l.price)
+    .map((l, i) => {
+      const { x, y } = latLngToXY(l.lat, l.lng);
+      const score = computeScore(l);
+      const status = score >= 85 ? 'HIGH' as const : score >= 70 ? 'MEDIUM' as const : 'LOW' as const;
+      const price = l.price || 3000;
+      const sqft = l.sqft || 800;
+      const monthlyRev = Math.round(price * 3.5);
+      const fmtMo = (n: number) => `$${(n / 1000).toFixed(1)}K`.replace('.0K', 'K');
+      const fmtYr = (n: number) => `$${Math.round(n * 12 / 1000)}k`;
+      return {
+        id: i + 1,
+        name: l.address.split(',')[0] || `Location ${i + 1}`,
+        score,
+        x, y,
+        lat: l.lat,
+        lng: l.lng,
+        status,
+        address: l.address,
+        rent_price: price,
+        sqft,
+        bedrooms: l.bedrooms ?? undefined,
+        bathrooms: l.bathrooms ?? undefined,
+        propertyType: l.propertyType,
+        metrics: [
+          { label: 'Location Score', score: Math.min(99, score + 2), confidence: status },
+          { label: 'Foot Traffic', score: Math.min(99, 60 + (Math.abs(x * y) % 30)), confidence: (score > 80 ? 'HIGH' : 'MEDIUM') as 'HIGH' | 'MEDIUM' | 'LOW' },
+          { label: 'Transit Access', score: Math.min(99, 65 + (Math.abs(Math.round(x + y)) % 25)), confidence: 'MEDIUM' as const },
+          { label: 'Rent Value', score: Math.min(99, price < 3000 ? 90 : price < 5000 ? 75 : 60), confidence: (price < 4000 ? 'HIGH' : 'MEDIUM') as 'HIGH' | 'MEDIUM' | 'LOW' },
+          { label: 'Space Utility', score: Math.min(99, sqft > 1000 ? 88 : sqft > 700 ? 75 : 65), confidence: 'MEDIUM' as const },
+        ],
+        competitors: [],
+        revenue: [
+          { scenario: 'Conservative', monthly: fmtMo(monthlyRev * 0.7), annual: fmtYr(monthlyRev * 0.7), margin: '20%' },
+          { scenario: 'Moderate', monthly: fmtMo(monthlyRev), annual: fmtYr(monthlyRev), margin: '28%', isRecommended: true },
+          { scenario: 'Optimistic', monthly: fmtMo(monthlyRev * 1.4), annual: fmtYr(monthlyRev * 1.4), margin: '34%' },
+        ],
+        checklist: [
+          { text: 'Verify zoning permits for food service', completed: false },
+          { text: 'Contact landlord for lease terms', completed: false },
+          { text: 'Check foot traffic data for peak hours', completed: false },
+          { text: 'Review competitor pricing strategy', completed: false },
+          { text: 'Schedule site visit with realtor', completed: false },
+        ],
+      };
+    });
+}
+
+// Fallback mock data - NYC/Manhattan locations
+const FALLBACK_LOCATIONS = [
+  { id: 1, name: '401 W 25th St', score: 98, x: 35, y: 45, status: 'HIGH' as const,
+    address: '401 W 25th St, Apt 3B, New York, NY 10001', rent_price: 4200, sqft: 1100, lat: 40.7490, lng: -74.0015, propertyType: 'Apartment', bedrooms: 2, bathrooms: 1,
     metrics: [
       { label: 'Elite Density', score: 98, confidence: 'HIGH' as const },
       { label: 'Net Disposable', score: 95, confidence: 'HIGH' as const },
@@ -109,7 +186,8 @@ const LOCATIONS = [
       { text: 'Schedule site visit with realtor', completed: false }
     ]
   },
-  { id: 2, name: 'Tribeca', score: 89, x: 60, y: 55, status: 'HIGH' as const,
+  { id: 2, name: '82 Reade St', score: 89, x: 60, y: 55, status: 'HIGH' as const,
+    address: '82 Reade St, Apt 7A, New York, NY 10007', rent_price: 5500, sqft: 1350, lat: 40.7148, lng: -74.0064, propertyType: 'Loft', bedrooms: 2, bathrooms: 2,
     metrics: [
       { label: 'Elite Density', score: 92, confidence: 'HIGH' as const },
       { label: 'Net Disposable', score: 88, confidence: 'HIGH' as const },
@@ -134,7 +212,8 @@ const LOCATIONS = [
       { text: 'Schedule site visit with realtor', completed: false }
     ]
   },
-  { id: 3, name: 'SoHo', score: 87, x: 50, y: 70, status: 'HIGH' as const,
+  { id: 3, name: '145 Spring St', score: 87, x: 50, y: 70, status: 'HIGH' as const,
+    address: '145 Spring St, Unit 2, New York, NY 10012', rent_price: 6800, sqft: 1500, lat: 40.7246, lng: -74.0012, propertyType: 'Retail', bedrooms: 0, bathrooms: 1,
     metrics: [
       { label: 'Elite Density', score: 94, confidence: 'HIGH' as const },
       { label: 'Net Disposable', score: 91, confidence: 'HIGH' as const },
@@ -195,6 +274,7 @@ export default function Vantage() {
   const [showPassword, setShowPassword] = useState(false);
   const [checklistStates, setChecklistStates] = useState<Record<number, boolean[]>>({});
   const [savedReports, setSavedReports] = useState<Array<{ id: number; locationId: number; generatedAt: Date }>>([]);
+  const [locations, setLocations] = useState(FALLBACK_LOCATIONS);
   const { theme, toggleTheme } = useTheme();
   const {
     storefrontUrl, storefrontLoading, storefrontError, generateStorefront,
@@ -204,7 +284,7 @@ export default function Vantage() {
 
   // Generate report when analysis completes
   const generateReport = async (locationId: number) => {
-    const location = LOCATIONS.find(l => l.id === locationId);
+    const location = locations.find(l => l.id === locationId);
     if (!location) return;
 
     try {
@@ -246,7 +326,7 @@ export default function Vantage() {
         if (e.ctrlKey || e.metaKey) {
           e.preventDefault();
           setAppState('results');
-          setSelectedLocation(LOCATIONS[0]?.id || null);
+          setSelectedLocation(locations[0]?.id || null);
           setActiveAgent(null);
         }
       }
@@ -255,7 +335,7 @@ export default function Vantage() {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
-  const selectedLocationData = selectedLocation ? LOCATIONS.find(l => l.id === selectedLocation) : null;
+  const selectedLocationData = selectedLocation ? locations.find(l => l.id === selectedLocation) : null;
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -292,22 +372,45 @@ export default function Vantage() {
     }, 60);
 
     try {
-      const response = await apiService.submitAnalysis({
-        business_type: 'Boba Tea Shop',
-        target_demo: 'Gen Z Students',
-        budget: 8500,
-      });
+      // Fetch real rental listings from RentCast API in parallel with backend
+      const [response, rentcastListings] = await Promise.all([
+        apiService.submitAnalysis({
+          business_type: 'Boba Tea Shop',
+          target_demo: 'Gen Z Students',
+          budget: 8500,
+        }),
+        fetchListings(),
+      ]);
 
       setTimeout(() => {
         clearInterval(interval);
         setAppState('results');
         setActiveAgent(null);
-        if (response.locations && response.locations.length > 0) {
-          console.log('Received locations:', response.locations);
+
+        // Use real RentCast data if available
+        if (rentcastListings && rentcastListings.length > 0) {
+          const realLocations = listingsToLocations(rentcastListings);
+          if (realLocations.length > 0) {
+            // Sort by score descending
+            realLocations.sort((a, b) => b.score - a.score);
+            setLocations(realLocations);
+            console.log('Using real RentCast listings:', realLocations.length);
+            const topLoc = realLocations[0];
+            toast.success('Analysis complete!', {
+              description: `Found ${realLocations.length} real listings. ${topLoc.name} scored ${topLoc.score}/100 — $${topLoc.rent_price?.toLocaleString()}/mo`,
+              duration: 4000,
+            });
+            return;
+          }
         }
-        const topLocation = LOCATIONS[0];
+
+        // Fallback to mock data
+        if (response.locations && response.locations.length > 0) {
+          console.log('Received backend locations:', response.locations);
+        }
+        const topLocation = locations[0];
         toast.success('Analysis complete!', {
-          description: `Found ${LOCATIONS.length} locations. ${topLocation.name} scored ${topLocation.score}/100 - Top pick`,
+          description: `Found ${locations.length} locations. ${topLocation.name} scored ${topLocation.score}/100 - Top pick`,
           duration: 4000,
         });
       }, 4000);
@@ -325,7 +428,7 @@ export default function Vantage() {
     setSelectedLocation(id);
     resetPropertyAI();
     if (!checklistStates[id]) {
-      const location = LOCATIONS.find(l => l.id === id);
+      const location = locations.find(l => l.id === id);
       if (location) {
         setChecklistStates(prev => ({
           ...prev,
@@ -348,7 +451,7 @@ export default function Vantage() {
   };
 
   const getChecklistState = (locationId: number, index: number): boolean => {
-    return checklistStates[locationId]?.[index] ?? LOCATIONS.find(l => l.id === locationId)?.checklist[index]?.completed ?? false;
+    return checklistStates[locationId]?.[index] ?? locations.find(l => l.id === locationId)?.checklist[index]?.completed ?? false;
   };
 
   // Login Modal
@@ -443,7 +546,7 @@ export default function Vantage() {
       {/* Fixed Icon Sidebar */}
       <aside className="fixed left-0 top-0 bottom-0 w-20 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col items-center py-8 z-50">
             <MotionDiv
-          className="w-12 h-12 rounded-2xl flex items-center justify-center overflow-hidden shadow-lg mb-12"
+          className="w-12 h-12 flex items-center justify-center mb-12"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: 'spring', stiffness: 300 }}
               >
@@ -566,7 +669,7 @@ export default function Vantage() {
             <div>
               <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6">All Locations</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-                {LOCATIONS.map((location) => (
+                {locations.map((location) => (
                   <MotionDiv
                     key={location.id}
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -588,8 +691,21 @@ export default function Vantage() {
                         {location.status}
               </div>
                     </div>
-                    <div className="text-4xl font-black text-teal-600 dark:text-teal-400 mb-2 break-words">{location.score}/100</div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 break-words">Click to view detailed analysis</p>
+                    <div className="flex items-baseline gap-3 mb-2">
+                      <span className="text-4xl font-black text-teal-600 dark:text-teal-400">{location.score}/100</span>
+                      {location.rent_price && (
+                        <span className="text-sm font-bold text-slate-700 dark:text-slate-300">${location.rent_price.toLocaleString()}/mo</span>
+                      )}
+                    </div>
+                    {location.address && (
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mb-1 truncate flex items-center gap-1"><MapPin size={10} />{location.address}</p>
+                    )}
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 break-words">
+                      {location.sqft ? `${location.sqft.toLocaleString()} sqft` : ''}
+                      {location.sqft && location.bedrooms ? ' · ' : ''}
+                      {location.bedrooms ? `${location.bedrooms}BR` : ''}
+                      {!location.sqft && !location.bedrooms ? 'Click to view detailed analysis' : ''}
+                    </p>
             <MotionDiv
                       whileHover={{ x: 4 }}
                       className="flex items-center gap-2 text-xs font-bold text-teal-600 dark:text-teal-400 whitespace-nowrap"
@@ -721,7 +837,7 @@ export default function Vantage() {
                     {/* Map - Full Width with popup detail sidebar built-in */}
                     <div style={{ minHeight: '650px', height: '650px' }}>
                       <MapView
-                        markers={LOCATIONS}
+                        markers={locations}
                         onMarkerClick={handleMarkerClick}
                         selectedId={selectedLocation}
                       />
@@ -736,16 +852,28 @@ export default function Vantage() {
                       {selectedLocationData ? (
                         <>
                           {/* Property info bar */}
-                          <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex flex-wrap items-center gap-x-6 gap-y-2">
-                            <h3 className="text-base font-bold text-slate-900 dark:text-white">{selectedLocationData.name}</h3>
-                            <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                              <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
-                                <TrendingUp size={14} />Score: {selectedLocationData.score}/100
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <MapPin size={13} />{selectedLocationData.status} Confidence
-                              </span>
+                          <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700">
+                            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                              <h3 className="text-base font-bold text-slate-900 dark:text-white">{selectedLocationData.name}</h3>
+                              <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                                {selectedLocationData.rent_price && (
+                                  <span className="text-teal-600 dark:text-teal-400 font-bold">
+                                    ${selectedLocationData.rent_price.toLocaleString()}/mo
+                                  </span>
+                                )}
+                                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
+                                  <TrendingUp size={14} />Score: {selectedLocationData.score}/100
+                                </span>
+                              </div>
                             </div>
+                            {selectedLocationData.address && (
+                              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 flex items-center gap-1">
+                                <MapPin size={10} />{selectedLocationData.address}
+                                {selectedLocationData.sqft && <span> &middot; {selectedLocationData.sqft.toLocaleString()} sqft</span>}
+                                {selectedLocationData.bedrooms && <span> &middot; {selectedLocationData.bedrooms}BR</span>}
+                                {selectedLocationData.propertyType && <span> &middot; {selectedLocationData.propertyType}</span>}
+                              </p>
+                            )}
                           </div>
 
                           {/* 3-column grid: Revenue | Storefront | Floor Plan */}
@@ -806,7 +934,7 @@ export default function Vantage() {
                                 <p className="text-xs text-red-500">{storefrontError}</p>
                               )}
                               <button
-                                onClick={() => generateStorefront(selectedLocationData.address || selectedLocationData.name, 'Boba Tea Shop')}
+                                onClick={() => generateStorefront(selectedLocationData.address || selectedLocationData.name, 'Boba Tea Shop', selectedLocationData.sqft, selectedLocationData.propertyType)}
                                 disabled={storefrontLoading}
                                 className={`w-full flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-white cursor-pointer transition-colors ${storefrontLoading ? 'bg-sky-300 cursor-not-allowed' : 'bg-sky-500 hover:bg-sky-600'}`}
                               >
@@ -842,7 +970,7 @@ export default function Vantage() {
                                 <p className="text-xs text-red-500">{floorplanError}</p>
                               )}
                               <button
-                                onClick={() => generateFloorplan(2000, 'Boba Tea Shop')}
+                                onClick={() => generateFloorplan(selectedLocationData.sqft || 2000, 'Boba Tea Shop', selectedLocationData.address)}
                                 disabled={floorplanLoading}
                                 className={`w-full flex items-center justify-center gap-2 rounded-lg border border-emerald-600 px-4 py-2.5 text-sm font-medium text-white cursor-pointer transition-colors ${floorplanLoading ? 'bg-emerald-300 cursor-not-allowed' : 'bg-emerald-500 hover:bg-emerald-600'}`}
                               >
@@ -1001,7 +1129,7 @@ export default function Vantage() {
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
                               >
-                                <ComparisonView locations={LOCATIONS} />
+                                <ComparisonView locations={locations} />
                               </MotionDiv>
                             )}
                           </AnimatePresence>

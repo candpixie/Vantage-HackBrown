@@ -210,11 +210,17 @@ export default function DeckOverlay({
       });
     }
 
-    // Location markers
+    // Location markers — use real lat/lng when available, fall back to x/y percentages
     const locationPoints = locations
-      .filter((loc) => loc.x !== undefined && loc.y !== undefined)
+      .filter((loc) => (loc.lat && loc.lng) || (loc.x !== undefined && loc.y !== undefined))
       .map((loc) => {
-        const [lat, lng] = percentToLatLngArray(loc.x, loc.y);
+        let lat: number, lng: number;
+        if (loc.lat && loc.lng) {
+          lat = loc.lat;
+          lng = loc.lng;
+        } else {
+          [lat, lng] = percentToLatLngArray(loc.x, loc.y);
+        }
         return {
           id: loc.id,
           lat,
