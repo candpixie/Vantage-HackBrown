@@ -24,7 +24,10 @@ class CompetitorResponse(Model):
 
 competitor_intel = Agent(
     name="competitor_intel",
-    seed="competitor_intel_seed_phrase"
+    seed="compdawg",
+    port=8002,
+    endpoint=["http://localhost:8002/submit"],
+    network="testnet"
 )
 
 GOOGLE_PLACES_API_KEY = "AIzaSyD8miMgNXY0knfl3zPD4RroatsVKJRGGQc"
@@ -99,5 +102,3 @@ async def analyze_competitors(ctx: Context, sender: str, msg: CompetitorRequest)
 
 if __name__ == "__main__":
     competitor_intel.run()
-
-
