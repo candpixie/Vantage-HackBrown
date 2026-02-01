@@ -125,12 +125,12 @@ async def startup_handler(ctx: Context):
     ctx.logger.info(f'Loading vacant storefronts data...')
     
     # Load vacant storefronts
-    vacant_storefronts = load_vacant_storefronts(limit=5)
+    vacant_storefronts = load_vacant_storefronts(limit=100)
     ctx.logger.info(f'Loaded {len(vacant_storefronts)} vacant storefronts')
     
     # Fetch rent listings from data service
     ctx.logger.info('Fetching rent listings from data service...')
-    rent_listings = data_service.fetch_rent_listings(limit=100)
+    rent_listings = data_service.fetch_rent_listings(limit=200)
     ctx.logger.info(f'Loaded {len(rent_listings)} rent listings')
     
     # Send score request for each vacant storefront
