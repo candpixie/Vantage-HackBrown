@@ -28,6 +28,11 @@ BENCHMARKS = {
     "coffee shop": {"conversion_rate": 0.04, "avg_ticket": 6.00, "margin": 0.60},
     "bakery": {"conversion_rate": 0.025, "avg_ticket": 12.00, "margin": 0.55},
     "restaurant": {"conversion_rate": 0.02, "avg_ticket": 25.00, "margin": 0.45},
+    "pizza": {"conversion_rate": 0.03, "avg_ticket": 20.00, "margin": 0.70},
+    "bar": {"conversion_rate": 0.045, "avg_ticket": 20.00, "margin": 0.75},
+    "gym": {"conversion_rate": 0.015, "avg_ticket": 60.00, "margin": 0.80},
+    "clothing_store": {"conversion_rate": 0.02, "avg_ticket": 55.00, "margin": 0.55},
+    "bookstore": {"conversion_rate": 0.02, "avg_ticket": 25.00, "margin": 0.45},
     "default": {"conversion_rate": 0.025, "avg_ticket": 10.00, "margin": 0.50}
 }
 
@@ -114,3 +119,4 @@ async def project_revenue(ctx: Context, sender: str, msg: RevenueRequest):
 
 if __name__ == "__main__":
     revenue_analyst.run()
+
