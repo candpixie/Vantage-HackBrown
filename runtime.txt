@@ -1,0 +1,5 @@
+"""
+Runtime Configuration for Deployment
+Specifies Python version and dependencies
+"""
+python-3.11.*

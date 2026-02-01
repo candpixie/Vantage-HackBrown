@@ -1,0 +1,11 @@
+backend/
+data/
+maps/
+testing/
+*.md
+*.py
+requirements.txt
+.gitignore
+.git/
+node_modules/
+frontend/ui/node_modules/

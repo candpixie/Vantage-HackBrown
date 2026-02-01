@@ -29,48 +29,85 @@ export const exportToPDF = async (data: PDFReportData) => {
     const htmlContent = generatePDFHTML(data);
     console.log('HTML content generated, length:', htmlContent.length);
 
-    // Create a temporary container that's visible
+    // Create a temporary container that's visible and properly sized
     const container = document.createElement('div');
+    container.id = 'pdf-export-container';
     container.style.position = 'fixed';
     container.style.top = '0';
     container.style.left = '0';
-    container.style.width = '8.5in';
-    container.style.padding = '0.5in';
+    container.style.width = '816px'; // 8.5in at 96dpi
+    container.style.minHeight = '1056px'; // 11in at 96dpi
+    container.style.padding = '48px'; // 0.5in at 96dpi
     container.style.backgroundColor = '#ffffff';
-    container.style.zIndex = '10000';
-    container.style.overflow = 'auto';
+    container.style.color = '#111827';
+    container.style.zIndex = '999999';
+    container.style.overflow = 'visible';
+    container.style.display = 'block';
+    container.style.opacity = '1';
+    container.style.visibility = 'visible';
+    container.style.boxSizing = 'border-box';
     container.innerHTML = htmlContent;
     
     document.body.appendChild(container);
-    console.log('Container added to DOM');
+    console.log('Container added to DOM, dimensions:', {
+      width: container.offsetWidth,
+      height: container.offsetHeight,
+      scrollHeight: container.scrollHeight
+    });
 
-    // Wait for rendering
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Wait for rendering and any custom fonts to load
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const opt = {
-      margin: 0,
+      margin: [0.5, 0.5, 0.5, 0.5],
       filename: `Vantage_Report_${data.location.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
         scale: 2,
         useCORS: true,
         logging: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        windowWidth: 816, // 8.5in at 96dpi
+        windowHeight: 1056, // 11in at 96dpi
+        scrollY: 0,
+        scrollX: 0,
+        letterRendering: true,
+        allowTaint: true,
+        foreignObjectRendering: false
       },
       jsPDF: { 
         unit: 'in', 
         format: 'letter', 
-        orientation: 'portrait'
-      }
+        orientation: 'portrait',
+        compress: true
+      },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
-    console.log('Generating PDF...');
-    await html2pdf().from(container).set(opt).save();
-    console.log('PDF generated successfully');
+    console.log('Generating PDF with html2pdf...');
+    
+    // Use html2pdf with proper error handling
+    await html2pdf()
+      .set(opt)
+      .from(container)
+      .toPdf()
+      .get('pdf')
+      .then((pdf: any) => {
+        console.log('PDF object created:', {
+          pages: pdf.internal.getNumberOfPages(),
+          format: pdf.internal.pageSize.getWidth() + 'x' + pdf.internal.pageSize.getHeight()
+        });
+      })
+      .save()
+      .then(() => {
+        console.log('PDF saved successfully');
+      });
     
     // Clean up
-    document.body.removeChild(container);
-    console.log('Cleaned up');
+    if (document.body.contains(container)) {
+      document.body.removeChild(container);
+      console.log('Cleaned up container');
+    }
     
   } catch (error) {
     console.error('PDF export failed:', error);
@@ -117,7 +154,18 @@ const generatePDFHTML = (data: PDFReportData): string => {
     : '<p style="color: #6b7280;">Revenue projections not available</p>';
 
   return `
-    <div style="font-family: Arial, Helvetica, sans-serif; color: #111827; line-height: 1.6; padding: 40px; background: #ffffff;">
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; color: #111827; background: #ffffff; }
+        .page { width: 100%; min-height: 100%; }
+      </style>
+    </head>
+    <body>
+    <div class="page" style="font-family: Arial, Helvetica, sans-serif; color: #111827; line-height: 1.6; padding: 20px; background: #ffffff;">
       
       <!-- Header -->
       <div style="border-bottom: 4px solid #f59e0b; padding-bottom: 20px; margin-bottom: 30px;">
@@ -186,5 +234,7 @@ const generatePDFHTML = (data: PDFReportData): string => {
       </div>
 
     </div>
+    </body>
+    </html>
   `;
 };

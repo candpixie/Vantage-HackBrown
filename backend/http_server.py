@@ -96,7 +96,21 @@ except ImportError as e:
     data_service = None
 
 app = Flask(__name__)
-CORS(app)
+
+# Enable CORS for frontend access (including Vercel deployments)
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "http://localhost:5173",
+            "http://localhost:5174", 
+            "http://localhost:5175",
+            "https://*.vercel.app",
+            "https://vantage-*.vercel.app"
+        ],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 # Default NYC location (Manhattan)
 DEFAULT_LAT = 40.7128
@@ -637,9 +651,11 @@ def submit_analysis():
 
 
 if __name__ == '__main__':
-    print("Starting Vantage HTTP Bridge Server on port 8020...")
+    port = int(os.environ.get('PORT', 8020))
+    print(f"Starting Vantage HTTP Bridge Server on port {port}...")
     print("Make sure all uagents are running:")
     print("  - location_scout on port 8001")
     print("  - competitor_intel on port 8003")
     print("  - revenue_analyst on port 8003")
-    app.run(host='0.0.0.0', port=8020, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
+
