@@ -24,6 +24,7 @@ class ScoreRequest(Model):
     target_demo: str
     latitude: float
     longitude: float
+    rent_estimate: float
 
 class ScoreResponse(Model):
     score: int
@@ -234,7 +235,7 @@ def calculate_location_score(neighborhood, business_type, target_demo, latitude,
     foot_traffic_result = calculate_foot_traffic(latitude, longitude)  # 40% weight
     transit_result = calculate_transit_access(latitude, longitude)     # 60% weight
     # demo_match = calculate_demo_match(neighborhood, target_demo)      # Future
-    # TODO: implmenet this 
+    # TODO: implement this 
     
     # Calculate weighted total with current factors
     total = (
@@ -265,6 +266,7 @@ def calculate_location_score(neighborhood, business_type, target_demo, latitude,
             # Additional factors will be added here
         }
     }
+
 
 if __name__ == "__main__":
     location_scout.run()
