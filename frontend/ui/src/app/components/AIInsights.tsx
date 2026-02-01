@@ -10,7 +10,7 @@ interface Insight {
   description: string;
 }
 
-export const AIInsights: React.FC<{ locationName: string; score: number }> = ({ locationName, score }) => {
+export const AIInsights: React.FC<{ locationName: string; score: number; businessType: string }> = ({ locationName, score, businessType }) => {
   // Simulated AI insights (replace with real API call later)
   const insights: Insight[] = [
     {
@@ -21,7 +21,7 @@ export const AIInsights: React.FC<{ locationName: string; score: number }> = ({ 
     {
       type: 'trend',
       title: 'Demographic Shift',
-      description: `Gen Z population in ${locationName} increased 23% YoY. Strong alignment with boba demand - market is expanding.`
+      description: `Gen Z population in ${locationName} increased 23% YoY. Strong alignment with ${businessType.toLowerCase()} demand - market is expanding.`
     },
     {
       type: 'risk',

@@ -67,7 +67,11 @@ const LOCATIONS = [
   }
 ];
 
-export const ReportsTab: React.FC = () => {
+interface ReportsTabProps {
+  businessType: string;
+}
+
+export const ReportsTab: React.FC<ReportsTabProps> = ({ businessType }) => {
   const [generating, setGenerating] = useState<number | null>(null);
 
   const reports = LOCATIONS.map((loc, idx) => ({
@@ -86,7 +90,7 @@ export const ReportsTab: React.FC = () => {
     setGenerating(reportId);
     try {
       await exportToPDF({
-        businessType: 'Boba Tea Shop',
+        businessType: businessType,
         targetDemo: 'Gen Z Students',
         budget: 8500,
         location: {

@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { RefreshCcw, SlidersHorizontal } from 'lucide-react';
 
+const MotionButton = motion.button as any;
+
 interface WhatIfControlsProps {
   onReRun: () => void;
   isAnalyzing: boolean;
@@ -11,12 +13,12 @@ export const WhatIfControls: React.FC<WhatIfControlsProps> = ({ onReRun, isAnaly
   return (
     <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden group">
       <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-transparent to-purple-500/5 pointer-events-none" />
-      
+
       <div className="flex items-center gap-6 flex-1 w-full">
         <div className="bg-white/5 p-3 rounded-xl border border-white/5">
           <SlidersHorizontal className="w-5 h-5 text-indigo-400" />
         </div>
-        
+
         <div className="flex-1 space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Scenario Testing: What If?</h3>
@@ -41,7 +43,7 @@ export const WhatIfControls: React.FC<WhatIfControlsProps> = ({ onReRun, isAnaly
         </div>
       </div>
 
-      <motion.button
+      <MotionButton
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={onReRun}
@@ -50,7 +52,7 @@ export const WhatIfControls: React.FC<WhatIfControlsProps> = ({ onReRun, isAnaly
       >
         <RefreshCcw className={`w-4 h-4 ${isAnalyzing ? 'animate-spin' : ''}`} />
         Re-Run Analysis
-      </motion.button>
+      </MotionButton>
     </div>
   );
 };

@@ -2,15 +2,30 @@ import React, { useState } from 'react';
 import { Search, MapPin, Users, DollarSign, Zap, ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
 
+const MotionDiv = motion.div as any;
+const MotionButton = motion.button as any;
+
 interface InputFormProps {
   onAnalyze: () => void;
   isAnalyzing: boolean;
+  businessType: string;
+  setBusinessType: (v: string) => void;
+  budget: number;
+  setBudget: (v: number) => void;
+  targetDemo: string;
+  setTargetDemo: (v: string) => void;
 }
 
-export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) => {
-  const [businessType, setBusinessType] = useState('Boba Tea Shop');
-  const [budget, setBudget] = useState(8500);
-  const [targetDemo, setTargetDemo] = useState('Gen Z Students');
+export const InputForm: React.FC<InputFormProps> = ({
+  onAnalyze,
+  isAnalyzing,
+  businessType,
+  setBusinessType,
+  budget,
+  setBudget,
+  targetDemo,
+  setTargetDemo
+}) => {
 
   return (
     <div className="space-y-6">
@@ -69,14 +84,14 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
             </div>
             <span className="truncate">Monthly Budget</span>
           </label>
-          <motion.div
+          <MotionDiv
             key={budget}
             initial={{ scale: 1.2, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="px-4 py-2 bg-gradient-to-r from-teal-500 to-emerald-600 rounded-xl flex-shrink-0 whitespace-nowrap"
           >
             <span className="text-lg font-black text-white">${budget.toLocaleString()}</span>
-          </motion.div>
+          </MotionDiv>
         </div>
         <div className="relative">
           <input
@@ -103,20 +118,19 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
         </div>
       </div>
 
-      <motion.button
+      <MotionButton
         whileHover={{ scale: 1.03, y: -2 }}
         whileTap={{ scale: 0.97 }}
         onClick={onAnalyze}
         disabled={isAnalyzing}
-        className={`w-full py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-3 transition-all ${
-          isAnalyzing
-            ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
-            : 'bg-gradient-to-r from-teal-500 to-emerald-600 text-white shadow-sm hover:shadow-md hover:from-teal-600 hover:to-emerald-700'
-        }`}
+        className={`w-full py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-3 transition-all ${isAnalyzing
+          ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
+          : 'bg-gradient-to-r from-teal-500 to-emerald-600 text-white shadow-sm hover:shadow-md hover:from-teal-600 hover:to-emerald-700'
+          }`}
       >
         {isAnalyzing ? (
           <>
-            <motion.div
+            <MotionDiv
               className="w-6 h-6 border-3 border-slate-400 border-t-transparent rounded-full"
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
@@ -129,7 +143,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
             <span>Find Perfect Locations</span>
           </>
         )}
-      </motion.button>
+      </MotionButton>
     </div>
   );
 };

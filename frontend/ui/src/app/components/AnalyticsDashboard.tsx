@@ -4,7 +4,11 @@ import { BarChart3, TrendingUp, TrendingDown, DollarSign, Users, MapPin, Activit
 
 const MotionDiv = motion.div as any;
 
-export const AnalyticsDashboard: React.FC = () => {
+interface AnalyticsDashboardProps {
+  businessType: string;
+}
+
+export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ businessType }) => {
   const metrics = [
     { label: 'Total Analyses', value: '247', change: '+12%', trend: 'up', icon: BarChart3 },
     { label: 'Avg. Score', value: '87.3', change: '+2.1%', trend: 'up', icon: Target },
@@ -121,7 +125,7 @@ export const AnalyticsDashboard: React.FC = () => {
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[
-            { type: 'Boba Tea', count: 89, color: 'bg-teal-500' },
+            { type: businessType, count: 89, color: 'bg-teal-500' },
             { type: 'Coffee', count: 67, color: 'bg-emerald-500' },
             { type: 'Restaurant', count: 45, color: 'bg-emerald-500' },
             { type: 'Retail', count: 32, color: 'bg-purple-500' },

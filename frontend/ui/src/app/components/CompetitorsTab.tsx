@@ -6,9 +6,10 @@ const MotionDiv = motion.div as any;
 
 interface CompetitorsTabProps {
   locationName: string;
+  businessType: string;
 }
 
-export const CompetitorsTab: React.FC<CompetitorsTabProps> = ({ locationName }) => {
+export const CompetitorsTab: React.FC<CompetitorsTabProps> = ({ locationName, businessType }) => {
   const competitors = [
     {
       name: 'Blue Bottle Coffee',
@@ -97,7 +98,7 @@ export const CompetitorsTab: React.FC<CompetitorsTabProps> = ({ locationName }) 
         <h4 className="font-black text-slate-900 dark:text-white mb-2">Competitive Advantage</h4>
         <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
           All competitors close by 8pm. Offering extended hours (until 10pm) could capture 15-20%
-          additional revenue from evening foot traffic. None offer boba-specific menu items, creating
+          additional revenue from evening foot traffic. None offer {businessType.toLowerCase()}-specific menu items, creating
           a clear differentiation opportunity.
         </p>
       </div>

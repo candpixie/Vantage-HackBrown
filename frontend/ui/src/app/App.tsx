@@ -299,6 +299,9 @@ export default function Vantage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [businessType, setBusinessType] = useState('Boba Tea Shop');
+  const [budget, setBudget] = useState(8500);
+  const [targetDemo, setTargetDemo] = useState('Gen Z Students');
   const [checklistStates, setChecklistStates] = useState<Record<number, boolean[]>>({});
   const [savedReports, setSavedReports] = useState<Array<{ id: number; locationId: number; generatedAt: Date }>>([]);
   const [locations, setLocations] = useState(FALLBACK_LOCATIONS);
@@ -316,9 +319,9 @@ export default function Vantage() {
 
     try {
       await exportToPDF({
-        businessType: 'Boba Tea Shop',
-        targetDemo: 'Gen Z Students',
-        budget: 8500,
+        businessType: businessType,
+        targetDemo: targetDemo,
+        budget: budget,
         location: {
           name: location.name,
           score: location.score,
@@ -402,9 +405,9 @@ export default function Vantage() {
       // Fetch real rental listings from RentCast API in parallel with backend
       const [response, rentcastListings] = await Promise.all([
         apiService.submitAnalysis({
-          business_type: 'retail',
-          target_demo: 'young professionals',
-          budget: 15000,
+          business_type: businessType.toLowerCase().replace(/\s+/g, '_'),
+          target_demo: targetDemo.toLowerCase().replace(/\s+/g, '_'),
+          budget: budget,
         }),
         fetchListings(),
       ]);
@@ -677,7 +680,7 @@ export default function Vantage() {
               <p className="text-slate-600 dark:text-slate-300 font-medium mt-1 break-words">
                 {appState === 'initial'
                   ? 'Select your parameters to begin site evaluation'
-                  : 'Advanced AI analysis for Boba Tea Shop expansion'}
+                  : `Advanced AI analysis for ${businessType} expansion`}
               </p>
             </div>
 
@@ -702,7 +705,7 @@ export default function Vantage() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <AnalyticsDashboard />
+            <AnalyticsDashboard businessType={businessType} />
           </MotionDiv>
         ) : activeTab === 'reports' ? (
           <MotionDiv
@@ -710,7 +713,7 @@ export default function Vantage() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <ReportsTab />
+            <ReportsTab businessType={businessType} />
           </MotionDiv>
         ) : activeTab === 'settings' ? (
           <MotionDiv
@@ -795,7 +798,16 @@ export default function Vantage() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                   >
-                    <InputForm onAnalyze={startAnalysis} isAnalyzing={false} />
+                    <InputForm
+                      onAnalyze={startAnalysis}
+                      isAnalyzing={false}
+                      businessType={businessType}
+                      setBusinessType={setBusinessType}
+                      budget={budget}
+                      setBudget={setBudget}
+                      targetDemo={targetDemo}
+                      setTargetDemo={setTargetDemo}
+                    />
                     <div className="mt-6 flex items-center justify-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
                       Press <kbd className="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700">⌘ Enter</kbd> to analyze
                     </div>
@@ -822,7 +834,7 @@ export default function Vantage() {
                           <Sparkles className="w-8 h-8 text-teal-600 dark:text-teal-400 mb-4" />
                           <h4 className="text-lg font-black mb-2">Vantage Score: {selectedLocationData?.score || 98}</h4>
                           <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
-                            {selectedLocationData?.name || 'Chelsea Highline'} demonstrates elite potential with 95% foot traffic alignment for Boba Tea demographics.
+                            {selectedLocationData?.name || 'Chelsea Highline'} demonstrates elite potential with 95% foot traffic alignment for {businessType} demographics.
                           </p>
                           <button
                             onClick={async () => {
@@ -993,7 +1005,7 @@ export default function Vantage() {
                                 <p className="text-xs text-red-500">{storefrontError}</p>
                               )}
                               <button
-                                onClick={() => generateStorefront(selectedLocationData.address || selectedLocationData.name, 'Boba Tea Shop', selectedLocationData.sqft, selectedLocationData.propertyType)}
+                                onClick={() => generateStorefront(selectedLocationData.address || selectedLocationData.name, businessType, selectedLocationData.sqft, selectedLocationData.propertyType)}
                                 disabled={storefrontLoading}
                                 className={`w-full flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-white cursor-pointer transition-colors ${storefrontLoading ? 'bg-sky-300 cursor-not-allowed' : 'bg-sky-500 hover:bg-sky-600'}`}
                               >
@@ -1029,7 +1041,7 @@ export default function Vantage() {
                                 <p className="text-xs text-red-500">{floorplanError}</p>
                               )}
                               <button
-                                onClick={() => generateFloorplan(selectedLocationData.sqft || 2000, 'Boba Tea Shop', selectedLocationData.address)}
+                                onClick={() => generateFloorplan(selectedLocationData.sqft || 2000, businessType, selectedLocationData.address)}
                                 disabled={floorplanLoading}
                                 className={`w-full flex items-center justify-center gap-2 rounded-lg border border-emerald-600 px-4 py-2.5 text-sm font-medium text-white cursor-pointer transition-colors ${floorplanLoading ? 'bg-emerald-300 cursor-not-allowed' : 'bg-emerald-500 hover:bg-emerald-600'}`}
                               >
@@ -1145,7 +1157,7 @@ export default function Vantage() {
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
                               >
-                                <CompetitorsTab locationName={selectedLocationData.name} />
+                                <CompetitorsTab locationName={selectedLocationData.name} businessType={businessType} />
                               </MotionDiv>
                             )}
 
@@ -1176,7 +1188,7 @@ export default function Vantage() {
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
                               >
-                                <AIInsights locationName={selectedLocationData.name} score={selectedLocationData.score} />
+                                <AIInsights locationName={selectedLocationData.name} score={selectedLocationData.score} businessType={businessType} />
                               </MotionDiv>
                             )}
 
