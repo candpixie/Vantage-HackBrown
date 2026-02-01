@@ -392,11 +392,6 @@ Health check endpoint.
 
 ---
 
-## Disclaimer
-
-This project was developed with assistance from AI coding tools and with integration of various APIs.
----
-
 ## The Pitch
 
 > "Site selection consulting costs $10,000 to $50,000. Enterprise tools are priced for chains, not first-time owners.
