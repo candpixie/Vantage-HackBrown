@@ -57,8 +57,7 @@ def get_nearby_competitors(lat, lng, business_type, radius):
     params = {
         "location": f"{lat},{lng}",
         "radius": radius,
-        "type": "cafe",
-        "keyword": business_type,
+        "type": business_type,
         "key": GOOGLE_PLACES_API_KEY
     }
     
