@@ -202,18 +202,13 @@ def generate_ai_insights(location_data: Dict[str, Any]) -> List[Dict[str, Any]]:
 	Generate AI insights using Google Gemini API
 	"""
 	# Replace YOUR_GEMINI_API_KEY_HERE with your actual Gemini API key
-	gemini_api_key = "AIzaSyABYwF8Wt5cyhzEBSq4BKiQdoRStqTZj4c"
-	if not gemini_api_key or gemini_api_key == "YOUR_GEMINI_API_KEY_HERE":
-		print("⚠️  GEMINI_API_KEY not configured, returning mock insights")
-
-		return []
-	
+	gemini_api_key = "AIzaSyB7a__9evbglKws4nVo7-BZmtkbNLwyDPo"
 	try:
 		from google import genai
 		from google.genai import Client
 		
 		client = genai.Client(api_key=gemini_api_key)
-		model_name = 'gemini-2.0-flash'
+		model_name = 'gemma-3-27b-it'
 		
 		# Build context from location data
 		location_name = location_data.get("name", "Location")
@@ -235,9 +230,7 @@ def generate_ai_insights(location_data: Dict[str, Any]) -> List[Dict[str, Any]]:
 		# Format revenue
 		revenue_text = "\n".join([f"- {r.get('scenario', '')}: {r.get('monthly', 'N/A')}/mo" for r in revenue])
 		
-		prompt = f"""You are a commercial real estate analyst for NYC. Analyze this location and generate 4-5 actionable insights.
-
-Location: {location_name}
+		prompt = f"""You are a commercial real estate analyst for NYC. Analyze this location and generate 4-5 actionable insights. Location: {location_name}
 Address: {address}
 Overall Score: {score}/100
 Monthly Rent: ${rent_price:,}
@@ -277,6 +270,7 @@ Return ONLY valid JSON, no markdown or extra text."""
 			contents=prompt
 		)
 		response_text = response.text.strip()
+		print(f"Gemini response: {response_text}")
 		
 		# Clean up response (remove markdown code blocks if present)
 		if response_text.startswith("```json"):
