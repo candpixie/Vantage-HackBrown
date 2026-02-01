@@ -2,6 +2,8 @@
 from uagents import Agent, Context, Model
 import requests
 import os
+import json
+import hashlib
 
 class CompetitorRequest(Model):
     lat: float
@@ -24,13 +26,33 @@ class CompetitorResponse(Model):
 
 competitor_intel = Agent(
     name="competitor_intel",
-    seed="competitor_intel_seed_phrase"
+    seed="competitor_intel_seed_phrase",
+    port=8002,
+    endpoint=["http://localhost:8002/submit"],
+    network="testnet",
 )
 
-GOOGLE_PLACES_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY")
+GOOGLE_PLACES_API_KEY = "AIzaSyD8miMgNXY0knfl3zPD4RroatsVKJRGGQc"
 
 def get_nearby_competitors(lat, lng, business_type, radius):
-    """Fetch competitors from Google Places API"""
+    """Fetch competitors from Google Places API with Caching"""
+    
+    # Create cache directory if it doesn't exist
+    if not os.path.exists(".cache"):
+        os.makedirs(".cache")
+        
+    # Generate a unique filename based on query params
+    cache_key = f"{lat}_{lng}_{business_type}_{radius}"
+    cache_hash = hashlib.md5(cache_key.encode()).hexdigest()
+    cache_path = f".cache/{cache_hash}.json"
+    
+    # Check cache first
+    if os.path.exists(cache_path):
+        print(f"💰 Loading from cache: {cache_path}")
+        with open(cache_path, "r") as f:
+            return json.load(f)
+            
+    print("🌍 Fetching from Google Places API...")
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
     params = {
         "location": f"{lat},{lng}",
