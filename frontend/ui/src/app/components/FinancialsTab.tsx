@@ -1,13 +1,20 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { DollarSign, TrendingUp, AlertCircle } from 'lucide-react';
+import { VisaIntegrationStatus } from './VisaIntegrationStatus';
 
 interface FinancialsTabProps {
   locationName: string;
   baseRevenue: string;
+  visaData?: {
+    dataSource?: string;
+    merchantCount?: number;
+    confidence?: string;
+    assumptions?: string[];
+  };
 }
 
-export const FinancialsTab: React.FC<FinancialsTabProps> = ({ locationName, baseRevenue }) => {
+export const FinancialsTab: React.FC<FinancialsTabProps> = ({ locationName, baseRevenue, visaData }) => {
   const scenarios = [
     {
       name: 'Conservative',
@@ -44,6 +51,16 @@ export const FinancialsTab: React.FC<FinancialsTabProps> = ({ locationName, base
 
   return (
     <div className="space-y-8">
+      {/* Visa Integration Status */}
+      {visaData && (
+        <VisaIntegrationStatus
+          dataSource={visaData.dataSource}
+          merchantCount={visaData.merchantCount}
+          confidence={visaData.confidence}
+          assumptions={visaData.assumptions}
+        />
+      )}
+
       <div>
         <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2">
           <DollarSign className="w-5 h-5 text-amber-600 dark:text-amber-400" />

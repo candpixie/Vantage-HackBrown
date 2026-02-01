@@ -1,5 +1,6 @@
 from uagents import Agent, Context, Model
 import asyncio
+from typing import Optional
 
 class ScoreResponse(Model):
     score: int
@@ -20,6 +21,8 @@ class RevenueRequest(Model):
     foot_traffic_score: int  # 0-100
     competition_count: int
     rent_estimate: float  # monthly
+    latitude: Optional[float] = None  # Added for Visa API integration
+    longitude: Optional[float] = None  # Added for Visa API integration
 
 class RevenueResponse(Model):
     conservative: int
@@ -49,6 +52,8 @@ location_scout_address = "agent1qtmh344czvgrgregw9xf7490s7a9qc9twvz3njq6ye6rn0gn
 competitor_intel_address = "agent1qwztegem8pxg4u3edsvwngrnx2pqu9ju8fd50kz9l4yvakqqysn2xjdamxu"
 revenue_analyst_address = "agent1qvjvmz2ej8vnjpxnw8fhkazfky2mfx5se4au508xapjrmdkhf9782cwpm5q"
 
+# Master state storage - holds initial inputs for the current request
+master_state = {}
 
 @orchestrator.on_event("startup")
 async def startup_function(ctx: Context):
@@ -58,6 +63,10 @@ async def startup_function(ctx: Context):
 @orchestrator.on_message(model=ScoreRequest)
 async def handle_score_request(ctx: Context, sender: str, msg: ScoreRequest):
     """
+    Two-Step Waterfall Pattern:
+    Step 1: Store master state, send requests to agents 2 & 3 in parallel
+    Step 2: Wait for both responses, then combine with master state and send to agent 4
+    
     loc scout returns:
     {
         "score": int,
@@ -114,29 +123,36 @@ async def handle_score_request(ctx: Context, sender: str, msg: ScoreRequest):
     ctx.logger.info(f"Longitude: {msg.longitude}")
     ctx.logger.info(f"Rent Estimate: {msg.rent_estimate}")
 
-    out.business_type = msg.business_type
-    out.neighborhood = msg.neighborhood
-    out.rent_estimate = msg.rent_estimate
+    # STEP 1: Store master state (initial inputs that all agents need)
+    master_state['business_type'] = msg.business_type
+    master_state['neighborhood'] = msg.neighborhood
+    master_state['rent_estimate'] = msg.rent_estimate
+    master_state['target_demo'] = msg.target_demo
+    master_state['latitude'] = msg.latitude
+    master_state['longitude'] = msg.longitude
+    
+    # Reset output state for new request
+    out.loc_result = None
+    out.comp_result = None
+    out.rev_result = None
 
-    # ask for location score for that business
-    msg = ScoreRequest(neighborhood=msg.neighborhood,
-                       business_type=msg.business_type,
-                       target_demo=msg.target_demo,
-                       latitude=msg.latitude,
-                       longitude=msg.longitude,
-                       rent_estimate=msg.rent_estimate)
+    # Send requests to agents 2 & 3 in parallel (Step 1)
+    score_request = ScoreRequest(
+        neighborhood=msg.neighborhood,
+        business_type=msg.business_type,
+        target_demo=msg.target_demo,
+        latitude=msg.latitude,
+        longitude=msg.longitude,
+        rent_estimate=msg.rent_estimate
+    )
+    
     ctx.logger.info(f"Sending message to location_scout at {location_scout_address}")
-    await ctx.send(location_scout_address, msg)
+    await ctx.send(location_scout_address, score_request)
 
-    # ask for competitor intel for that business
-    msg = ScoreRequest(neighborhood=msg.neighborhood,
-                       business_type=msg.business_type,
-                       target_demo=msg.target_demo,
-                       latitude=msg.latitude,
-                       longitude=msg.longitude,
-                       rent_estimate=msg.rent_estimate)
     ctx.logger.info(f"Sending message to competitor_intel at {competitor_intel_address}")
-    await ctx.send(competitor_intel_address, msg)
+    await ctx.send(competitor_intel_address, score_request)
+    
+    ctx.logger.info("Waiting for responses from agents 2 and 3 before calling agent 4...")
 
 @orchestrator.on_message(model=ScoreResponse)
 async def handle_score_response(ctx: Context, sender: str, msg: ScoreResponse):
@@ -144,21 +160,55 @@ async def handle_score_response(ctx: Context, sender: str, msg: ScoreResponse):
     ctx.logger.info(f"Received score: {msg.score}")
     ctx.logger.info(f"Confidence: {msg.confidence}")
     ctx.logger.info(f"Breakdown: {msg.breakdown}")
+    
+    # Determine which agent sent the response based on sender address
     if not out.loc_result:
         out.loc_result = msg
+        ctx.logger.info("Stored location_scout result")
     elif not out.comp_result:
         out.comp_result = msg
+        ctx.logger.info("Stored competitor_intel result")
     
+    # STEP 2: Check if we have both responses, then call agent 4
     if out.loc_result and out.comp_result:
-        # ask for revenue analyst for that business
-        msg = RevenueRequest(business_type=out.business_type,
-                        neighborhood=out.neighborhood,
-                        foot_traffic_score=out.loc_result.breakdown['foot_traffic']['count'],
-                        competition_count=out.comp_result.breakdown['competitor_count'],
-                        rent_estimate=out.rent_estimate)
-        ctx.logger.info(f"Sending message to revenue_analyst at {revenue_analyst_address}")
-        await ctx.send(revenue_analyst_address, msg)
-    
+        ctx.logger.info("Both agents 2 and 3 have responded. Now calling agent 4...")
+        
+        # Extract data from responses
+        foot_traffic_score = 0
+        competition_count = 0
+        
+        # Get foot_traffic score from location_scout breakdown
+        if out.loc_result.breakdown and 'foot_traffic' in out.loc_result.breakdown:
+            foot_traffic_data = out.loc_result.breakdown['foot_traffic']
+            # Use the score from foot_traffic, or fallback to overall score
+            foot_traffic_score = foot_traffic_data.get('score', out.loc_result.score)
+        
+        # Get competition_count from competitor_intel breakdown
+        if out.comp_result.breakdown and 'competitor_count' in out.comp_result.breakdown:
+            competition_count = out.comp_result.breakdown['competitor_count']
+        
+        # Combine master state with agent 2 & 3 results and send to agent 4
+        revenue_request = RevenueRequest(
+            business_type=master_state['business_type'],
+            neighborhood=master_state['neighborhood'],
+            foot_traffic_score=foot_traffic_score,
+            competition_count=competition_count,
+            rent_estimate=master_state['rent_estimate'],
+            latitude=master_state.get('latitude'),  # Pass location for Visa API
+            longitude=master_state.get('longitude')  # Pass location for Visa API
+        )
+        
+        ctx.logger.info(f"Sending RevenueRequest to revenue_analyst at {revenue_analyst_address}")
+        ctx.logger.info(f"  - Business Type: {revenue_request.business_type}")
+        ctx.logger.info(f"  - Neighborhood: {revenue_request.neighborhood}")
+        ctx.logger.info(f"  - Foot Traffic Score: {revenue_request.foot_traffic_score}")
+        ctx.logger.info(f"  - Competition Count: {revenue_request.competition_count}")
+        ctx.logger.info(f"  - Rent Estimate: {revenue_request.rent_estimate}")
+        ctx.logger.info(f"  - Location: ({revenue_request.latitude}, {revenue_request.longitude})")
+        
+        await ctx.send(revenue_analyst_address, revenue_request)
+    else:
+        ctx.logger.info(f"Waiting for other response... (loc_result: {out.loc_result is not None}, comp_result: {out.comp_result is not None})")
 
 @orchestrator.on_message(model=RevenueResponse)
 async def handle_revenue_response(ctx: Context, sender: str, msg: RevenueResponse):
@@ -169,15 +219,13 @@ async def handle_revenue_response(ctx: Context, sender: str, msg: RevenueRespons
     ctx.logger.info(f"Received breakeven_months: {msg.breakeven_months}")
     ctx.logger.info(f"Received confidence: {msg.confidence}")
     ctx.logger.info(f"Received assumptions: {msg.assumptions}")
-    if not out.rev_result:
-        out.rev_result = msg
-    else:
-        ctx.logger.info(f"Received all responses.")
-        ctx.logger.info(f"Final Output: {out}")
     
+    out.rev_result = msg
+    
+    ctx.logger.info("=== ALL RESPONSES RECEIVED ===")
+    ctx.logger.info(f"Final Output: {out}")
     print(out.dict())
 
 if __name__ == "__main__":
     out = output()
     orchestrator.run()
-

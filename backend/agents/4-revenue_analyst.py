@@ -1,5 +1,14 @@
 # revenue_analyst.py
 from uagents import Agent, Context, Model
+from typing import Optional
+
+# Import Visa API service
+try:
+    from visa_api_service import get_nearby_merchants, get_merchant_spending_insights
+    VISA_API_AVAILABLE = True
+except ImportError:
+    VISA_API_AVAILABLE = False
+    print("⚠️  Visa API service not available. Using benchmark data only.")
 
 class RevenueRequest(Model):
     business_type: str
@@ -7,6 +16,8 @@ class RevenueRequest(Model):
     foot_traffic_score: int  # 0-100
     competition_count: int
     rent_estimate: float  # monthly
+    latitude: Optional[float] = None  # Added for Visa API integration
+    longitude: Optional[float] = None  # Added for Visa API integration
 
 class RevenueResponse(Model):
     conservative: int
@@ -45,8 +56,23 @@ def estimate_daily_traffic(foot_traffic_score):
     # Score 20 = ~500 daily passersby (quiet residential)
     return int((foot_traffic_score / 100) * 4500 + 500)
 
-def calculate_revenue(foot_traffic_score, competition_count, business_type, rent):
-    """Calculate conservative/moderate/optimistic monthly revenue"""
+def calculate_revenue(
+    foot_traffic_score: int,
+    competition_count: int,
+    business_type: str,
+    rent: float,
+    visa_merchant_data: Optional[dict] = None
+):
+    """
+    Calculate conservative/moderate/optimistic monthly revenue
+    
+    Args:
+        foot_traffic_score: Foot traffic score (0-100)
+        competition_count: Number of nearby competitors
+        business_type: Type of business
+        rent: Monthly rent estimate
+        visa_merchant_data: Optional merchant data from Visa API
+    """
     
     benchmarks = BENCHMARKS.get(business_type.lower(), BENCHMARKS["default"])
     daily_traffic = estimate_daily_traffic(foot_traffic_score)
@@ -65,11 +91,29 @@ def calculate_revenue(foot_traffic_score, competition_count, business_type, rent
     avg_ticket = benchmarks["avg_ticket"]
     margin = benchmarks["margin"]
     
-    # Daily customers
-    daily_customers = daily_traffic * conversion
-    
-    # Monthly revenue (30 days)
-    base_monthly = daily_customers * avg_ticket * 30
+    # Enhance with Visa API data if available
+    if visa_merchant_data:
+        spending_insights = get_merchant_spending_insights(visa_merchant_data)
+        market_activity = spending_insights.get("market_activity_score", 50)
+        
+        # Adjust conversion rate based on market activity from Visa data
+        # Higher market activity = higher conversion potential
+        activity_multiplier = 1.0 + (market_activity / 100) * 0.3  # Up to 30% boost
+        conversion = conversion * activity_multiplier
+        
+        # If we have transaction volume data, use it to refine estimates
+        estimated_spending = spending_insights.get("estimated_monthly_spending", 0)
+        if estimated_spending > 0:
+            # Use Visa transaction data as a baseline, adjusted for our business
+            base_monthly = estimated_spending * (conversion / base_conversion)
+        else:
+            # Fall back to traffic-based calculation
+            daily_customers = daily_traffic * conversion
+            base_monthly = daily_customers * avg_ticket * 30
+    else:
+        # Standard calculation without Visa data
+        daily_customers = daily_traffic * conversion
+        base_monthly = daily_customers * avg_ticket * 30
     
     # Three scenarios
     conservative = int(base_monthly * 0.6)
@@ -90,18 +134,59 @@ def calculate_revenue(foot_traffic_score, competition_count, business_type, rent
 async def project_revenue(ctx: Context, sender: str, msg: RevenueRequest):
     ctx.logger.info(f"Projecting revenue for {msg.business_type} in {msg.neighborhood}")
     
+    # Try to get Visa merchant data if location is available
+    visa_merchant_data = None
+    data_source = "benchmarks"
+    
+    if VISA_API_AVAILABLE and msg.latitude is not None and msg.longitude is not None:
+        ctx.logger.info(f"Calling Visa API for merchant data at ({msg.latitude}, {msg.longitude})")
+        try:
+            visa_merchant_data = get_nearby_merchants(
+                lat=msg.latitude,
+                lng=msg.longitude,
+                business_type=msg.business_type,
+                radius=1000  # 1km radius
+            )
+            if visa_merchant_data:
+                ctx.logger.info(f"Received Visa merchant data: {visa_merchant_data.get('merchant_count', 0)} merchants found")
+                data_source = "visa_api"
+            else:
+                ctx.logger.info("Visa API returned no data, using benchmarks")
+        except Exception as e:
+            ctx.logger.warning(f"Visa API call failed: {e}. Falling back to benchmarks.")
+    
+    # Calculate revenue with or without Visa data
     conservative, moderate, optimistic, breakeven = calculate_revenue(
         msg.foot_traffic_score,
         msg.competition_count,
         msg.business_type,
-        msg.rent_estimate
+        msg.rent_estimate,
+        visa_merchant_data=visa_merchant_data
     )
     
     # Confidence based on data quality
-    if msg.foot_traffic_score > 0 and msg.competition_count >= 0:
+    if visa_merchant_data:
+        confidence = "high"  # Visa API data provides higher confidence
+    elif msg.foot_traffic_score > 0 and msg.competition_count >= 0:
         confidence = "medium"
     else:
         confidence = "low"
+    
+    # Build assumptions list
+    assumptions = [
+        f"Foot traffic score: {msg.foot_traffic_score}/100",
+        f"Nearby competitors: {msg.competition_count}",
+        f"Estimated rent: ${int(msg.rent_estimate)}/mo",
+    ]
+    
+    if visa_merchant_data:
+        merchant_count = visa_merchant_data.get("merchant_count", 0)
+        assumptions.append(f"Visa API data: {merchant_count} nearby merchants with transaction data")
+        assumptions.append("Revenue projections enhanced with real transaction volumes")
+    else:
+        assumptions.append("Industry-standard conversion rates applied")
+        if msg.latitude is None or msg.longitude is None:
+            assumptions.append("Location data not available for Visa API lookup")
     
     response = RevenueResponse(
         conservative=conservative,
@@ -109,12 +194,7 @@ async def project_revenue(ctx: Context, sender: str, msg: RevenueRequest):
         optimistic=optimistic,
         breakeven_months=min(breakeven, 36),
         confidence=confidence,
-        assumptions=[
-            f"Foot traffic score: {msg.foot_traffic_score}/100",
-            f"Nearby competitors: {msg.competition_count}",
-            f"Estimated rent: ${int(msg.rent_estimate)}/mo",
-            "Industry-standard conversion rates applied"
-        ]
+        assumptions=assumptions
     )
     
     await ctx.send(sender, response)

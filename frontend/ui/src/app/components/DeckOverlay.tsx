@@ -76,26 +76,42 @@ function getFillColor(feature: any, colorMode: string): [number, number, number,
   }
   
   const props = feature.properties;
-  const popNorm = typeof props.popNorm === 'number' ? props.popNorm : 0;
-  const incNorm = typeof props.incNorm === 'number' ? props.incNorm : 0;
-  const ageNorm = typeof props.ageNorm === 'number' ? props.ageNorm : 0;
+  // Get normalized values, with fallback to calculating from raw values if needed
+  let popNorm = typeof props.popNorm === 'number' ? props.popNorm : 0;
+  let incNorm = typeof props.incNorm === 'number' ? props.incNorm : 0;
+  let ageNorm = typeof props.ageNorm === 'number' ? props.ageNorm : 0;
+  
+  // If normalized values are missing but raw values exist, calculate them
+  if (popNorm === 0 && props.population) {
+    popNorm = Math.min(1, Math.max(0, props.population / 50000));
+  }
+  if (incNorm === 0 && props.income) {
+    incNorm = Math.min(1, Math.max(0, props.income / 150000));
+  }
+  if (ageNorm === 0 && props.medianAge) {
+    ageNorm = Math.min(1, Math.max(0, props.medianAge / 50));
+  }
+  
+  // Ensure we have at least a small value to show color (minimum 0.1 for visibility)
+  const minValue = 0.1;
   
   switch (colorMode) {
     case 'population':
       if (popNorm > 0) {
-        return populationColor(popNorm);
+        return populationColor(Math.max(minValue, popNorm));
       }
-      return [200, 200, 200, 50]; // Fallback gray
+      // Try to use a default value if available
+      return populationColor(minValue);
     case 'income':
       if (incNorm > 0) {
-        return incomeColor(incNorm);
+        return incomeColor(Math.max(minValue, incNorm));
       }
-      return [200, 200, 200, 50]; // Fallback gray
+      return incomeColor(minValue);
     case 'age':
       if (ageNorm > 0) {
-        return ageColor(ageNorm);
+        return ageColor(Math.max(minValue, ageNorm));
       }
-      return [200, 200, 200, 50]; // Fallback gray
+      return ageColor(minValue);
     default:
       return [0, 0, 0, 0]; // Transparent
   }
@@ -132,47 +148,60 @@ export default function DeckOverlay({
         features: neighborhoods.features.length,
         colorMode,
         sampleFeature: neighborhoods.features[0],
-        sampleProps: neighborhoods.features[0]?.properties
+        sampleProps: neighborhoods.features[0]?.properties,
+        hasPopNorm: !!neighborhoods.features[0]?.properties?.popNorm,
+        hasIncNorm: !!neighborhoods.features[0]?.properties?.incNorm,
+        hasAgeNorm: !!neighborhoods.features[0]?.properties?.ageNorm,
       });
       
-      result.push(
-        new GeoJsonLayer({
-          id: 'neighborhoods-heatmap',
-          data: neighborhoods,
-          filled: true,
-          stroked: false, // Disable strokes for cleaner look
-          extruded: false,
-          getLineColor: [100, 116, 139, 0], // Transparent lines
-          getLineWidth: 0,
-          getFillColor: (f: any) => {
-            if (!f || !f.properties) {
-              console.warn('DeckOverlay: Feature missing properties', f);
-              return [200, 200, 200, 120];
-            }
-            const color = getFillColor(f, colorMode);
-            // Ensure valid color with good opacity
-            if (!Array.isArray(color) || color.length !== 4) {
-              console.warn('DeckOverlay: Invalid color returned', color);
-              return [200, 200, 200, 120];
-            }
-            // Boost opacity for visibility (min 100 for good visibility)
-            const alpha = Math.max(100, Math.min(255, color[3]));
-            const finalColor = [color[0], color[1], color[2], alpha];
-            return finalColor;
-          },
-          pickable: true,
-          autoHighlight: true,
-          highlightColor: [245, 158, 11, 150],
-          onHover: (info: any) => {
-            if (onHoverNeighborhood && info.object) {
-              onHoverNeighborhood(info.object.properties ?? null);
-            }
-          },
-          updateTriggers: { 
-            getFillColor: [colorMode] 
-          },
-        })
-      );
+      try {
+        result.push(
+          new GeoJsonLayer({
+            id: 'neighborhoods-heatmap',
+            data: neighborhoods,
+            filled: true,
+            stroked: false, // Disable strokes for cleaner look
+            extruded: false,
+            getLineColor: [100, 116, 139, 0], // Transparent lines
+            getLineWidth: 0,
+            getFillColor: (f: any) => {
+              try {
+                if (!f || !f.properties) {
+                  console.warn('DeckOverlay: Feature missing properties', f);
+                  return [200, 200, 200, 100];
+                }
+                const color = getFillColor(f, colorMode);
+                // Ensure valid color with good opacity
+                if (!Array.isArray(color) || color.length !== 4) {
+                  console.warn('DeckOverlay: Invalid color returned', color, 'for feature', f);
+                  return [200, 200, 200, 100];
+                }
+                // Ensure opacity is visible (min 120 for good visibility, max 200 for not too opaque)
+                const alpha = Math.max(120, Math.min(200, color[3] || 150));
+                const finalColor: [number, number, number, number] = [color[0], color[1], color[2], alpha];
+                return finalColor;
+              } catch (error) {
+                console.error('DeckOverlay: Error in getFillColor', error, f);
+                return [200, 200, 200, 100];
+              }
+            },
+            pickable: true,
+            autoHighlight: true,
+            highlightColor: [245, 158, 11, 150],
+            onHover: (info: any) => {
+              if (onHoverNeighborhood && info.object) {
+                onHoverNeighborhood(info.object.properties ?? null);
+              }
+            },
+            updateTriggers: { 
+              getFillColor: [colorMode, neighborhoods?.features?.length] 
+            },
+          })
+        );
+        console.log('DeckOverlay: Successfully created heatmap layer');
+      } catch (error) {
+        console.error('DeckOverlay: Error creating GeoJsonLayer', error);
+      }
     } else {
       console.log('DeckOverlay: Skipping heatmap', {
         hasNeighborhoods: !!neighborhoods,
@@ -241,12 +270,20 @@ export default function DeckOverlay({
 
   useEffect(() => {
     if (overlay) {
-      console.log('DeckOverlay: Updating overlay with', layers.length, 'layers');
-      overlay.setProps({ layers });
+      console.log('DeckOverlay: Updating overlay with', layers.length, 'layers', {
+        hasHeatmap: layers.some(l => l.id === 'neighborhoods-heatmap'),
+        hasMarkers: layers.some(l => l.id === 'location-markers'),
+        colorMode
+      });
+      try {
+        overlay.setProps({ layers });
+      } catch (error) {
+        console.error('DeckOverlay: Error updating overlay', error);
+      }
     } else {
       console.log('DeckOverlay: No overlay instance yet');
     }
-  }, [overlay, layers]);
+  }, [overlay, layers, colorMode]);
 
   return null;
 }

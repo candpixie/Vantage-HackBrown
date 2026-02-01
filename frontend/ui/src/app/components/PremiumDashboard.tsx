@@ -193,7 +193,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
   });
 
   return (
-    <div className="min-h-screen bg-[#0a0b0f] text-white p-4 font-sans">
+    <div className="min-h-screen bg-[#0a0b0f] text-white p-3 sm:p-4 lg:p-6 font-sans overflow-x-hidden">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -413,7 +413,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
         </div>
 
         {/* CENTER COLUMN - Map + Score Breakdown */}
-        <div className="col-span-12 lg:col-span-6 space-y-4">
+        <div className="col-span-12 lg:col-span-6 space-y-3 lg:space-y-4">
           {/* Map Area */}
           <div className="bg-[#12131a] rounded-xl border border-white/5 overflow-hidden glass-card-dark premium-glow">
             <div className="relative h-64 bg-gradient-to-br from-[#1a1b25] to-[#12131a]">
@@ -634,7 +634,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
         </div>
 
         {/* RIGHT COLUMN - Competitors + Gaps */}
-        <div className="col-span-12 lg:col-span-3 space-y-4">
+        <div className="col-span-12 lg:col-span-3 space-y-3 lg:space-y-4">
           {/* Competitor Intel */}
           <div className="bg-[#12131a] rounded-xl border border-white/5 p-4 glass-card-dark premium-glow">
             <div className="flex items-center justify-between mb-3">

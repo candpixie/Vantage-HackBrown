@@ -182,19 +182,71 @@ def call_competitor_intel(business_type: str, lat: float, lng: float) -> Optiona
         return None
 
 
-def call_revenue_analyst(business_type: str, foot_traffic_score: int, competition_count: int, rent_estimate: float) -> Optional[Dict]:
+def call_revenue_analyst(
+    business_type: str,
+    foot_traffic_score: int,
+    competition_count: int,
+    rent_estimate: float,
+    latitude: Optional[float] = None,
+    longitude: Optional[float] = None
+) -> Optional[Dict]:
     """Call revenue_analyst agent function directly"""
     if not calculate_revenue:
         return None
     try:
+        # Try to get Visa merchant data if location is available
+        visa_merchant_data = None
+        data_source = "benchmarks"
+        
+        if latitude is not None and longitude is not None:
+            try:
+                from agents.visa_api_service import get_nearby_merchants, get_merchant_spending_insights
+                visa_merchant_data = get_nearby_merchants(
+                    lat=latitude,
+                    lng=longitude,
+                    business_type=business_type,
+                    radius=1000
+                )
+                if visa_merchant_data:
+                    data_source = "visa_api"
+                    print(f"✓ Using Visa API data: {visa_merchant_data.get('merchant_count', 0)} merchants found")
+            except ImportError:
+                print("⚠️  Visa API service not available")
+            except Exception as e:
+                print(f"⚠️  Visa API call failed: {e}. Using benchmarks.")
+        
+        # Call calculate_revenue with optional Visa data
         conservative, moderate, optimistic, breakeven = calculate_revenue(
             foot_traffic_score,
             competition_count,
             business_type,
-            rent_estimate
+            rent_estimate,
+            visa_merchant_data=visa_merchant_data
         )
         
-        confidence = "medium" if foot_traffic_score > 0 and competition_count >= 0 else "low"
+        # Determine confidence based on data source
+        if visa_merchant_data:
+            confidence = "high"
+        elif foot_traffic_score > 0 and competition_count >= 0:
+            confidence = "medium"
+        else:
+            confidence = "low"
+        
+        # Build assumptions list
+        assumptions = [
+            f"Foot traffic score: {foot_traffic_score}/100",
+            f"Nearby competitors: {competition_count}",
+            f"Estimated rent: ${int(rent_estimate)}/mo",
+        ]
+        
+        if visa_merchant_data:
+            merchant_count = visa_merchant_data.get("merchant_count", 0)
+            assumptions.append(f"Visa API data: {merchant_count} nearby merchants with transaction data")
+            assumptions.append("Revenue projections enhanced with real transaction volumes")
+        else:
+            assumptions.append("Industry-standard conversion rates applied")
+            if latitude is None or longitude is None:
+                assumptions.append("Location data not available for Visa API lookup")
         
         return {
             "conservative": conservative,
@@ -202,12 +254,7 @@ def call_revenue_analyst(business_type: str, foot_traffic_score: int, competitio
             "optimistic": optimistic,
             "breakeven_months": min(breakeven, 36),
             "confidence": confidence,
-            "assumptions": [
-                f"Foot traffic score: {foot_traffic_score}/100",
-                f"Nearby competitors: {competition_count}",
-                f"Estimated rent: ${int(rent_estimate)}/mo",
-                "Industry-standard conversion rates applied"
-            ]
+            "assumptions": assumptions
         }
     except Exception as e:
         print(f"Error calling revenue_analyst: {e}")
@@ -336,6 +383,28 @@ def transform_to_location_result(
         {"text": "Schedule site visit with realtor", "completed": False}
     ]
     
+    # Extract Visa data from revenue_data if available
+    visa_data_source = None
+    visa_merchant_count = 0
+    visa_confidence = revenue_data.get("confidence", "medium") if revenue_data else "medium"
+    visa_assumptions = revenue_data.get("assumptions", []) if revenue_data else []
+    
+    # Check if Visa data was used by examining assumptions
+    for assumption in visa_assumptions:
+        if "Visa API" in assumption or "Visa Merchant" in assumption:
+            visa_data_source = "Visa Merchant Data"
+            # Extract merchant count from assumption like "Visa API data: 5 nearby merchants"
+            if "nearby merchants" in assumption:
+                try:
+                    merchant_count_str = assumption.split("nearby merchants")[0].split(":")[-1].strip()
+                    visa_merchant_count = int(merchant_count_str.split()[0])
+                except:
+                    pass
+            break
+    
+    if not visa_data_source:
+        visa_data_source = "Industry-standard benchmarks"
+    
     return {
         "id": location_id,
         "name": location_name,
@@ -343,10 +412,15 @@ def transform_to_location_result(
         "x": round(x, 1),
         "y": round(y, 1),
         "status": status,
+        "confidence": status,  # Overall confidence
         "metrics": metrics,
         "competitors": competitors,
         "revenue": revenue_projections,
-        "checklist": checklist
+        "checklist": checklist,
+        # Visa integration data for frontend dashboard
+        "dataSource": visa_data_source,
+        "merchantCount": visa_merchant_count,
+        "assumptions": visa_assumptions
     }
 
 
@@ -483,12 +557,14 @@ def submit_analysis():
         foot_traffic_score = location_scout_data.get("breakdown", {}).get("foot_traffic", {}).get("score", 0)
         competition_count = competitor_data.get("breakdown", {}).get("competitor_count", 0)
         
-        # Call revenue analyst
+        # Call revenue analyst with location data for Visa API
         revenue_data = call_revenue_analyst(
             business_type,
             foot_traffic_score,
             competition_count,
-            place_rent  # Use actual rent from listing
+            place_rent,  # Use actual rent from listing
+            latitude=loc_lat,  # Pass location for Visa API
+            longitude=loc_lng  # Pass location for Visa API
         )
         
         if not revenue_data:

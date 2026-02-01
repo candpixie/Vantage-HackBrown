@@ -20,281 +20,171 @@ export interface PDFReportData {
 
 export const exportToPDF = async (data: PDFReportData) => {
   try {
+    console.log('Starting PDF export...', data);
+    
     // Dynamic import to avoid loading the library if not needed
     const html2pdf = (await import('html2pdf.js')).default;
 
     // Create HTML content for PDF
     const htmlContent = generatePDFHTML(data);
+    console.log('HTML content generated, length:', htmlContent.length);
 
-    // Create a temporary element with proper styling for rendering
-    const element = document.createElement('div');
-    element.innerHTML = htmlContent;
-    element.style.width = '8.5in';
-    element.style.minHeight = '11in';
-    element.style.padding = '40px';
-    element.style.fontFamily = 'Inter, sans-serif';
-    element.style.position = 'fixed';
-    element.style.left = '0';
-    element.style.top = '0';
-    element.style.backgroundColor = '#ffffff';
-    element.style.color = '#000000';
-    element.style.zIndex = '99999';
-    element.style.visibility = 'visible';
-    element.style.opacity = '1';
-    element.style.display = 'block';
-    element.style.overflow = 'visible';
-    element.id = 'pdf-export-element';
-    document.body.appendChild(element);
-
-    // Force a reflow to ensure element is rendered
-    element.offsetHeight;
+    // Create a temporary container that's visible
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.top = '0';
+    container.style.left = '0';
+    container.style.width = '8.5in';
+    container.style.padding = '0.5in';
+    container.style.backgroundColor = '#ffffff';
+    container.style.zIndex = '10000';
+    container.style.overflow = 'auto';
+    container.innerHTML = htmlContent;
     
-    // Wait for fonts and images to load, and ensure element is rendered
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    document.body.appendChild(container);
+    console.log('Container added to DOM');
+
+    // Wait for rendering
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     const opt = {
-      margin: [0.5, 0.5, 0.5, 0.5],
+      margin: 0,
       filename: `Vantage_Report_${data.location.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { 
         scale: 2,
         useCORS: true,
-        letterRendering: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-        windowWidth: 816,
-        windowHeight: 1056,
-        allowTaint: true,
-        onclone: (clonedDoc: Document) => {
-          // Ensure cloned document has visible content
-          const clonedElement = clonedDoc.querySelector('body > div');
-          if (clonedElement) {
-            const htmlEl = clonedElement as HTMLElement;
-            htmlEl.style.visibility = 'visible';
-            htmlEl.style.opacity = '1';
-            htmlEl.style.display = 'block';
-            htmlEl.style.position = 'relative';
-            htmlEl.style.width = '8.5in';
-            htmlEl.style.minHeight = '11in';
-            htmlEl.style.backgroundColor = '#ffffff';
-            htmlEl.style.color = '#000000';
-            // Ensure all text is visible
-            const allText = clonedDoc.querySelectorAll('p, div, span, h1, h2, h3, h4, li');
-            allText.forEach((el) => {
-              const htmlElement = el as HTMLElement;
-              htmlElement.style.color = '#000000';
-              htmlElement.style.visibility = 'visible';
-              htmlElement.style.opacity = '1';
-            });
-          }
-        }
+        logging: true,
+        backgroundColor: '#ffffff'
       },
       jsPDF: { 
         unit: 'in', 
         format: 'letter', 
-        orientation: 'portrait',
-        compress: true
-      },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        orientation: 'portrait'
+      }
     };
 
-    await html2pdf().set(opt).from(element).save();
+    console.log('Generating PDF...');
+    await html2pdf().from(container).set(opt).save();
+    console.log('PDF generated successfully');
     
     // Clean up
-    if (document.body.contains(element)) {
-      document.body.removeChild(element);
-    }
+    document.body.removeChild(container);
+    console.log('Cleaned up');
+    
   } catch (error) {
     console.error('PDF export failed:', error);
-    throw new Error('Failed to generate PDF. Please try again.');
+    alert(`Failed to generate PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
 
 const generatePDFHTML = (data: PDFReportData): string => {
-  const metricsHTML = data.location.metrics.map(m => 
-    `• ${m.label}: ${m.score}/100 (${m.confidence})`
-  ).join('<br>');
+  const metricsHTML = data.location.metrics && data.location.metrics.length > 0
+    ? data.location.metrics.map(m => 
+        `<div style="margin: 12px 0; padding: 12px; background: #f3f4f6; border-left: 4px solid #f59e0b;">
+          <div style="font-weight: 700; color: #111827; font-size: 15px;">${m.label}</div>
+          <div style="color: #374151; font-size: 18px; font-weight: 700; margin-top: 4px;">
+            ${m.score}/100 <span style="color: #6b7280; font-size: 13px; font-weight: 400;">(${m.confidence})</span>
+          </div>
+        </div>`
+      ).join('')
+    : '<p style="color: #6b7280;">No metrics available</p>';
 
-  const competitorsHTML = data.location.competitors.map(c => 
-    `• ${c.name}${c.rating ? ` (${c.rating}★)` : ''}, ${c.distance} - ${c.weakness}`
-  ).join('<br>');
+  const competitorsHTML = data.location.competitors && data.location.competitors.length > 0
+    ? data.location.competitors.map(c => 
+        `<div style="margin: 12px 0; padding: 12px; background: #f9fafb; border-radius: 6px;">
+          <div style="font-weight: 700; color: #111827; font-size: 15px;">${c.name}</div>
+          ${c.rating ? `<div style="color: #f59e0b; font-size: 14px; margin: 4px 0;">${'★'.repeat(Math.floor(c.rating))} ${c.rating}</div>` : ''}
+          <div style="color: #6b7280; font-size: 13px;">${c.distance}</div>
+          <div style="color: #dc2626; font-size: 13px; margin-top: 4px;">
+            <strong>Weakness:</strong> ${c.weakness}
+          </div>
+        </div>`
+      ).join('')
+    : '<p style="color: #6b7280;">No competitors found in the immediate area.</p>';
 
-  const revenueHTML = data.location.revenue.map(r => 
-    `${r.scenario}: ${r.monthly}/mo (${r.annual}/yr) - ${r.margin} margin`
-  ).join('<br>');
+  const revenueHTML = data.location.revenue && data.location.revenue.length > 0
+    ? data.location.revenue.map(r => 
+        `<div style="margin: 16px 0; padding: 16px; background: #f0fdf4; border-radius: 8px; border: 2px solid #10b981;">
+          <div style="font-weight: 800; color: #065f46; margin-bottom: 8px; font-size: 16px;">${r.scenario}</div>
+          <div style="color: #374151; font-size: 14px; line-height: 1.8;">
+            <div><strong>Monthly Revenue:</strong> <span style="color: #10b981; font-weight: 700;">${r.monthly}</span></div>
+            <div><strong>Annual Revenue:</strong> <span style="color: #10b981; font-weight: 700;">${r.annual}</span></div>
+            <div><strong>Profit Margin:</strong> <span style="color: #10b981; font-weight: 700;">${r.margin}</span></div>
+          </div>
+        </div>`
+      ).join('')
+    : '<p style="color: #6b7280;">Revenue projections not available</p>';
 
   return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        body {
-          font-family: 'Inter', sans-serif;
-          color: #111827;
-          line-height: 1.6;
-          padding: 40px;
-          margin: 0;
-          width: 100%;
-          min-height: 100vh;
-        }
-        * {
-          box-sizing: border-box;
-        }
-        p, div, span {
-          word-wrap: break-word;
-          overflow-wrap: break-word;
-        }
-        .header {
-          border-bottom: 3px solid #F59E0B;
-          padding-bottom: 20px;
-          margin-bottom: 30px;
-        }
-        .header h1 {
-          color: #92400E;
-          font-size: 32px;
-          font-weight: 900;
-          margin: 0 0 10px 0;
-        }
-        .header p {
-          color: #6B7280;
-          font-size: 14px;
-          margin: 0;
-        }
-        .section {
-          margin-bottom: 30px;
-        }
-        .section-title {
-          color: #92400E;
-          font-size: 18px;
-          font-weight: 700;
-          margin-bottom: 15px;
-          border-left: 4px solid #F59E0B;
-          padding-left: 10px;
-        }
-        .highlight-box {
-          background: linear-gradient(135deg, #FEF3C7, #FDE68A);
-          border: 2px solid #F59E0B;
-          border-radius: 8px;
-          padding: 20px;
-          margin-bottom: 20px;
-        }
-        .score {
-          font-size: 48px;
-          font-weight: 900;
-          color: #D97706;
-          margin: 10px 0;
-        }
-        .confidence {
-          display: inline-block;
-          background: #10B981;
-          color: white;
-          padding: 4px 12px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: 700;
-          text-transform: uppercase;
-        }
-        .metrics, .competitors, .revenue {
-          background: #F9FAFB;
-          border-left: 3px solid #F59E0B;
-          padding: 15px;
-          margin: 10px 0;
-          border-radius: 4px;
-          word-wrap: break-word;
-          overflow-wrap: break-word;
-        }
-        h1, h2, h3, h4 {
-          word-wrap: break-word;
-          overflow-wrap: break-word;
-        }
-        .footer {
-          margin-top: 40px;
-          padding-top: 20px;
-          border-top: 1px solid #E5E7EB;
-          text-align: center;
-          color: #6B7280;
-          font-size: 12px;
-        }
-        .data-source {
-          font-size: 11px;
-          color: #9CA3AF;
-          margin-top: 20px;
-          padding-top: 15px;
-          border-top: 1px solid #E5E7EB;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <h1>VANTAGE LOCATION INTELLIGENCE REPORT</h1>
-        <p>Generated: ${data.generatedAt}</p>
+    <div style="font-family: Arial, Helvetica, sans-serif; color: #111827; line-height: 1.6; padding: 40px; background: #ffffff;">
+      
+      <!-- Header -->
+      <div style="border-bottom: 4px solid #f59e0b; padding-bottom: 20px; margin-bottom: 30px;">
+        <h1 style="color: #92400e; font-size: 32px; font-weight: 900; margin: 0 0 8px 0;">
+          VANTAGE
+        </h1>
+        <p style="color: #6b7280; font-size: 16px; margin: 0;">Location Intelligence Report</p>
+        <p style="color: #9ca3af; font-size: 12px; margin: 8px 0 0 0;">Generated: ${data.generatedAt}</p>
       </div>
 
+      <!-- Business Info -->
       ${data.businessType || data.targetDemo || data.budget ? `
-      <div class="section">
-        <div class="section-title">BUSINESS PROFILE</div>
-        ${data.businessType ? `<p><strong>Business Type:</strong> ${data.businessType}</p>` : ''}
-        ${data.targetDemo ? `<p><strong>Target Demographic:</strong> ${data.targetDemo}</p>` : ''}
-        ${data.budget ? `<p><strong>Monthly Budget:</strong> $${data.budget.toLocaleString()}</p>` : ''}
+      <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h3 style="margin: 0 0 12px 0; color: #92400e; font-size: 16px; font-weight: 700;">ANALYSIS PARAMETERS</h3>
+        ${data.businessType ? `<p style="margin: 4px 0; color: #78350f;"><strong>Business Type:</strong> ${data.businessType}</p>` : ''}
+        ${data.targetDemo ? `<p style="margin: 4px 0; color: #78350f;"><strong>Target Demographic:</strong> ${data.targetDemo}</p>` : ''}
+        ${data.budget ? `<p style="margin: 4px 0; color: #78350f;"><strong>Budget:</strong> $${data.budget.toLocaleString()}/month</p>` : ''}
       </div>
       ` : ''}
 
-      <div class="section">
-        <div class="section-title">#1 RECOMMENDATION</div>
-        <div class="highlight-box">
-          <h2 style="margin: 0 0 10px 0; color: #92400E; font-size: 24px;">${data.location.name}</h2>
-          <div class="score">${data.location.score}/100</div>
-          <span class="confidence">${data.location.confidence} CONFIDENCE</span>
+      <!-- Location Score -->
+      <div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px; text-align: center;">
+        <h2 style="margin: 0 0 12px 0; color: #ffffff; font-size: 24px; font-weight: 900;">
+          ${data.location.name}
+        </h2>
+        <div style="font-size: 64px; font-weight: 900; color: #ffffff; margin: 12px 0;">
+          ${data.location.score}
         </div>
+        <p style="margin: 0; color: #fef3c7; font-size: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;">
+          ${data.location.confidence} CONFIDENCE
+        </p>
       </div>
 
-      ${data.location.metrics && data.location.metrics.length > 0 ? `
-      <div class="section">
-        <div class="section-title">SCORE BREAKDOWN</div>
-        <div class="metrics">
-          ${metricsHTML || '<p>No metrics available</p>'}
-        </div>
-      </div>
-      ` : '<div class="section"><div class="section-title">SCORE BREAKDOWN</div><div class="metrics"><p>No metrics available</p></div></div>'}
-
-      ${data.location.competitors && data.location.competitors.length > 0 ? `
-      <div class="section">
-        <div class="section-title">COMPETITOR ANALYSIS</div>
-        <div class="competitors">
-          <p><strong>Found ${data.location.competitors.length} competitor${data.location.competitors.length !== 1 ? 's' : ''} within 0.5 miles:</strong></p>
-          ${competitorsHTML}
-        </div>
-      </div>
-      ` : `
-      <div class="section">
-        <div class="section-title">COMPETITOR ANALYSIS</div>
-        <div class="competitors">
-          <p>No competitors found in the immediate area. This location offers a unique market opportunity.</p>
-        </div>
-      </div>
-      `}
-
-      ${data.location.revenue && data.location.revenue.length > 0 ? `
-      <div class="section">
-        <div class="section-title">REVENUE PROJECTION</div>
-        <div class="revenue">
-          ${revenueHTML}
-        </div>
-      </div>
-      ` : '<div class="section"><div class="section-title">REVENUE PROJECTION</div><div class="revenue"><p>Revenue projections not available</p></div></div>'}
-
-      <div class="data-source">
-        <p><strong>Data Sources:</strong></p>
-        <p>• Foot traffic: NYC Open Data, Business Licenses 2024</p>
-        <p>• Competitors: Google Places API (live data)</p>
-        <p>• Demographics: Census ACS 2023</p>
+      <!-- Metrics Section -->
+      <div style="margin-bottom: 30px;">
+        <h3 style="color: #111827; font-size: 20px; font-weight: 800; margin: 0 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb;">
+          📊 LOCATION METRICS
+        </h3>
+        ${metricsHTML}
       </div>
 
-      <div class="footer">
-        Generated by Vantage | Location Intelligence Platform
+      <!-- Competitors Section -->
+      <div style="margin-bottom: 30px; page-break-before: auto;">
+        <h3 style="color: #111827; font-size: 20px; font-weight: 800; margin: 0 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb;">
+          🏪 NEARBY COMPETITORS
+        </h3>
+        ${competitorsHTML}
       </div>
-    </body>
-    </html>
+
+      <!-- Revenue Section -->
+      <div style="margin-bottom: 30px; page-break-before: auto;">
+        <h3 style="color: #111827; font-size: 20px; font-weight: 800; margin: 0 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb;">
+          💰 REVENUE PROJECTIONS
+        </h3>
+        ${revenueHTML}
+      </div>
+
+      <!-- Footer -->
+      <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center;">
+        <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+          This report was generated by Vantage Location Intelligence Platform
+        </p>
+        <p style="color: #9ca3af; font-size: 11px; margin: 4px 0 0 0;">
+          © ${new Date().getFullYear()} Vantage. All rights reserved.
+        </p>
+      </div>
+
+    </div>
   `;
 };
