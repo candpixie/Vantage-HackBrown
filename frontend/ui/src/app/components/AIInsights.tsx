@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, TrendingUp, AlertTriangle, Lightbulb } from 'lucide-react';
+import { Sparkles, TrendingUp, AlertTriangle, Lightbulb, Loader2 } from 'lucide-react';
+import { apiService } from '../../services/api';
+import type { LocationResult } from '../../services/api';
 
 const MotionDiv = motion.div as any;
 
@@ -10,9 +12,21 @@ interface Insight {
   description: string;
 }
 
-export const AIInsights: React.FC<{ locationName: string; score: number }> = ({ locationName, score }) => {
-  // Simulated AI insights (replace with real API call later)
-  const insights: Insight[] = [
+interface AIInsightsProps {
+  locationName: string;
+  score: number;
+  locationData?: LocationResult;
+  businessType?: string;
+  targetDemo?: string;
+}
+
+export const AIInsights: React.FC<AIInsightsProps> = ({ locationName, score, locationData, businessType, targetDemo }) => {
+  const [insights, setInsights] = useState<Insight[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fallback mock insights
+  const fallbackInsights: Insight[] = [
     {
       type: 'opportunity',
       title: 'Peak Hours Opportunity',
@@ -35,14 +49,67 @@ export const AIInsights: React.FC<{ locationName: string; score: number }> = ({ 
     }
   ];
 
-  // Add score-specific insights
-  if (score >= 95) {
-    insights.unshift({
-      type: 'opportunity',
-      title: 'Elite Location Match',
-      description: 'This location scores in the top 5% for your business type. High probability of success with proper execution.'
-    });
-  }
+  // Fetch AI insights from backend
+  useEffect(() => {
+    const fetchInsights = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        if (locationData) {
+          const aiInsights = await apiService.generateInsights(locationData, businessType, targetDemo);
+          
+          if (aiInsights && aiInsights.length > 0) {
+            // Validate and format insights
+            const validInsights = aiInsights
+              .filter((insight: any) => 
+                insight.type && 
+                (insight.type === 'opportunity' || insight.type === 'risk' || insight.type === 'trend' || insight.type === 'tip') &&
+                insight.title && 
+                insight.description
+              )
+              .map((insight: any) => ({
+                type: insight.type as 'opportunity' | 'risk' | 'trend' | 'tip',
+                title: insight.title,
+                description: insight.description
+              }));
+            
+            if (validInsights.length > 0) {
+              // Add score-specific insight if applicable
+              if (score >= 95 && !validInsights.some(i => i.title.toLowerCase().includes('elite'))) {
+                validInsights.unshift({
+                  type: 'opportunity' as const,
+                  title: 'Elite Location Match',
+                  description: 'This location scores in the top 5% for your business type. High probability of success with proper execution.'
+                });
+              }
+              setInsights(validInsights);
+            } else {
+              // Use fallback if no valid insights
+              setInsights(fallbackInsights);
+            }
+          } else {
+            // Use fallback if empty response
+            setInsights(fallbackInsights);
+          }
+        } else {
+          // Use fallback if no location data
+          setInsights(fallbackInsights);
+        }
+      } catch (err) {
+        console.error('Error fetching AI insights:', err);
+        setError('Failed to load AI insights');
+        setInsights(fallbackInsights);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInsights();
+  }, [locationName, score, locationData, businessType, targetDemo]);
+
+  // Add score-specific insights to fallback
+  const displayInsights = loading ? [] : (insights.length > 0 ? insights : fallbackInsights);
 
   const icons = {
     opportunity: TrendingUp,
@@ -65,8 +132,18 @@ export const AIInsights: React.FC<{ locationName: string; score: number }> = ({ 
         <h3 className="font-bold text-slate-900 dark:text-white">AI Insights for {locationName}</h3>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {insights.map((insight, idx) => {
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 text-violet-600 dark:text-violet-400 animate-spin mr-2" />
+          <span className="text-slate-600 dark:text-slate-400">Generating AI insights...</span>
+        </div>
+      ) : error ? (
+        <div className="p-4 bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 rounded-xl">
+          <p className="text-sm text-orange-700 dark:text-orange-400">{error}</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {displayInsights.map((insight, idx) => {
           const Icon = icons[insight.type];
           const color = colors[insight.type];
 
@@ -95,11 +172,12 @@ export const AIInsights: React.FC<{ locationName: string; score: number }> = ({ 
             </MotionDiv>
           );
         })}
-      </div>
+        </div>
+      )}
 
       <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          💡 Insights generated by Vantage AI using real-time data analysis
+          💡 Insights generated by Vantage AI using {loading ? 'real-time' : 'Gemini'} data analysis
         </p>
       </div>
     </div>

@@ -282,6 +282,37 @@ class ApiService {
       return false;
     }
   }
+
+  /**
+   * Generate AI insights for a location using Gemini API
+   */
+  async generateInsights(locationData: LocationResult, businessType?: string, targetDemo?: string): Promise<{ type: string; title: string; description: string }[]> {
+    try {
+      const payload = {
+        ...locationData,
+        business_type: businessType || 'retail business',
+        target_demo: targetDemo || 'customers',
+      };
+
+      const response = await fetch(`${this.baseUrl}/generate-insights`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Insights request failed: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data.insights || [];
+    } catch (error) {
+      console.error('Insights API Error:', error);
+      return []; // Return empty array on error, component will show fallback
+    }
+  }
 }
 
 export const apiService = new ApiService();

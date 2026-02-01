@@ -1118,7 +1118,13 @@ export default function Vantage() {
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
                               >
-                                <AIInsights locationName={selectedLocationData.name} score={selectedLocationData.score} />
+                                <AIInsights 
+                                  locationName={selectedLocationData.name} 
+                                  score={selectedLocationData.score}
+                                  locationData={selectedLocationData}
+                                  businessType="Boba Tea Shop"
+                                  targetDemo="Gen Z Students"
+                                />
             </MotionDiv>
             )}
 
