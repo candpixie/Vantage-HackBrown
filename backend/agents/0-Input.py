@@ -1,5 +1,6 @@
 from uagents import Agent, Context, Model
 
+
 # This is here just because it makes it easy to start this agent multiple times to give inputs without restarting all the others
 
 class ScoreRequest(Model):
