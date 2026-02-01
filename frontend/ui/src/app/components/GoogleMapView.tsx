@@ -32,7 +32,7 @@ function MapController({ target }: MapControllerProps) {
 
 interface MapClickHandlerProps {
   locations: LocationResult[];
-  onSelectLocation: (id: number) => void;
+  onSelectLocation: (id: number | null) => void;
 }
 
 function MapClickHandler({ locations, onSelectLocation }: MapClickHandlerProps) {
@@ -79,7 +79,7 @@ function MapClickHandler({ locations, onSelectLocation }: MapClickHandlerProps) 
 interface GoogleMapViewProps {
   locations: LocationResult[];
   selectedLocationId: number | null;
-  onSelectLocation: (id: number) => void;
+  onSelectLocation: (id: number | null) => void;
   neighborhoods?: any;
   colorMode?: string;
   onHoverNeighborhood?: (neighborhood: any) => void;

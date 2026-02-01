@@ -414,43 +414,68 @@ export default function Vantage() {
         setAppState('results');
         setActiveAgent(null);
 
+        let nextLocations: LocationType[] = FALLBACK_LOCATIONS;
+        let sourceLabel = 'fallback';
+
         // Priority 1: Use backend orchestrator results if available
         if (response.locations && response.locations.length > 0) {
-          // Sort by score descending
           const backendLocations = [...response.locations].sort((a, b) => b.score - a.score);
-          setLocations(backendLocations as typeof FALLBACK_LOCATIONS);
-          console.log('Using backend orchestrator locations:', backendLocations.length);
-          const topLoc = backendLocations[0];
-          toast.success('Analysis complete!', {
-            description: `Found ${backendLocations.length} locations from backend. ${topLoc.name} scored ${topLoc.score}/100 — $${topLoc.rent_price?.toLocaleString()}/mo`,
-            duration: 4000,
-          });
-          return;
-        }
-
-        // Priority 2: Use real RentCast data if available
-        if (rentcastListings && rentcastListings.length > 0) {
+          nextLocations = backendLocations.map((loc, idx) => ({
+            id: loc.id ?? idx + 1,
+            name: loc.name || `Location ${idx + 1}`,
+            score: loc.score || 0,
+            x: loc.x ?? 50,
+            y: loc.y ?? 50,
+            lat: loc.lat ?? 40.7128,
+            lng: loc.lng ?? -74.006,
+            status: loc.status || 'MEDIUM',
+            address: loc.address || loc.name || `Location ${idx + 1}`,
+            rent_price: loc.rent_price ?? 5000,
+            sqft: loc.sqft ?? 1000,
+            propertyType: loc.propertyType || 'Commercial',
+            bedrooms: loc.bedrooms,
+            bathrooms: loc.bathrooms,
+            metrics: loc.metrics || [],
+            competitors: loc.competitors || [],
+            revenue: loc.revenue || [],
+            checklist: loc.checklist || [
+              { text: 'Verify zoning permits for food service', completed: false },
+              { text: 'Contact landlord for lease terms', completed: false },
+              { text: 'Check foot traffic data for peak hours', completed: false },
+              { text: 'Review competitor pricing strategy', completed: false },
+              { text: 'Schedule site visit with realtor', completed: false },
+            ],
+          }));
+          sourceLabel = 'backend';
+        } else if (rentcastListings && rentcastListings.length > 0) {
           const realLocations = listingsToLocations(rentcastListings);
           if (realLocations.length > 0) {
-            // Sort by score descending
             realLocations.sort((a, b) => b.score - a.score);
-            setLocations(realLocations);
-            console.log('Using real RentCast listings:', realLocations.length);
-            const topLoc = realLocations[0];
-            toast.success('Analysis complete!', {
-              description: `Found ${realLocations.length} real listings. ${topLoc.name} scored ${topLoc.score}/100 — $${topLoc.rent_price?.toLocaleString()}/mo`,
-              duration: 4000,
-            });
-            return;
+            nextLocations = realLocations;
+            sourceLabel = 'rentcast';
           }
         }
 
-        // Fallback to mock data
-        const topLocation = locations[0];
-        toast.success('Analysis complete!', {
-          description: `Found ${locations.length} locations. ${topLocation.name} scored ${topLocation.score}/100 - Top pick`,
-          duration: 4000,
-        });
+        setLocations(nextLocations);
+        setSelectedLocation(nextLocations[0]?.id ?? null);
+
+        const topLoc = nextLocations[0];
+        if (sourceLabel === 'backend') {
+          toast.success('Analysis complete!', {
+            description: `Found ${nextLocations.length} locations from backend. ${topLoc.name} scored ${topLoc.score}/100 — $${topLoc.rent_price?.toLocaleString()}/mo`,
+            duration: 4000,
+          });
+        } else if (sourceLabel === 'rentcast') {
+          toast.success('Analysis complete!', {
+            description: `Found ${nextLocations.length} real listings. ${topLoc.name} scored ${topLoc.score}/100 — $${topLoc.rent_price?.toLocaleString()}/mo`,
+            duration: 4000,
+          });
+        } else {
+          toast.success('Analysis complete!', {
+            description: `Found ${nextLocations.length} locations. ${topLoc.name} scored ${topLoc.score}/100 - Top pick`,
+            duration: 4000,
+          });
+        }
       }, 4000);
     } catch (error) {
       console.error('Analysis failed:', error);
@@ -462,7 +487,13 @@ export default function Vantage() {
     }
   };
 
-  const handleMarkerClick = (id: number) => {
+  const handleMarkerClick = (id: number | null) => {
+    if (id === null) {
+      setSelectedLocation(null);
+      resetPropertyAI();
+      return;
+    }
+
     setSelectedLocation(id);
     resetPropertyAI();
     if (!checklistStates[id]) {
