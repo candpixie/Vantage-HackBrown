@@ -19,7 +19,10 @@ class RevenueResponse(Model):
 
 revenue_analyst = Agent(
     name="revenue_analyst",
-    seed="revenue_analyst_seed_phrase"
+    seed="revdawg",
+    port=8003,
+    endpoint=["http://localhost:8003/submit"],
+    network="testnet"
 )
 
 # Industry benchmarks (monthly)
@@ -119,4 +122,3 @@ async def project_revenue(ctx: Context, sender: str, msg: RevenueRequest):
 
 if __name__ == "__main__":
     revenue_analyst.run()
-

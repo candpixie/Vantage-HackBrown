@@ -1,144 +1,270 @@
-# location_scout.py
 from uagents import Agent, Context, Model
 import json
+from math import radians, cos, sin, asin, sqrt
 
-# Load data at startup
-with open("data/business_licenses.json") as f:
-    business_data = json.load(f)
-    
 with open("data/subway_stations.json") as f:
     subway_data = json.load(f)
 
-class ScoreRequest(Model):
-    neighborhood: str
-    business_type: str
-    target_demo: str
-
-class ScoreResponse(Model):
-    score: int
-    confidence: str
-    breakdown: dict
-    data_sources: list
+with open("data/Bi-Annual_Pedestrian_Counts.geojson") as f:
+    pedestrian_data = json.load(f)
 
 location_scout = Agent(
     name="location_scout",
     seed="scout_seed_phrase",
     port=8001,
-    endpoint=["http://localhost:8001/submit"]
+    endpoint=["http://localhost:8001/submit"],
+    network="testnet",
 )
+class Message(Model):
+    message: str
+
+class ScoreRequest(Model):
+    neighborhood: str
+    business_type: str
+    target_demo: str
+    latitude: float
+    longitude: float
+
+class ScoreResponse(Model):
+    score: int
+    confidence: str 
+    breakdown: dict = {}
+
+
+# Use the actual agent address derived from the seed phrase
+ORCHESTRATOR_ADDRESS = "agent1q2wva7fjhjqfklv8sna6q3ftcaf32pt7fev5q9w0qwn5earml3a8qz24n4f"
+
+@location_scout.on_event("startup")
+async def startup_handler(ctx : Context):
+    ctx.logger.info(f'My name is {ctx.agent.name} and my address  is {ctx.agent.address}')
+    # Register the orchestrator's endpoint for local communication
+    ctx.logger.info(f'Attempting to send message to orchestrator at {ORCHESTRATOR_ADDRESS}')
+    await ctx.send(ORCHESTRATOR_ADDRESS, Message(message = 'Hi Orchestrator, fuck fetch.ai lol'))
 
 
 @location_scout.on_message(model=ScoreRequest)
-async def score_location(ctx: Context, sender: str, msg: ScoreRequest):
-    # Calculate score using local data
-    score = calculate_location_score(
-        msg.neighborhood, 
-        msg.business_type,
-        msg.target_demo
+async def handle_message(ctx: Context, sender: str, scoreRequest: ScoreRequest):
+    ctx.logger.info(f'I have received a request for {scoreRequest.neighborhood}')
+    
+    # Calculate location score with all factors
+    location_result = calculate_location_score(
+        scoreRequest.neighborhood, 
+        scoreRequest.business_type, 
+        scoreRequest.target_demo,
+        scoreRequest.latitude,
+        scoreRequest.longitude
     )
     
-    response = ScoreResponse(
-        score=score["score"],
-        confidence=score["confidence"],
-        breakdown=score["breakdown"],
-        data_sources=[
-            "NYC Business Licenses (61K records)",
-            "MTA Subway Stations (473 stations)"
-        ]
-    )
+    final_score = location_result['score']
     
-    await ctx.send(sender, response)
+    ctx.logger.info(f'Location score: {location_result["score"]}')
+    ctx.logger.info(f'Breakdown: {location_result["breakdown"]}')
+    ctx.logger.info(f'Sending back overall score: {final_score}')
+    
+    await ctx.send(
+        ORCHESTRATOR_ADDRESS, 
+        ScoreResponse(
+            score=final_score,
+            confidence=location_result['confidence'],
+            breakdown=location_result['breakdown']
+        )
+    )
 
-def calculate_location_score(neighborhood, business_type, target_demo):
+def calculate_foot_traffic(lat, lng):
     """
-    Returns score 0-100 with confidence level
+    Calculate foot traffic based on nearby pedestrian counting locations
+    Returns score 0-100 based on average pedestrian counts within 0.25 miles
     """
+    nearby_counts = []
     
-    # Component scores (each 0-100)
-    foot_traffic = calculate_foot_traffic(neighborhood)      # 30%
-    demo_match = calculate_demo_match(neighborhood, target_demo)  # 25%
-    transit = calculate_transit_access(neighborhood)         # 20%
-    competition = calculate_competition_score(neighborhood, business_type)  # 15%
-    rent_fit = calculate_rent_fit(neighborhood, budget)      # 10%
+    for feature in pedestrian_data['features']:
+        # Extract coordinates from GeoJSON
+        coords = feature['geometry']['coordinates']
+        count_lng, count_lat = coords[0], coords[1]
+        
+        # Calculate distance
+        distance = haversine(lat, lng, count_lat, count_lng)
+        
+        # Include locations within 0.25 miles
+        if distance <= 0.25:
+            props = feature['properties']
+            
+            # Extract recent count data (most recent available periods)
+            # Use oct24 (October 2024) and may25 (May 2025) as most recent
+            recent_counts = []
+            
+            # October 2024 data
+            if 'oct24_am' in props and props['oct24_am'] != "0":
+                try:
+                    recent_counts.append(int(props['oct24_am']))
+                except (ValueError, TypeError):
+                    pass
+            if 'oct24_pm' in props and props['oct24_pm'] != "0":
+                try:
+                    recent_counts.append(int(props['oct24_pm']))
+                except (ValueError, TypeError):
+                    pass
+            if 'oct24_md' in props and props['oct24_md'] != "0":
+                try:
+                    recent_counts.append(int(props['oct24_md']))
+                except (ValueError, TypeError):
+                    pass
+            
+            # May 2025 data
+            if 'may25_am' in props and props['may25_am'] != "0":
+                try:
+                    recent_counts.append(int(props['may25_am']))
+                except (ValueError, TypeError):
+                    pass
+            if 'may25_pm' in props and props['may25_pm'] != "0":
+                try:
+                    recent_counts.append(int(props['may25_pm']))
+                except (ValueError, TypeError):
+                    pass
+            if 'may25_md' in props and props['may25_md'] != "0":
+                try:
+                    recent_counts.append(int(props['may25_md']))
+                except (ValueError, TypeError):
+                    pass
+            
+            if recent_counts:
+                avg_count = sum(recent_counts) / len(recent_counts)
+                nearby_counts.append({
+                    'location': props.get('street_nam', 'Unknown'),
+                    'distance': round(distance, 2),
+                    'avg_count': round(avg_count),
+                    'borough': props.get('borough', 'Unknown')
+                })
     
-    # Weighted total
-    total = (
-        foot_traffic * 0.30 +
-        demo_match * 0.25 +
-        transit * 0.20 +
-        competition * 0.15 +
-        rent_fit * 0.10
-    )
+    # Calculate score based on pedestrian traffic
+    if not nearby_counts:
+        return {
+            'score': 0,
+            'nearby_locations': [],
+            'average_pedestrians': 0,
+            'count': 0
+        }
     
-    # Confidence based on data availability
-    confidence = calculate_confidence(data_points_used, total_possible)
+    # Get average pedestrian count from all nearby locations
+    total_avg = sum(loc['avg_count'] for loc in nearby_counts) / len(nearby_counts)
+    
+    # Normalize to 0-100 score
+    # Based on pedestrian count ranges:
+    # 0-1000: Low traffic (0-40)
+    # 1000-3000: Medium traffic (40-70)
+    # 3000-5000: High traffic (70-90)
+    # 5000+: Very high traffic (90-100)
+    if total_avg <= 1000:
+        score = (total_avg / 1000) * 40
+    elif total_avg <= 3000:
+        score = 40 + ((total_avg - 1000) / 2000) * 30
+    elif total_avg <= 5000:
+        score = 70 + ((total_avg - 3000) / 2000) * 20
+    else:
+        score = 90 + min((total_avg - 5000) / 5000 * 10, 10)
     
     return {
-        "score": round(total),
-        "confidence": confidence,  # "high", "medium", "low"
-        "breakdown": {
-            "foot_traffic": foot_traffic,
-            "demo_match": demo_match,
-            "transit": transit,
-            "competition": competition,
-            "rent_fit": rent_fit
-        }
+        'score': round(min(score, 100)),
+        'nearby_locations': nearby_counts,
+        'average_pedestrians': round(total_avg),
+        'count': len(nearby_counts)
     }
 
-# Foot Traffic Calculation
-def calculate_foot_traffic(neighborhood_code):
+def haversine(lat1, lon1, lat2, lon2):
     """
-    Based on business density from licenses data
+    Calculate the great circle distance between two points 
+    on the earth (specified in decimal degrees)
+    Returns distance in miles
     """
-    businesses = [b for b in business_data if b['nta_code'] == neighborhood_code]
-    density = len(businesses) / neighborhood_area
+    # convert decimal degrees to radians 
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
     
-    # Normalize to 0-100
-    # High density = high foot traffic (proxy)
-    max_density = 500  # businesses per sq km
-    score = min(100, (density / max_density) * 100)
+    # haversine formula 
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
     
-    return score
+    # Radius of earth in miles
+    miles = 3959 * c
+    return miles
 
 # Transit Access Calculation
-def calculate_transit_access(lat, lng):
+def calculate_transit_access(lat, lng, subway_data=subway_data,):
     """
     Count subway stations within 0.5 mile
+    Returns score 0-100 based on proximity to subway stations
     """
     nearby_stations = []
     for station in subway_data:
-        distance = haversine(lat, lng, station['lat'], station['lng'])
+        station_lat = float(station['gtfs_latitude'])
+        station_lng = float(station['gtfs_longitude'])
+        distance = haversine(lat, lng, station_lat, station_lng)
         if distance <= 0.5:  # miles
-            nearby_stations.append(station)
+            nearby_stations.append({
+                'name': station['stop_name'],
+                'distance': round(distance, 2),
+                'routes': station.get('daytime_routes', '')
+            })
     
-    # Score based on count
-    if len(nearby_stations) >= 3:
-        return 100
-    elif len(nearby_stations) == 2:
-        return 80
-    elif len(nearby_stations) == 1:
-        return 60
+    # Score based on count and add breakdown
+    station_count = len(nearby_stations)
+    if station_count >= 3:
+        score = 100
+    elif station_count == 2:
+        score = 80
+    elif station_count == 1:
+        score = 60
     else:
-        return 30
+        score = 30
+    
+    return {
+        'score': score,
+        'nearby_stations': nearby_stations,
+        'count': station_count
+    }
 
-# Competition Score Calculation
-def calculate_competition_score(neighborhood, business_type):
+def calculate_location_score(neighborhood, business_type, target_demo, latitude, longitude):
     """
-    Paradox: Some competition = good (proven market)
-    Too much competition = bad (saturated)
+    Returns score 0-100 with confidence level
+    Calculates overall location score based on multiple factors
     """
-    competitors = count_competitors(neighborhood, business_type)
     
-    if competitors == 0:
-        return 50  # Unproven market
-    elif competitors <= 3:
-        return 90  # Sweet spot - proven but not saturated
-    elif competitors <= 6:
-        return 70  # Getting crowded
-    elif competitors <= 10:
-        return 50  # Saturated
+    # Component scores (each 0-100)
+    foot_traffic_result = calculate_foot_traffic(latitude, longitude)  # 40% weight
+    transit_result = calculate_transit_access(latitude, longitude)     # 60% weight
+    # demo_match = calculate_demo_match(neighborhood, target_demo)      # Future
+    # TODO: implmenet this 
+    
+    # Calculate weighted total with current factors
+    total = (
+        foot_traffic_result['score'] * 0.40 +
+        transit_result['score'] * 0.60
+    )
+    
+    # Confidence based on available data
+    data_points = 0
+    if transit_result['count'] > 0:
+        data_points += 1
+    if foot_traffic_result['count'] > 0:
+        data_points += 1
+    
+    if data_points >= 2:
+        confidence = "high"
+    elif data_points == 1:
+        confidence = "medium"
     else:
-        return 30  # Oversaturated
+        confidence = "low"
+    
+    return {
+        "score": round(total),
+        "confidence": confidence,
+        "breakdown": {
+            "foot_traffic": foot_traffic_result,
+            "transit_access": transit_result,
+            # Additional factors will be added here
+        }
+    }
 
 if __name__ == "__main__":
     location_scout.run()
