@@ -45,7 +45,7 @@ Vantage is a **multi-agent system** that generates a complete **Business Opportu
 │            AGENT 1: ORCHESTRATOR                            │
 │  • Parses business requirements                             │
 │  • Dispatches to specialist agents                          │
-│  • Generates composite "magic number" score                │
+│  • Generates composite "magic number" score                 │
 └─────────────────────────────────────────────────────────────┘
                               │
           ┌───────────────────┼───────────────────┐
@@ -72,7 +72,7 @@ Vantage is a **multi-agent system** that generates a complete **Business Opportu
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │              REACT FRONTEND + GOOGLE MAPS                   │
-│  • Interactive map with heatmap overlays                   │
+│  • Interactive map with heatmap overlays                    │
 │  • Location scoring dashboard                               │
 │  • PDF report generation                                    │
 │  • Real-time comparison view                                │
@@ -147,9 +147,9 @@ Change parameters and re-run analysis:
 ║  └─ Rent Fit:         82/100  (MEDIUM confidence)             ║
 ║                                                               ║
 ║  COMPETITOR INTELLIGENCE (Live Data)                          ║
-║  Found 3 competitors — Gap: No late-night option               ║
+║  Found 3 competitors — Gap: No late-night option              ║
 ║                                                               ║
-║  REVENUE PROJECTION                                            ║
+║  REVENUE PROJECTION                                           ║
 ║  Conservative: $18,200/mo | Expected: $24,500/mo              ║
 ║  Break-even: 8 months                                         ║
 ║                                                               ║
