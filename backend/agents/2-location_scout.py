@@ -1,20 +1,77 @@
 from uagents import Agent, Context, Model
 import json
+import os
 from math import radians, cos, sin, asin, sqrt
+from pathlib import Path
 
-with open("data/subway_stations.json") as f:
-    subway_data = json.load(f)
+# Try to use AWS S3 data service, fallback to local files
+try:
+    import sys
+    backend_dir = Path(__file__).parent.parent
+    sys.path.insert(0, str(backend_dir))
+    from aws_data_service import AWSDataService
+    data_service = AWSDataService()
+    USE_AWS_DATA = data_service.use_aws
+except Exception as e:
+    print(f"⚠️  AWS data service not available: {e}. Using local files.")
+    USE_AWS_DATA = False
+    data_service = None
 
-with open("data/Bi-Annual_Pedestrian_Counts.geojson") as f:
-    pedestrian_data = json.load(f)
+# Load data from S3 or local files
+subway_data = []
+pedestrian_data = None
+
+if USE_AWS_DATA and data_service:
+    try:
+        subway_data = data_service.get_subway_stations() or []
+        # Get GeoJSON pedestrian data
+        pedestrian_data = data_service.get_pedestrian_counts_geojson()
+        # Ensure it's in GeoJSON format
+        if not pedestrian_data or not isinstance(pedestrian_data, dict):
+            pedestrian_data = {"features": []}
+        elif 'features' not in pedestrian_data:
+            pedestrian_data = {"features": []}
+        print("✅ Loaded data from AWS S3")
+    except Exception as e:
+        print(f"⚠️  Error loading from S3: {e}. Falling back to local files.")
+        USE_AWS_DATA = False
+
+if not USE_AWS_DATA:
+    # Fallback to local files
+    data_dir = Path(__file__).parent / "data"
+    try:
+        with open(data_dir / "subway_stations.json") as f:
+            subway_data = json.load(f)
+        with open(data_dir / "Bi-Annual_Pedestrian_Counts.geojson") as f:
+            pedestrian_data = json.load(f)
+        print("✅ Loaded data from local files")
+    except Exception as e:
+        print(f"⚠️  Error loading local data: {e}")
+        subway_data = []
+        pedestrian_data = {"features": []}
+
+# Agent configuration - supports Agentverse deployment
+AGENT_ENDPOINT = os.getenv("LOCATION_SCOUT_ENDPOINT", "http://localhost:8001/submit")
+AGENT_PORT = int(os.getenv("LOCATION_SCOUT_PORT", "8001"))
+AGENT_NETWORK = os.getenv("FETCH_AI_NETWORK", "testnet")
 
 location_scout = Agent(
     name="location_scout",
     seed="scout_seed_phrase",
-    port=8001,
-    endpoint=["http://localhost:8001/submit"],
-    network="testnet",
+    port=AGENT_PORT,
+    endpoint=[AGENT_ENDPOINT],
+    network=AGENT_NETWORK,
 )
+
+# Agentverse metadata (for registration)
+AGENT_METADATA = {
+    "name": "vantage-location-scout",
+    "description": "Analyzes demographics, foot traffic, and transit access for location intelligence scoring",
+    "version": "1.0.0",
+    "capabilities": ["demographics", "foot_traffic", "transit_access", "location_scoring"],
+    "tags": ["location-intelligence", "real-estate", "analytics", "nyc"],
+    "author": "Vantage Team"
+}
 class Message(Model):
     message: str
 

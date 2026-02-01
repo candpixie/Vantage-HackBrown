@@ -25,15 +25,30 @@ class Competitor(Model):
     price_level: int
     address: str
 
+# Agent configuration - supports Agentverse deployment
+AGENT_ENDPOINT = os.getenv("COMPETITOR_INTEL_ENDPOINT", "http://localhost:8002/submit")
+AGENT_PORT = int(os.getenv("COMPETITOR_INTEL_PORT", "8002"))
+AGENT_NETWORK = os.getenv("FETCH_AI_NETWORK", "testnet")
+
 competitor_intel = Agent(
     name="competitor_intel",
     seed="compdawg",
-    port=8002,
-    endpoint=["http://localhost:8002/submit"],
-    network="testnet",
+    port=AGENT_PORT,
+    endpoint=[AGENT_ENDPOINT],
+    network=AGENT_NETWORK,
 )
 
-GOOGLE_PLACES_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY")
+# Agentverse metadata (for registration)
+AGENT_METADATA = {
+    "name": "vantage-competitor-intel",
+    "description": "Analyzes nearby competitors, market saturation, and competitive gaps for location intelligence",
+    "version": "1.0.0",
+    "capabilities": ["competitor_analysis", "market_saturation", "gap_analysis", "google_places"],
+    "tags": ["location-intelligence", "competitor-analysis", "market-research"],
+    "author": "Vantage Team"
+}
+
+GOOGLE_PLACES_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY", "AIzaSyD8miMgNXY0knfl3zPD4RroatsVKJRGGQc")
 
 def get_nearby_competitors(lat, lng, business_type, radius):
     """Fetch competitors from Google Places API with Caching"""

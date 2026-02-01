@@ -27,13 +27,28 @@ class RevenueResponse(Model):
     confidence: str
     assumptions: list
 
+# Agent configuration - supports Agentverse deployment
+AGENT_ENDPOINT = os.getenv("REVENUE_ANALYST_ENDPOINT", "http://localhost:8003/submit")
+AGENT_PORT = int(os.getenv("REVENUE_ANALYST_PORT", "8003"))
+AGENT_NETWORK = os.getenv("FETCH_AI_NETWORK", "testnet")
+
 revenue_analyst = Agent(
     name="revenue_analyst",
     seed="revdawg",
-    port=8003,
-    endpoint=["http://localhost:8003/submit"],
-    network="testnet"
+    port=AGENT_PORT,
+    endpoint=[AGENT_ENDPOINT],
+    network=AGENT_NETWORK
 )
+
+# Agentverse metadata (for registration)
+AGENT_METADATA = {
+    "name": "vantage-revenue-analyst",
+    "description": "Projects revenue scenarios (conservative, moderate, optimistic) with Visa API integration for location intelligence",
+    "version": "1.0.0",
+    "capabilities": ["revenue_projection", "financial_analysis", "visa_integration", "break_even"],
+    "tags": ["location-intelligence", "financial-analysis", "revenue-projection", "visa"],
+    "author": "Vantage Team"
+}
 
 # Industry benchmarks (monthly)
 BENCHMARKS = {

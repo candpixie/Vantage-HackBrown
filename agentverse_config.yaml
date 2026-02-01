@@ -1,0 +1,108 @@
+# Agentverse Deployment Configuration for Vantage Agents
+# This file contains metadata for registering agents on Fetch.ai's Agentverse
+
+agents:
+  orchestrator:
+    name: "vantage-orchestrator"
+    display_name: "Vantage Orchestrator"
+    description: "Main coordinator agent that orchestrates location intelligence analysis across specialist agents. Coordinates communication between location scout, competitor intel, and revenue analyst agents."
+    version: "1.0.0"
+    capabilities:
+      - "orchestration"
+      - "location_analysis"
+      - "agent_coordination"
+      - "workflow_management"
+    tags:
+      - "location-intelligence"
+      - "orchestrator"
+      - "coordination"
+      - "real-estate"
+    endpoint: "${ORCHESTRATOR_ENDPOINT}"
+    port: 8000
+    seed: "orchdawg"
+    network: "${FETCH_AI_NETWORK:-testnet}"
+
+  location_scout:
+    name: "vantage-location-scout"
+    display_name: "Vantage Location Scout"
+    description: "Analyzes demographics, foot traffic patterns, and transit access for location intelligence scoring. Uses NYC Open Data and Census data to provide comprehensive location metrics."
+    version: "1.0.0"
+    capabilities:
+      - "demographics"
+      - "foot_traffic"
+      - "transit_access"
+      - "location_scoring"
+      - "nyc_data"
+    tags:
+      - "location-intelligence"
+      - "real-estate"
+      - "analytics"
+      - "nyc"
+      - "demographics"
+    endpoint: "${LOCATION_SCOUT_ENDPOINT}"
+    port: 8001
+    seed: "scout_seed_phrase"
+    network: "${FETCH_AI_NETWORK:-testnet}"
+
+  competitor_intel:
+    name: "vantage-competitor-intel"
+    display_name: "Vantage Competitor Intel"
+    description: "Analyzes nearby competitors, market saturation, and competitive gaps using Google Places API. Identifies market opportunities and competitor weaknesses."
+    version: "1.0.0"
+    capabilities:
+      - "competitor_analysis"
+      - "market_saturation"
+      - "gap_analysis"
+      - "google_places"
+      - "business_intelligence"
+    tags:
+      - "location-intelligence"
+      - "competitor-analysis"
+      - "market-research"
+      - "google-places"
+    endpoint: "${COMPETITOR_INTEL_ENDPOINT}"
+    port: 8002
+    seed: "compdawg"
+    network: "${FETCH_AI_NETWORK:-testnet}"
+
+  revenue_analyst:
+    name: "vantage-revenue-analyst"
+    display_name: "Vantage Revenue Analyst"
+    description: "Projects revenue scenarios (conservative, moderate, optimistic) with Visa API integration for enhanced accuracy. Calculates break-even points and financial viability."
+    version: "1.0.0"
+    capabilities:
+      - "revenue_projection"
+      - "financial_analysis"
+      - "visa_integration"
+      - "break_even"
+      - "financial_modeling"
+    tags:
+      - "location-intelligence"
+      - "financial-analysis"
+      - "revenue-projection"
+      - "visa"
+      - "fintech"
+    endpoint: "${REVENUE_ANALYST_ENDPOINT}"
+    port: 8003
+    seed: "revdawg"
+    network: "${FETCH_AI_NETWORK:-testnet}"
+
+# Deployment settings
+deployment:
+  platform: "railway"  # Options: railway, render, flyio, agentverse
+  region: "us-east-1"
+  environment: "production"
+  
+# Agentverse registration settings
+agentverse:
+  api_url: "https://api.agentverse.ai"  # Update with actual Agentverse API URL
+  api_key: "${FETCH_AI_API_KEY}"
+  network: "${FETCH_AI_NETWORK:-testnet}"
+  auto_discover: true
+  enable_messaging: true
+
+# Data dependencies
+data:
+  source: "aws_s3"  # Options: aws_s3, local, http
+  s3_bucket: "${AWS_S3_BUCKET:-vantage-location-data}"
+  aws_region: "${AWS_REGION:-us-east-2}"

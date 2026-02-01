@@ -41,15 +41,16 @@ export interface LocationResult {
   competitors: Competitor[];
   revenue: RevenueProjection[];
   checklist: { text: string; completed: boolean }[];
-  // Additional fields from backend
-  rent_price?: number;
-  address?: string;
-  lat?: number;
-  lng?: number;
-  sqft?: number;
+  // Required fields for map display
+  rent_price: number;
+  address: string;
+  lat: number;
+  lng: number;
+  sqft: number;
+  propertyType: string;
+  // Optional fields
   bedrooms?: number;
   bathrooms?: number;
-  propertyType?: string;
   demographics?: {
     median_income?: number;
     median_age?: number;
@@ -74,6 +75,7 @@ export interface AnalysisResponse {
   agent_statuses: AgentProgress[];
   locations: LocationResult[];
   error?: string;
+  cached?: boolean; // Flag to indicate if results were from cache
 }
 
 class ApiService {
@@ -138,6 +140,18 @@ class ApiService {
    * Transform backend response to frontend format
    */
   private transformBackendResponse(data: any): AnalysisResponse {
+    // Check if we have results from the orchestrator API
+    if (data.results && Array.isArray(data.results)) {
+      const locations = this.transformOrchestratorResults(data.results);
+      return {
+        status: 'completed',
+        progress: 100,
+        active_agent: undefined,
+        agent_statuses: [],
+        locations: locations.length > 0 ? locations : this.getMockLocations(),
+      };
+    }
+
     // Map backend data structure to frontend expected structure
     return {
       status: data.status || 'completed',
@@ -145,7 +159,124 @@ class ApiService {
       active_agent: data.active_agent,
       agent_statuses: data.agent_statuses || [],
       locations: data.locations || this.getMockLocations(),
+      cached: data.cached || false, // Preserve cached flag from backend
     };
+  }
+
+  /**
+   * Transform orchestrator results from backend to LocationResult format
+   */
+  private transformOrchestratorResults(results: any[]): LocationResult[] {
+    return results.map((result, index) => {
+      const { id, request, location_analysis, competitor_analysis, revenue_projection, overall_score } = result;
+
+      // Convert lat/lng to x/y percentage for map display
+      const x = Math.max(0, Math.min(100, ((request.longitude + 74.3) / 0.6) * 100));
+      const y = Math.max(0, Math.min(100, ((request.latitude - 40.5) / 0.4) * 100));
+
+      // Determine status based on overall score
+      const status: 'HIGH' | 'MEDIUM' | 'LOW' =
+        overall_score >= 75 ? 'HIGH' : overall_score >= 50 ? 'MEDIUM' : 'LOW';
+
+      // Build metrics from location and competitor analysis
+      const metrics: LocationMetric[] = [
+        {
+          label: 'Location Score',
+          score: location_analysis?.score || 0,
+          confidence: (location_analysis?.confidence?.toUpperCase() || 'LOW') as 'HIGH' | 'MEDIUM' | 'LOW'
+        },
+        {
+          label: 'Foot Traffic',
+          score: location_analysis?.breakdown?.foot_traffic?.score || 0,
+          confidence: (location_analysis?.confidence?.toUpperCase() || 'LOW') as 'HIGH' | 'MEDIUM' | 'LOW'
+        },
+        {
+          label: 'Transit Access',
+          score: location_analysis?.breakdown?.transit_access?.score || 0,
+          confidence: (location_analysis?.confidence?.toUpperCase() || 'LOW') as 'HIGH' | 'MEDIUM' | 'LOW'
+        },
+        {
+          label: 'Competition',
+          score: competitor_analysis?.score || 0,
+          confidence: (competitor_analysis?.confidence?.toUpperCase() || 'LOW') as 'HIGH' | 'MEDIUM' | 'LOW'
+        },
+        {
+          label: 'Overall',
+          score: overall_score || 0,
+          confidence: status
+        },
+      ];
+
+      // Build competitors list from competitor analysis
+      const competitors: Competitor[] = (competitor_analysis?.breakdown?.competitors || []).map((c: any) => ({
+        name: c.name || 'Unknown',
+        rating: c.rating || 0,
+        reviews: c.reviews || 0,
+        distance: c.distance ? `${c.distance.toFixed(2)} mi` : 'N/A',
+        status: 'Open' as const,
+        weakness: c.weakness || 'N/A',
+      }));
+
+      // Build revenue projections
+      const formatMoney = (n: number) => {
+        if (n >= 1000) return `$${(n / 1000).toFixed(1)}K`.replace('.0K', 'K');
+        return `$${n}`;
+      };
+
+      const revenue: RevenueProjection[] = [
+        {
+          scenario: 'Conservative',
+          monthly: formatMoney(revenue_projection?.conservative || 0),
+          annual: formatMoney((revenue_projection?.conservative || 0) * 12),
+          margin: '20%'
+        },
+        {
+          scenario: 'Moderate',
+          monthly: formatMoney(revenue_projection?.moderate || 0),
+          annual: formatMoney((revenue_projection?.moderate || 0) * 12),
+          margin: '28%',
+          isRecommended: true
+        },
+        {
+          scenario: 'Optimistic',
+          monthly: formatMoney(revenue_projection?.optimistic || 0),
+          annual: formatMoney((revenue_projection?.optimistic || 0) * 12),
+          margin: '34%'
+        },
+      ];
+
+      const locationResult: LocationResult = {
+        id: id || index + 1,
+        name: request?.neighborhood || `Location ${id || index + 1}`,
+        score: overall_score || 0,
+        x,
+        y,
+        status,
+        metrics,
+        competitors,
+        revenue,
+        checklist: [
+          { text: 'Verify zoning permits for food service', completed: false },
+          { text: 'Contact landlord for lease terms', completed: false },
+          { text: 'Check foot traffic data for peak hours', completed: false },
+          { text: 'Review competitor pricing strategy', completed: false },
+          { text: 'Schedule site visit with realtor', completed: false },
+        ],
+        rent_price: request?.rent_estimate || 5000,
+        address: request?.neighborhood || `Location ${id || index + 1}`,
+        lat: request?.latitude || 40.7128,
+        lng: request?.longitude || -74.006,
+        sqft: 1000, // Default estimate for commercial space
+        propertyType: 'Commercial',
+        demographics: {
+          median_income: undefined,
+          median_age: undefined,
+          population_density: undefined,
+          household_size: undefined,
+        },
+      };
+      return locationResult;
+    });
   }
 
   /**
@@ -177,7 +308,13 @@ class ApiService {
         score: 98,
         x: 35,
         y: 45,
+        lat: 40.7490,
+        lng: -74.0015,
         status: 'HIGH',
+        address: '401 W 25th St, New York, NY 10001',
+        rent_price: 4200,
+        sqft: 1100,
+        propertyType: 'Commercial',
         metrics: [
           { label: 'Elite Density', score: 98, confidence: 'HIGH' },
           { label: 'Net Disposable', score: 95, confidence: 'HIGH' },
@@ -209,7 +346,13 @@ class ApiService {
         score: 89,
         x: 60,
         y: 55,
+        lat: 40.7148,
+        lng: -74.0064,
         status: 'HIGH',
+        address: '82 Reade St, New York, NY 10007',
+        rent_price: 5500,
+        sqft: 1350,
+        propertyType: 'Loft',
         metrics: [
           { label: 'Elite Density', score: 92, confidence: 'HIGH' },
           { label: 'Net Disposable', score: 88, confidence: 'HIGH' },
@@ -240,7 +383,13 @@ class ApiService {
         score: 87,
         x: 50,
         y: 70,
+        lat: 40.7246,
+        lng: -74.0012,
         status: 'HIGH',
+        address: '145 Spring St, New York, NY 10012',
+        rent_price: 6800,
+        sqft: 1500,
+        propertyType: 'Retail',
         metrics: [
           { label: 'Elite Density', score: 94, confidence: 'HIGH' },
           { label: 'Net Disposable', score: 91, confidence: 'HIGH' },

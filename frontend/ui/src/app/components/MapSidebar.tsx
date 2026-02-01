@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Layers, ChevronLeft, ChevronRight, X, MapPin, Users, DollarSign, Calendar, Building2, TrendingUp, ExternalLink } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, MapPin, Users, DollarSign, Calendar, Building2, TrendingUp, ExternalLink } from 'lucide-react';
 import type { LocationResult } from '../../services/api';
+import { GOOGLE_MAPS_API_KEY } from '../config/keys';
 
 const LAYERS = [
   { key: 'none', label: 'None' },
@@ -18,12 +19,12 @@ interface MapSidebarProps {
   hoveredNeighborhood?: any;
 }
 
-export const MapSidebar: React.FC<MapSidebarProps> = ({ 
-  colorMode, 
-  setColorMode, 
-  isCollapsed, 
+export const MapSidebar: React.FC<MapSidebarProps> = ({
+  colorMode,
+  setColorMode,
+  isCollapsed,
   onToggle,
-  hoveredNeighborhood 
+  hoveredNeighborhood
 }) => {
   const activeLegend = LAYERS.find((l) => l.key === colorMode)?.legend;
 
@@ -39,11 +40,23 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
         className="absolute top-4 right-2 z-20 p-1.5 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors shadow-sm"
         aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
-        {isCollapsed ? (
-          <ChevronRight className="w-4 h-4 text-slate-600 dark:text-slate-300" />
-        ) : (
-          <ChevronLeft className="w-4 h-4 text-slate-600 dark:text-slate-300" />
-        )}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="w-4 h-4 text-slate-600 dark:text-slate-300"
+          aria-hidden="true"
+        >
+          <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+          <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+          <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" />
+        </svg>
       </button>
 
       <AnimatePresence mode="wait">
@@ -58,7 +71,23 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
             {/* Header */}
             <div>
               <h2 className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                <Layers className="w-4 h-4" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-4 h-4"
+                  aria-hidden="true"
+                >
+                  <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+                  <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+                  <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" />
+                </svg>
                 Demographic Layers
               </h2>
               <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Select a heatmap overlay</p>
@@ -69,11 +98,10 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
               {LAYERS.map(({ key, label }) => (
                 <label
                   key={key}
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-                    colorMode === key
-                      ? 'bg-teal-50 dark:bg-teal-500/20 border border-teal-300 dark:border-teal-500/30'
-                      : 'hover:bg-slate-50 dark:hover:bg-slate-700 border border-transparent'
-                  }`}
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors ${colorMode === key
+                    ? 'bg-teal-50 dark:bg-teal-500/20 border border-teal-300 dark:border-teal-500/30'
+                    : 'hover:bg-slate-50 dark:hover:bg-slate-700 border border-transparent'
+                    }`}
                 >
                   <input
                     type="radio"
@@ -143,7 +171,6 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
             exit={{ opacity: 0 }}
             className="flex flex-col items-center py-4 gap-3"
           >
-            <Layers className="w-5 h-5 text-slate-400 dark:text-slate-500" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -158,11 +185,11 @@ interface MapDetailPanelProps {
   onClose: () => void;
 }
 
-export const MapDetailPanel: React.FC<MapDetailPanelProps> = ({ 
-  location, 
-  isCollapsed, 
-  onToggle, 
-  onClose 
+export const MapDetailPanel: React.FC<MapDetailPanelProps> = ({
+  location,
+  isCollapsed,
+  onToggle,
+  onClose
 }) => {
   if (!location) return null;
 
@@ -203,7 +230,7 @@ export const MapDetailPanel: React.FC<MapDetailPanelProps> = ({
             {/* Header with Google Street View */}
             <div className="relative h-52 flex-none overflow-hidden">
               <img
-                src={`https://maps.googleapis.com/maps/api/streetview?size=600x400&location=${coords.lat},${coords.lng}&fov=90&pitch=10&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`}
+                src={`https://maps.googleapis.com/maps/api/streetview?size=600x400&location=${coords.lat},${coords.lng}&fov=90&pitch=10&key=${GOOGLE_MAPS_API_KEY}`}
                 alt={`Street view of ${location.name}`}
                 className="absolute inset-0 w-full h-full object-cover"
                 onError={(e) => {

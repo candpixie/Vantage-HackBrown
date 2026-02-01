@@ -1,11 +1,33 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { APIProvider, Map as GoogleMap, useMap } from '@vis.gl/react-google-maps';
 import DeckOverlay from './DeckOverlay';
 import type { LocationResult } from '../../services/api';
+import { GOOGLE_MAPS_API_KEY } from '../config/keys';
 
 const NYC_CENTER = { lat: 40.7128, lng: -74.006 };
-const GMAP_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 const GMAP_MAP_ID = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || '';
+const PLACEHOLDER_API_KEY = 'PASTE_YOUR_GOOGLE_MAPS_API_KEY_HERE';
+
+const DARK_GREY_MAP_STYLE: google.maps.MapTypeStyle[] = [
+  { elementType: 'geometry', stylers: [{ color: '#f2f2f2' }] },
+  { elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#6b6b6b' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#f0f0f0' }] },
+  { featureType: 'administrative', elementType: 'geometry', stylers: [{ color: '#e0e0e0' }] },
+  { featureType: 'administrative.country', elementType: 'labels.text.fill', stylers: [{ color: '#5f5f5f' }] },
+  { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#5f5f5f' }] },
+  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#ededed' }] },
+  { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#7a7a7a' }] },
+  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#e6eee6' }] },
+  { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#6f846f' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#dcdcdc' }] },
+  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#cfcfcf' }] },
+  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#6f6f6f' }] },
+  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#e4e4e4' }] },
+  { featureType: 'transit.station', elementType: 'labels.text.fill', stylers: [{ color: '#6f6f6f' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#dfe5ea' }] },
+  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#6b6b6b' }] },
+];
 
 // Desaturated grey map style so colored dots stand out
 const MAP_STYLES: google.maps.MapTypeStyle[] = [
@@ -31,11 +53,20 @@ interface MapControllerProps {
 
 function MapController({ target }: MapControllerProps) {
   const map = useMap();
+  const lastTargetIdRef = useRef<number | null>(null);
+
   useEffect(() => {
     if (map && target) {
+      if (lastTargetIdRef.current === target.id) {
+        return;
+      }
       const coords = percentToLatLng(target.x, target.y);
       map.panTo({ lat: coords.lat, lng: coords.lng });
       map.setZoom(15);
+      lastTargetIdRef.current = target.id;
+    }
+    if (!target) {
+      lastTargetIdRef.current = null;
     }
   }, [map, target]);
   return null;
@@ -43,7 +74,7 @@ function MapController({ target }: MapControllerProps) {
 
 interface MapClickHandlerProps {
   locations: LocationResult[];
-  onSelectLocation: (id: number) => void;
+  onSelectLocation: (id: number | null) => void;
 }
 
 function MapClickHandler({ locations, onSelectLocation }: MapClickHandlerProps) {
@@ -90,7 +121,7 @@ function MapClickHandler({ locations, onSelectLocation }: MapClickHandlerProps) 
 interface GoogleMapViewProps {
   locations: LocationResult[];
   selectedLocationId: number | null;
-  onSelectLocation: (id: number) => void;
+  onSelectLocation: (id: number | null) => void;
   neighborhoods?: any;
   colorMode?: string;
   onHoverNeighborhood?: (neighborhood: any) => void;
@@ -105,11 +136,11 @@ export default function GoogleMapView({
   onHoverNeighborhood,
 }: GoogleMapViewProps) {
   // Don't render if API key is missing
-  if (!GMAP_API_KEY) {
+  if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === PLACEHOLDER_API_KEY) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
         <p className="text-slate-500 dark:text-slate-400 text-sm">
-          Google Maps API key not configured. Add VITE_GOOGLE_MAPS_API_KEY to .env.local
+          Google Maps API key not configured. Add your key in app/config/keys.ts
         </p>
       </div>
     );
@@ -117,7 +148,7 @@ export default function GoogleMapView({
 
   return (
     <div className="w-full h-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm absolute inset-0">
-      <APIProvider apiKey={GMAP_API_KEY}>
+      <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
         <GoogleMap
           defaultCenter={NYC_CENTER}
           defaultZoom={11}
