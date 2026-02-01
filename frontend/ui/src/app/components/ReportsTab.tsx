@@ -4,12 +4,15 @@ import { FileText, Download, Calendar, MapPin, TrendingUp, CheckCircle2, Clock }
 import { exportToPDF } from '../../utils/pdfExport';
 import { toast } from 'sonner';
 
+const MotionDiv = motion.div as any;
+const MotionButton = motion.button as any;
+
 // Mock locations data for reports - matches App.tsx structure
 const LOCATIONS = [
-  { 
-    id: 1, 
-    name: 'Chelsea Highline', 
-    score: 98, 
+  {
+    id: 1,
+    name: 'Chelsea Highline',
+    score: 98,
     status: 'HIGH' as const,
     metrics: [
       { label: 'Demographics', score: 92, confidence: 'HIGH' as const },
@@ -26,10 +29,10 @@ const LOCATIONS = [
       { scenario: 'Optimistic', monthly: '$58,800', annual: '$706k', margin: '32%' }
     ]
   },
-  { 
-    id: 2, 
-    name: 'Tribeca Lofts', 
-    score: 87, 
+  {
+    id: 2,
+    name: 'Tribeca Lofts',
+    score: 87,
     status: 'MEDIUM' as const,
     metrics: [
       { label: 'Demographics', score: 85, confidence: 'HIGH' as const },
@@ -45,10 +48,10 @@ const LOCATIONS = [
       { scenario: 'Optimistic', monthly: '$52,000', annual: '$624k', margin: '30%' }
     ]
   },
-  { 
-    id: 3, 
-    name: 'SoHo Artisan', 
-    score: 76, 
+  {
+    id: 3,
+    name: 'SoHo Artisan',
+    score: 76,
     status: 'MEDIUM' as const,
     metrics: [
       { label: 'Demographics', score: 82, confidence: 'MEDIUM' as const },
@@ -98,9 +101,9 @@ export const ReportsTab: React.FC = () => {
           competitors: location.competitors || [],
           revenue: location.revenue || []
         },
-        generatedAt: new Date().toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'long', 
+        generatedAt: new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
           day: 'numeric',
           hour: '2-digit',
           minute: '2-digit'
@@ -128,7 +131,7 @@ export const ReportsTab: React.FC = () => {
       {/* Reports List */}
       <div className="space-y-4">
         {reports.map((report) => (
-          <motion.div
+          <MotionDiv
             key={report.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -137,8 +140,8 @@ export const ReportsTab: React.FC = () => {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="p-3 bg-amber-100 dark:bg-amber-500/20 rounded-lg">
-                    <FileText className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  <div className="p-3 bg-teal-100 dark:bg-teal-500/20 rounded-lg">
+                    <FileText className="w-5 h-5 text-teal-600 dark:text-teal-400" />
                   </div>
                   <div>
                     <h3 className="text-lg font-black text-slate-900 dark:text-white mb-1 break-words">
@@ -147,8 +150,8 @@ export const ReportsTab: React.FC = () => {
                     <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 flex-wrap">
                       <div className="flex items-center gap-1 whitespace-nowrap">
                         <Calendar className="w-4 h-4 flex-shrink-0" />
-                        <span className="truncate">{report.generatedAt.toLocaleDateString('en-US', { 
-                          month: 'short', 
+                        <span className="truncate">{report.generatedAt.toLocaleDateString('en-US', {
+                          month: 'short',
                           day: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit'
@@ -177,12 +180,12 @@ export const ReportsTab: React.FC = () => {
                 </div>
               </div>
 
-              <motion.button
+              <MotionButton
                 onClick={() => handleDownload(report.id)}
                 disabled={generating === report.id}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="ml-4 px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:from-amber-600 hover:to-amber-700 transition-all shadow-sm shadow-amber-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ml-4 px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:from-teal-600 hover:to-teal-700 transition-all shadow-sm shadow-teal-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {generating === report.id ? (
                   <>
@@ -195,37 +198,37 @@ export const ReportsTab: React.FC = () => {
                     Download PDF
                   </>
                 )}
-              </motion.button>
+              </MotionButton>
             </div>
-          </motion.div>
+          </MotionDiv>
         ))}
       </div>
 
       {/* Info Box */}
-      <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-xl p-6">
+      <div className="bg-gradient-to-br from-teal-50 to-teal-100/50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/30 rounded-xl p-6">
         <h4 className="font-black text-slate-900 dark:text-white mb-2 flex items-center gap-2 break-words">
-          <FileText className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+          <FileText className="w-5 h-5 text-teal-600 dark:text-teal-400 flex-shrink-0" />
           <span>Report Contents</span>
         </h4>
         <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
           <li className="flex items-start gap-2">
-            <span className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0">•</span>
+            <span className="text-teal-600 dark:text-teal-400 mt-0.5 flex-shrink-0">•</span>
             <span className="break-words">Comprehensive location scoring and metrics breakdown</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0">•</span>
+            <span className="text-teal-600 dark:text-teal-400 mt-0.5 flex-shrink-0">•</span>
             <span className="break-words">Detailed competitor analysis and market positioning</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0">•</span>
+            <span className="text-teal-600 dark:text-teal-400 mt-0.5 flex-shrink-0">•</span>
             <span className="break-words">Revenue projections across multiple scenarios</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0">•</span>
+            <span className="text-teal-600 dark:text-teal-400 mt-0.5 flex-shrink-0">•</span>
             <span className="break-words">Demographic insights and foot traffic analysis</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0">•</span>
+            <span className="text-teal-600 dark:text-teal-400 mt-0.5 flex-shrink-0">•</span>
             <span className="break-words">Data sources and methodology documentation</span>
           </li>
         </ul>

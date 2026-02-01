@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { 
-  Download, 
-  Share2, 
-  Volume2, 
-  MapPin, 
+import {
+  Download,
+  Share2,
+  Volume2,
+  MapPin,
   TrendingUp,
   CheckCircle2,
   AlertCircle,
@@ -12,6 +12,10 @@ import {
   Clock,
   ExternalLink
 } from 'lucide-react';
+
+const MotionDiv = motion.div as any;
+const MotionButton = motion.button as any;
+const MotionSpan = motion.span as any;
 import type { LocationResult } from '../../services/api';
 
 interface PremiumDashboardProps {
@@ -40,16 +44,16 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
   // Transform location data to match premium dashboard format
   const transformLocation = (loc: LocationResult, rank: number) => {
     const metricsMap: Record<string, { score: number; confidence: string; source: string }> = {};
-    
+
     loc.metrics.forEach((metric) => {
       const key = metric.label.toLowerCase().replace(/\s+/g, '');
       metricsMap[key] = {
         score: metric.score,
         confidence: metric.confidence.toLowerCase(),
         source: metric.label === 'Elite Density' ? 'NYC Open Data' :
-                metric.label === 'Net Disposable' ? 'Census ACS 2023' :
-                metric.label === 'Foot Velocity' ? 'NYC Open Data' :
-                metric.label === 'Transit' ? 'MTA Data' :
+          metric.label === 'Net Disposable' ? 'Census ACS 2023' :
+            metric.label === 'Foot Velocity' ? 'NYC Open Data' :
+              metric.label === 'Transit' ? 'MTA Data' :
                 'LoopNet Estimates',
       };
     });
@@ -105,18 +109,18 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
   };
 
   const transformedLocations = locations.map((loc, idx) => transformLocation(loc, idx + 1));
-  
+
   // Auto-select first location if none selected
   React.useEffect(() => {
     if (!selectedLocationId && transformedLocations.length > 0) {
       onLocationSelect(transformedLocations[0].id);
     }
   }, [selectedLocationId, transformedLocations.length]);
-  
-  const selectedLocation = selectedLocationId 
-    ? transformedLocations.find(l => l.id === selectedLocationId) 
+
+  const selectedLocation = selectedLocationId
+    ? transformedLocations.find(l => l.id === selectedLocationId)
     : transformedLocations[0];
-  
+
   const loc = selectedLocation || transformedLocations[0];
 
   // Debug log to verify component is rendering
@@ -130,13 +134,13 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
 
   const getConfidenceColor = (conf: string) => {
     if (conf === 'high') return 'text-emerald-400';
-    if (conf === 'medium') return 'text-amber-400';
+    if (conf === 'medium') return 'text-teal-400';
     return 'text-red-400';
   };
-  
+
   const getConfidenceBg = (conf: string) => {
     if (conf === 'high') return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-    if (conf === 'medium') return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+    if (conf === 'medium') return 'bg-teal-500/20 text-teal-400 border-teal-500/30';
     return 'bg-red-500/20 text-red-400 border-red-500/30';
   };
 
@@ -197,13 +201,13 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <motion.div 
+          <MotionDiv
             className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/50"
             whileHover={{ scale: 1.1, rotate: 5 }}
             transition={{ type: 'spring', stiffness: 300 }}
           >
             <MapPin className="w-6 h-6 text-white" />
-          </motion.div>
+          </MotionDiv>
           <div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
               VANTAGE
@@ -212,20 +216,20 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <motion.span 
+          <MotionSpan
             className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs"
             animate={{ opacity: [1, 0.7, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
             <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
             LIVE
-          </motion.span>
+          </MotionSpan>
           <span className="text-xs text-gray-500">NYC Dataset • {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
         </div>
       </div>
 
       {/* Agent Workflow Bar */}
-      <motion.div 
+      <MotionDiv
         className="bg-[#12131a] rounded-xl border border-white/5 p-3 mb-4 glass-card-dark premium-glow"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -239,7 +243,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
         <div className="flex items-center gap-2">
           {agents.map((agent, i) => (
             <React.Fragment key={agent.id}>
-              <motion.div 
+              <MotionDiv
                 onClick={() => {
                   console.log('🤖 Agent clicked:', agent.name);
                   console.log('📊 Agent Status:', agent.status);
@@ -254,15 +258,14 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                 whileTap={{ scale: 0.98 }}
               >
                 <div className="flex items-center gap-2">
-                  <div className={`w-6 h-6 rounded-md flex items-center justify-center ${
-                    agent.status === 'done' ? 'bg-emerald-500/20' :
+                  <div className={`w-6 h-6 rounded-md flex items-center justify-center ${agent.status === 'done' ? 'bg-emerald-500/20' :
                     agent.status === 'active' ? 'bg-indigo-500/20 animate-pulse' :
-                    'bg-gray-500/20'
-                  }`}>
+                      'bg-gray-500/20'
+                    }`}>
                     {agent.status === 'done' ? (
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                     ) : agent.status === 'active' ? (
-                      <motion.div
+                      <MotionDiv
                         className="w-3.5 h-3.5 border-2 border-indigo-400 border-t-transparent rounded-full"
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
@@ -276,12 +279,12 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                     {agent.time && <p className="text-[10px] text-gray-500">{agent.time}</p>}
                   </div>
                 </div>
-              </motion.div>
+              </MotionDiv>
               {i < agents.length - 1 && (
-                <motion.svg 
+                <motion.svg
                   className="w-4 h-4 text-emerald-500/50 flex-shrink-0"
-                  fill="none" 
-                  stroke="currentColor" 
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: agent.status === 'done' ? 1 : 0.3 }}
@@ -292,11 +295,11 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             </React.Fragment>
           ))}
         </div>
-      </motion.div>
+      </MotionDiv>
 
       {/* Main 3-Column Layout */}
       <div className="grid grid-cols-12 gap-4">
-        
+
         {/* LEFT COLUMN - Location List + Score */}
         <div className="col-span-12 lg:col-span-3 space-y-4">
           {/* Top Locations */}
@@ -306,45 +309,42 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             </h3>
             <div className="space-y-2">
               {transformedLocations.map((l) => (
-                <motion.button
+                <MotionButton
                   key={l.id}
                   onClick={() => onLocationSelect(l.id)}
                   whileHover={{ scale: 1.02, x: 4 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full text-left p-3 rounded-lg border transition-all ${
-                    selectedLocationId === l.id 
-                      ? 'bg-indigo-500/20 border-indigo-500/50 shadow-lg shadow-indigo-500/20' 
-                      : 'bg-[#1a1b25] border-white/5 hover:border-white/10'
-                  }`}
+                  className={`w-full text-left p-3 rounded-lg border transition-all ${selectedLocationId === l.id
+                    ? 'bg-indigo-500/20 border-indigo-500/50 shadow-lg shadow-indigo-500/20'
+                    : 'bg-[#1a1b25] border-white/5 hover:border-white/10'
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className={`text-xs px-1.5 py-0.5 rounded ${
-                          l.rank === 1 ? 'bg-amber-500/20 text-amber-400' :
+                        <span className={`text-xs px-1.5 py-0.5 rounded ${l.rank === 1 ? 'bg-teal-500/20 text-teal-400' :
                           l.rank === 2 ? 'bg-gray-500/20 text-gray-400' :
-                          'bg-orange-900/20 text-orange-400'
-                        }`}>#{l.rank}</span>
+                            'bg-emerald-900/20 text-emerald-400'
+                          }`}>#{l.rank}</span>
                         <span className="font-medium text-sm">{l.name}</span>
                       </div>
                       <p className="text-xs text-gray-500 mt-1">{l.dailyTraffic.toLocaleString()} daily foot traffic</p>
                     </div>
                     <div className="text-right">
-                      <span className={`text-2xl font-bold ${
-                        l.score >= 90 ? 'text-emerald-400' :
+                      <span className={`text-2xl font-bold ${l.score >= 90 ? 'text-emerald-400' :
                         l.score >= 85 ? 'text-indigo-400' :
-                        'text-amber-400'
-                      }`}>{l.score}</span>
+                          'text-teal-400'
+                        }`}>{l.score}</span>
                       <p className="text-[10px] text-gray-500">/ 100</p>
                     </div>
                   </div>
-                </motion.button>
+                </MotionButton>
               ))}
             </div>
           </div>
 
           {/* Overall Score Card */}
-          <motion.div 
+          <MotionDiv
             onClick={() => {
               console.log('📊 Overall Score Card clicked');
               console.log('📍 Location:', loc.name);
@@ -361,13 +361,13 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
           >
             <div className="text-center">
               <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Overall Score</p>
-              <motion.div 
+              <MotionDiv
                 className="text-6xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
                 {loc.magicNumber || loc.score}
-              </motion.div>
+              </MotionDiv>
               <p className="text-sm text-gray-400 mt-1">{loc.name}</p>
               <div className="flex items-center justify-center gap-1 mt-3">
                 <span className={`text-xs px-2 py-1 rounded-full border ${getConfidenceBg('high')}`}>
@@ -375,7 +375,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                 </span>
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
 
           {/* Data Sources */}
           <div className="bg-[#12131a] rounded-xl border border-white/5 p-4 glass-card-dark">
@@ -387,8 +387,8 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                 { name: 'Census ACS 2023', status: 'cached', count: 'Demographics' },
                 { name: 'MTA Ridership', status: 'live', count: '14 stations' },
               ].map((src) => (
-                <div 
-                  key={src.name} 
+                <div
+                  key={src.name}
                   onClick={() => {
                     console.log('📡 Data Source clicked:', src.name);
                     console.log('📊 Status:', src.status);
@@ -398,11 +398,11 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                   className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0 cursor-pointer hover:bg-white/5 rounded px-2 transition"
                 >
                   <div className="flex items-center gap-2">
-                    <motion.span 
-                      className={`w-1.5 h-1.5 rounded-full ${src.status === 'live' ? 'bg-emerald-400' : 'bg-amber-400'}`}
+                    <MotionSpan
+                      className={`w-1.5 h-1.5 rounded-full ${src.status === 'live' ? 'bg-emerald-400' : 'bg-teal-400'}`}
                       animate={src.status === 'live' ? { opacity: [1, 0.5, 1] } : {}}
                       transition={{ duration: 2, repeat: Infinity }}
-                    ></motion.span>
+                    ></MotionSpan>
                     <span className="text-gray-300">{src.name}</span>
                   </div>
                   <span className="text-gray-500">{src.count}</span>
@@ -443,7 +443,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                   </defs>
                 </svg>
               </div>
-              
+
               {/* Location markers */}
               {transformedLocations.map((l, idx) => {
                 const positions = [
@@ -453,13 +453,13 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                 ];
                 const pos = positions[idx] || positions[0];
                 const isSelected = selectedLocationId === l.id;
-                
+
                 return (
-                  <motion.div
+                  <MotionDiv
                     key={l.id}
                     className="absolute cursor-pointer"
-                    style={{ 
-                      left: pos.x, 
+                    style={{
+                      left: pos.x,
                       top: pos.y,
                       transform: 'translate(-50%, -50%)',
                     }}
@@ -471,34 +471,33 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                     }}
                   >
                     <div className="relative">
-                      <motion.div 
-                        className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg ${
-                          isSelected 
-                            ? 'bg-indigo-500 shadow-indigo-500/50' 
-                            : 'bg-purple-500/80'
-                        }`}
+                      <MotionDiv
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shadow-lg ${isSelected
+                          ? 'bg-indigo-500 shadow-indigo-500/50'
+                          : 'bg-purple-500/80'
+                          }`}
                         whileHover={{ scale: 1.2 }}
                         whileTap={{ scale: 0.9 }}
                       >
                         <span className="text-xs font-bold">{l.rank}</span>
-                      </motion.div>
+                      </MotionDiv>
                       {isSelected && (
-                        <motion.div
+                        <MotionDiv
                           className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap"
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
                         >
                           <span className="text-xs bg-black/80 px-2 py-1 rounded text-indigo-300">{l.name}</span>
-                        </motion.div>
+                        </MotionDiv>
                       )}
                     </div>
-                  </motion.div>
+                  </MotionDiv>
                 );
               })}
 
               {/* Map controls overlay */}
               <div className="absolute top-3 right-3 flex flex-col gap-2">
-                <motion.button 
+                <MotionButton
                   onClick={() => {
                     setMapZoom(prev => Math.min(prev + 0.1, 2));
                     console.log('🔍 Zoom In - Current zoom:', (mapZoom + 0.1).toFixed(1));
@@ -509,8 +508,8 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                   title="Zoom In"
                 >
                   <span className="text-lg">+</span>
-                </motion.button>
-                <motion.button 
+                </MotionButton>
+                <MotionButton
                   onClick={() => {
                     setMapZoom(prev => Math.max(prev - 0.1, 0.5));
                     console.log('🔍 Zoom Out - Current zoom:', (mapZoom - 0.1).toFixed(1));
@@ -521,9 +520,9 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                   title="Zoom Out"
                 >
                   <span className="text-lg">−</span>
-                </motion.button>
+                </MotionButton>
               </div>
-              
+
               {/* Map legend */}
               <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur rounded-lg px-3 py-2">
                 <div className="flex items-center gap-3 text-xs">
@@ -548,8 +547,8 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             </div>
             <div className="space-y-3">
               {Object.entries(loc.metrics).map(([key, metric]) => (
-                <motion.div 
-                  key={key} 
+                <MotionDiv
+                  key={key}
                   onClick={() => {
                     console.log('📊 Metric clicked:', key);
                     console.log('📈 Score:', metric.score);
@@ -574,21 +573,20 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                     <span className="text-sm font-semibold text-white">{metric.score}</span>
                   </div>
                   <div className="relative h-2 bg-[#1a1b25] rounded-full overflow-hidden">
-                    <motion.div 
-                      className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500 ${
-                        metric.score >= 90 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' :
+                    <MotionDiv
+                      className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500 ${metric.score >= 90 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' :
                         metric.score >= 80 ? 'bg-gradient-to-r from-indigo-500 to-indigo-400' :
-                        'bg-gradient-to-r from-amber-500 to-amber-400'
-                      }`}
+                          'bg-gradient-to-r from-teal-500 to-teal-400'
+                        }`}
                       initial={{ width: 0 }}
                       animate={{ width: `${metric.score}%` }}
                       transition={{ duration: 1, delay: 0.2 }}
-                    ></motion.div>
+                    ></MotionDiv>
                   </div>
                   <p className="text-[10px] text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition">
                     Source: {metric.source}
                   </p>
-                </motion.div>
+                </MotionDiv>
               ))}
             </div>
           </div>
@@ -604,8 +602,8 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                 { label: 'Moderate', value: loc.revenue.moderate, color: 'from-indigo-500 to-indigo-400' },
                 { label: 'Optimistic', value: loc.revenue.optimistic, color: 'from-emerald-500 to-emerald-400' },
               ].map((scenario) => (
-                <motion.div 
-                  key={scenario.label} 
+                <MotionDiv
+                  key={scenario.label}
                   className={`bg-[#1a1b25] rounded-lg p-3 border border-white/5 ${scenario.label === 'Moderate' ? 'ring-2 ring-indigo-500/50' : ''}`}
                   whileHover={{ scale: 1.05, y: -2 }}
                 >
@@ -614,7 +612,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                     {formatMoney(scenario.value)}
                   </p>
                   <p className="text-[10px] text-gray-500">/ month</p>
-                </motion.div>
+                </MotionDiv>
               ))}
             </div>
             <div className="flex items-center justify-between p-3 bg-[#1a1b25] rounded-lg border border-white/5">
@@ -624,7 +622,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
               </div>
               <div className="text-right">
                 <p className="text-xs text-gray-400">Est. Rent</p>
-                <p className="text-lg font-semibold text-amber-400">{formatMoney(loc.rent)}/mo</p>
+                <p className="text-lg font-semibold text-teal-400">{formatMoney(loc.rent)}/mo</p>
               </div>
             </div>
             <p className="text-[10px] text-gray-500 mt-2 italic">
@@ -648,8 +646,8 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             </div>
             <div className="space-y-2">
               {loc.competitors.map((comp, i) => (
-                <motion.div 
-                  key={i} 
+                <MotionDiv
+                  key={i}
                   onClick={() => {
                     console.log('🎯 Competitor clicked:', comp.name);
                     console.log('📊 Competitor Details:', {
@@ -678,14 +676,14 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                         <ExternalLink className="w-3 h-3 text-gray-500" />
                       </div>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs text-amber-400">★ {comp.rating}</span>
+                        <span className="text-xs text-teal-400">★ {comp.rating}</span>
                         <span className="text-xs text-gray-500">({comp.reviews})</span>
                         <span className="text-xs text-gray-500">• {comp.distance}</span>
                       </div>
                       <p className="text-[10px] text-gray-500 mt-1">Hours: {comp.hours}</p>
                     </div>
                     {comp.gap && (
-                      <span 
+                      <span
                         onClick={(e) => {
                           e.stopPropagation();
                           console.log('⚠️ Opportunity Gap:', comp.gap);
@@ -697,7 +695,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                       </span>
                     )}
                   </div>
-                </motion.div>
+                </MotionDiv>
               ))}
             </div>
           </div>
@@ -713,8 +711,8 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                 { gap: 'Limited dairy-free menu', impact: 'Medium', desc: 'Growing vegan demographic' },
                 { gap: 'No loyalty program', impact: 'Medium', desc: 'Student retention opportunity' },
               ].map((item, i) => (
-                <motion.div 
-                  key={i} 
+                <MotionDiv
+                  key={i}
                   onClick={() => {
                     console.log('⚡ Opportunity Gap clicked:', item.gap);
                     console.log('📈 Impact:', item.impact);
@@ -730,12 +728,11 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-white font-medium">{item.gap}</span>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                      item.impact === 'High' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'
-                    }`}>{item.impact}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${item.impact === 'High' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-teal-500/20 text-teal-400'
+                      }`}>{item.impact}</span>
                   </div>
                   <p className="text-[10px] text-gray-400 mt-1">{item.desc}</p>
-                </motion.div>
+                </MotionDiv>
               ))}
             </div>
           </div>
@@ -744,7 +741,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
           <div className="bg-[#12131a] rounded-xl border border-white/5 p-4 glass-card-dark premium-glow">
             <h3 className="text-sm font-semibold text-gray-300 mb-3">Quick Actions</h3>
             <div className="space-y-2">
-              <motion.button 
+              <MotionButton
                 onClick={() => {
                   if (onExportPDF) {
                     onExportPDF();
@@ -768,8 +765,8 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
               >
                 <Download className="w-4 h-4" />
                 Export Full Report (PDF)
-              </motion.button>
-              <motion.button 
+              </MotionButton>
+              <MotionButton
                 onClick={() => {
                   if (onShare) {
                     onShare();
@@ -795,8 +792,8 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
               >
                 <Share2 className="w-4 h-4" />
                 Share Analysis
-              </motion.button>
-              <motion.button 
+              </MotionButton>
+              <MotionButton
                 onClick={() => {
                   setShowVoiceSummary(!showVoiceSummary);
                   const summary = `Location Analysis for ${loc.name}. Overall score: ${loc.score} out of 100 with ${loc.confidence}% confidence. ` +
@@ -804,9 +801,9 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                     `Break-even expected in ${loc.revenue.breakeven} months. ` +
                     `Found ${loc.competitors.length} nearby competitors. ` +
                     `Daily foot traffic estimated at ${loc.dailyTraffic.toLocaleString()} visitors.`;
-                  
+
                   console.log('🔊 Voice Summary:', summary);
-                  
+
                   if ('speechSynthesis' in window) {
                     const utterance = new SpeechSynthesisUtterance(summary);
                     utterance.rate = 0.9;
@@ -823,7 +820,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
               >
                 <Volume2 className="w-4 h-4" />
                 Voice Summary
-              </motion.button>
+              </MotionButton>
             </div>
           </div>
 
@@ -835,10 +832,10 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
             <div className="space-y-3">
               <div>
                 <label className="text-xs text-gray-400 block mb-1.5">Adjust Budget</label>
-                <input 
-                  type="range" 
-                  min="5000" 
-                  max="15000" 
+                <input
+                  type="range"
+                  min="5000"
+                  max="15000"
                   value={budget}
                   onChange={(e) => {
                     const newBudget = parseInt(e.target.value);
@@ -855,7 +852,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
               </div>
               <div>
                 <label className="text-xs text-gray-400 block mb-1.5">Target Demo</label>
-                <select 
+                <select
                   value={targetDemo}
                   onChange={(e) => {
                     setTargetDemo(e.target.value);
@@ -869,7 +866,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                   <option>Tourists</option>
                 </select>
               </div>
-              <motion.button 
+              <MotionButton
                 onClick={() => {
                   if (onReRun) {
                     onReRun();
@@ -887,7 +884,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                 className="w-full py-2 bg-indigo-500/20 border border-indigo-500/50 rounded-lg text-sm text-indigo-400 font-medium hover:bg-indigo-500/30 transition"
               >
                 Re-run Analysis →
-              </motion.button>
+              </MotionButton>
             </div>
           </div>
         </div>

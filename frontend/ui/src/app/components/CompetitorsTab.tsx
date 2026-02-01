@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Target, Star, MapPin, Clock, AlertTriangle } from 'lucide-react';
 
+const MotionDiv = motion.div as any;
+
 interface CompetitorsTabProps {
   locationName: string;
 }
@@ -41,12 +43,12 @@ export const CompetitorsTab: React.FC<CompetitorsTabProps> = ({ locationName }) 
     <div className="space-y-6">
       <div>
         <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-          <Target className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          <Target className="w-5 h-5 text-teal-600 dark:text-teal-400" />
           Nearby Competitors
         </h3>
         <div className="space-y-4">
           {competitors.map((comp, idx) => (
-            <motion.div
+            <MotionDiv
               key={comp.name}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -72,9 +74,8 @@ export const CompetitorsTab: React.FC<CompetitorsTabProps> = ({ locationName }) 
                     </div>
                   </div>
                 </div>
-                <div className={`px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap flex-shrink-0 ${
-                  comp.threat === 'High' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'
-                }`}>
+                <div className={`px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap flex-shrink-0 ${comp.threat === 'High' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'
+                  }`}>
                   {comp.threat} Threat
                 </div>
               </div>
@@ -87,7 +88,7 @@ export const CompetitorsTab: React.FC<CompetitorsTabProps> = ({ locationName }) 
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </MotionDiv>
           ))}
         </div>
       </div>
@@ -95,8 +96,8 @@ export const CompetitorsTab: React.FC<CompetitorsTabProps> = ({ locationName }) 
       <div className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-xl p-6">
         <h4 className="font-black text-slate-900 dark:text-white mb-2">Competitive Advantage</h4>
         <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-          All competitors close by 8pm. Offering extended hours (until 10pm) could capture 15-20% 
-          additional revenue from evening foot traffic. None offer boba-specific menu items, creating 
+          All competitors close by 8pm. Offering extended hours (until 10pm) could capture 15-20%
+          additional revenue from evening foot traffic. None offer boba-specific menu items, creating
           a clear differentiation opportunity.
         </p>
       </div>

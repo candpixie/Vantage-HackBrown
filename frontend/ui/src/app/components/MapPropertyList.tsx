@@ -3,6 +3,9 @@ import { motion } from 'motion/react';
 import { ChevronUp, ChevronDown, Building2, MapPin, Maximize2, Bed } from 'lucide-react';
 import type { LocationResult } from '../../services/api';
 
+const MotionSection = motion.section as any;
+const MotionButton = motion.button as any;
+
 interface MapPropertyListProps {
   locations: LocationResult[];
   selectedId: number | null;
@@ -35,7 +38,7 @@ export const MapPropertyList: React.FC<MapPropertyListProps> = ({
   };
 
   return (
-    <motion.section
+    <MotionSection
       initial={false}
       animate={{ height: isCollapsed ? 60 : 200 }}
       className="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 relative overflow-hidden"
@@ -94,7 +97,7 @@ export const MapPropertyList: React.FC<MapPropertyListProps> = ({
           ))}
         </div>
       )}
-    </motion.section>
+    </MotionSection>
   );
 };
 
@@ -116,15 +119,14 @@ const LocationCard: React.FC<LocationCardProps> = ({ location, isSelected, onSel
   };
 
   return (
-    <motion.button
+    <MotionButton
       onClick={() => onSelect(location.id)}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className={`flex-none w-64 rounded-xl overflow-hidden border transition-all text-left ${
-        isSelected
+      className={`flex-none w-64 rounded-xl overflow-hidden border transition-all text-left ${isSelected
           ? 'border-teal-400 dark:border-teal-500 ring-2 ring-teal-200 dark:ring-teal-500/30 shadow-lg shadow-teal-100 dark:shadow-teal-500/20'
           : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md'
-      } bg-white dark:bg-slate-800`}
+        } bg-white dark:bg-slate-800`}
     >
       <div className="h-24 bg-gradient-to-br from-teal-50 to-emerald-100/50 dark:from-teal-500/10 dark:to-emerald-600/10 relative overflow-hidden flex items-center justify-center">
         <Building2 size={24} className="text-teal-500 dark:text-teal-400" />
@@ -147,6 +149,6 @@ const LocationCard: React.FC<LocationCardProps> = ({ location, isSelected, onSel
           <span className="truncate">{location.address || 'Location'}</span>
         </div>
       </div>
-    </motion.button>
+    </MotionButton>
   );
 };

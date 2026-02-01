@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { 
-  User, Mail, Building2, Bell, Moon, Sun, Globe, Shield, 
+import {
+  User, Mail, Building2, Bell, Moon, Sun, Globe, Shield,
   Download, Trash2, Key, CreditCard, Smartphone, Monitor,
   CheckCircle2, AlertCircle, Clock, ChevronRight
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+
+const MotionDiv = motion.div as any;
+const MotionButton = motion.button as any;
 
 export const SettingsTab: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
@@ -43,17 +46,17 @@ export const SettingsTab: React.FC = () => {
       {/* User Profile Section */}
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm">
         <div className="flex items-center gap-6 mb-8">
-          <motion.div 
+          <MotionDiv
             whileHover={{ scale: 1.1, rotate: 5 }}
-            className="w-20 h-20 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-amber-500/30 cursor-pointer"
+            className="w-20 h-20 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-teal-500/30 cursor-pointer"
           >
             {userInfo.name.charAt(0)}
-          </motion.div>
+          </MotionDiv>
           <div className="flex-1 min-w-0">
             <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-1 break-words">{userInfo.name}</h2>
             <p className="text-slate-600 dark:text-slate-400 mb-2 break-words truncate">{userInfo.email}</p>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-3 py-1 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 rounded-lg text-xs font-bold whitespace-nowrap">
+              <span className="px-3 py-1 bg-teal-100 dark:bg-teal-500/20 text-teal-700 dark:text-teal-400 rounded-lg text-xs font-bold whitespace-nowrap">
                 {userInfo.plan}
               </span>
               <span className="text-xs text-slate-500 dark:text-slate-400 break-words">Member since {userInfo.memberSince}</span>
@@ -67,10 +70,10 @@ export const SettingsTab: React.FC = () => {
               <User className="w-4 h-4" />
               Full Name
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               defaultValue={userInfo.name}
-              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all"
+              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
             />
           </div>
           <div className="space-y-4">
@@ -78,10 +81,10 @@ export const SettingsTab: React.FC = () => {
               <Mail className="w-4 h-4" />
               Email Address
             </label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               defaultValue={userInfo.email}
-              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all"
+              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
             />
           </div>
           <div className="space-y-4">
@@ -89,10 +92,10 @@ export const SettingsTab: React.FC = () => {
               <Building2 className="w-4 h-4" />
               Company
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               defaultValue={userInfo.company}
-              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all"
+              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
             />
           </div>
         </div>
@@ -109,8 +112,8 @@ export const SettingsTab: React.FC = () => {
           ].map((stat, idx) => (
             <div key={stat.label} className="p-6 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-amber-100 dark:bg-amber-500/20 rounded-lg">
-                  <stat.icon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                <div className="p-2 bg-teal-100 dark:bg-teal-500/20 rounded-lg">
+                  <stat.icon className="w-5 h-5 text-teal-600 dark:text-teal-400" />
                 </div>
                 <div className="text-sm font-bold text-slate-600 dark:text-slate-400">{stat.label}</div>
               </div>
@@ -159,7 +162,7 @@ export const SettingsTab: React.FC = () => {
                   onChange={(e) => setNotifications({ ...notifications, [pref.key]: e.target.checked })}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-slate-200 dark:bg-slate-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 dark:peer-focus:ring-amber-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                <div className="w-11 h-6 bg-slate-200 dark:bg-slate-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 dark:peer-focus:ring-teal-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
               </label>
             </div>
           ))}
@@ -169,7 +172,7 @@ export const SettingsTab: React.FC = () => {
       {/* System Information */}
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm">
         <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-          <Monitor className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          <Monitor className="w-5 h-5 text-teal-600 dark:text-teal-400" />
           System Information
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -196,29 +199,28 @@ export const SettingsTab: React.FC = () => {
         <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6">Account Management</h3>
         <div className="space-y-3">
           {[
-            { label: 'Change Password', icon: Key, action: () => {} },
-            { label: 'Export Account Data', icon: Download, action: () => {} },
-            { label: 'Billing & Subscription', icon: CreditCard, action: () => {} },
-            { label: 'Privacy Settings', icon: Shield, action: () => {} },
-            { label: 'Delete Account', icon: Trash2, action: () => {}, danger: true }
+            { label: 'Change Password', icon: Key, action: () => { } },
+            { label: 'Export Account Data', icon: Download, action: () => { } },
+            { label: 'Billing & Subscription', icon: CreditCard, action: () => { } },
+            { label: 'Privacy Settings', icon: Shield, action: () => { } },
+            { label: 'Delete Account', icon: Trash2, action: () => { }, danger: true }
           ].map((action, idx) => (
-            <motion.button
+            <MotionButton
               key={action.label}
               onClick={action.action}
               whileHover={{ scale: 1.02, x: 4 }}
               whileTap={{ scale: 0.98 }}
-              className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${
-                action.danger
+              className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${action.danger
                   ? 'border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 text-red-700 dark:text-red-400'
                   : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white'
-              }`}
+                }`}
             >
               <div className="flex items-center gap-3">
                 <action.icon className={`w-5 h-5 ${action.danger ? 'text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-400'}`} />
                 <span className="font-semibold">{action.label}</span>
               </div>
               <ChevronRight className="w-5 h-5 opacity-50" />
-            </motion.button>
+            </MotionButton>
           ))}
         </div>
       </div>

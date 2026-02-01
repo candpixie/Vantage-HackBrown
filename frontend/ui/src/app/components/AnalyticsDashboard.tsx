@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { BarChart3, TrendingUp, TrendingDown, DollarSign, Users, MapPin, Activity, Target } from 'lucide-react';
 
+const MotionDiv = motion.div as any;
+
 export const AnalyticsDashboard: React.FC = () => {
   const metrics = [
     { label: 'Total Analyses', value: '247', change: '+12%', trend: 'up', icon: BarChart3 },
@@ -32,7 +34,7 @@ export const AnalyticsDashboard: React.FC = () => {
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric, idx) => (
-          <motion.div
+          <MotionDiv
             key={metric.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -51,7 +53,7 @@ export const AnalyticsDashboard: React.FC = () => {
             </div>
             <div className="text-3xl font-black text-slate-900 dark:text-white mb-1 break-words">{metric.value}</div>
             <div className="text-sm font-medium text-slate-600 dark:text-slate-400 break-words">{metric.label}</div>
-          </motion.div>
+          </MotionDiv>
         ))}
       </div>
 
@@ -60,18 +62,18 @@ export const AnalyticsDashboard: React.FC = () => {
         {/* Score Trend Chart */}
         <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm">
           <h3 className="text-lg font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-            <Activity className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <Activity className="w-5 h-5 text-teal-600 dark:text-teal-400" />
             Average Score Trend
           </h3>
           <div className="h-64 flex items-end justify-between gap-2">
             {trends.map((trend, idx) => (
               <div key={trend.month} className="flex-1 flex flex-col items-center gap-2">
                 <div className="w-full flex flex-col items-center justify-end h-full">
-                  <motion.div
+                  <MotionDiv
                     initial={{ height: 0 }}
                     animate={{ height: `${(trend.value / maxValue) * 100}%` }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    className="w-full bg-gradient-to-t from-amber-500 to-amber-400 rounded-t-lg min-h-[20px]"
+                    className="w-full bg-gradient-to-t from-teal-500 to-teal-400 rounded-t-lg min-h-[20px]"
                   />
                 </div>
                 <div className="text-xs font-bold text-slate-600 dark:text-slate-400">{trend.month}</div>
@@ -84,12 +86,12 @@ export const AnalyticsDashboard: React.FC = () => {
         {/* Top Locations */}
         <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm">
           <h3 className="text-lg font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-            <Target className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <Target className="w-5 h-5 text-teal-600 dark:text-teal-400" />
             Top Performing Locations
           </h3>
           <div className="space-y-4">
             {topLocations.map((loc, idx) => (
-              <motion.div
+              <MotionDiv
                 key={loc.name}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -102,10 +104,10 @@ export const AnalyticsDashboard: React.FC = () => {
                   <div className="text-xs text-slate-600 dark:text-slate-400 break-words">{loc.analyses} analyses</div>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <div className="text-2xl font-black text-amber-600 dark:text-amber-400 break-words">{loc.score}</div>
+                  <div className="text-2xl font-black text-teal-600 dark:text-teal-400 break-words">{loc.score}</div>
                   <div className="text-xs font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap">{loc.revenue}/mo</div>
                 </div>
-              </motion.div>
+              </MotionDiv>
             ))}
           </div>
         </div>
@@ -114,13 +116,13 @@ export const AnalyticsDashboard: React.FC = () => {
       {/* Business Type Distribution */}
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm">
         <h3 className="text-lg font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-          <Users className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          <Users className="w-5 h-5 text-teal-600 dark:text-teal-400" />
           Analysis by Business Type
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[
-            { type: 'Boba Tea', count: 89, color: 'bg-amber-500' },
-            { type: 'Coffee', count: 67, color: 'bg-amber-500' },
+            { type: 'Boba Tea', count: 89, color: 'bg-teal-500' },
+            { type: 'Coffee', count: 67, color: 'bg-emerald-500' },
             { type: 'Restaurant', count: 45, color: 'bg-emerald-500' },
             { type: 'Retail', count: 32, color: 'bg-purple-500' },
             { type: 'Fitness', count: 14, color: 'bg-pink-500' },

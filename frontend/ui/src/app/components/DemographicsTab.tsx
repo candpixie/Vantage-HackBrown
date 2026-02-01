@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Users, TrendingUp, MapPin } from 'lucide-react';
 
+const MotionDiv = motion.div as any;
+
 interface DemographicsTabProps {
   locationName: string;
   demographics?: {
@@ -18,40 +20,40 @@ export const DemographicsTab: React.FC<DemographicsTabProps> = ({ locationName, 
   const medianAge = demoData?.median_age || 36;
   const populationDensity = demoData?.population_density || 27000;
   const householdSize = demoData?.household_size || 2.5;
-  
+
   // Calculate demographics from median age
   const genZ = medianAge < 30 ? 35 : medianAge < 40 ? 25 : 15;
   const millennials = medianAge >= 28 && medianAge < 44 ? 45 : 35;
   const genX = medianAge >= 44 && medianAge < 60 ? 20 : 15;
   const boomers = medianAge >= 60 ? 10 : 5;
-  
+
   const demographics = [
-    { label: 'Gen Z (18-27)', value: `${genZ}%`, trend: '+12%', color: 'bg-amber-500' },
+    { label: 'Gen Z (18-27)', value: `${genZ}%`, trend: '+12%', color: 'bg-teal-500' },
     { label: 'Millennials (28-43)', value: `${millennials}%`, trend: '+8%', color: 'bg-purple-500' },
     { label: 'Gen X (44-59)', value: `${genX}%`, trend: '-3%', color: 'bg-pink-500' },
-    { label: 'Boomers (60+)', value: `${boomers}%`, trend: '-5%', color: 'bg-orange-500' }
+    { label: 'Boomers (60+)', value: `${boomers}%`, trend: '-5%', color: 'bg-emerald-600' }
   ];
 
   // Income distribution based on median
   const incomeRanges = [
     { range: '$0-50k', value: medianIncome < 50000 ? 40 : 15, color: 'bg-slate-300' },
     { range: '$50-100k', value: medianIncome >= 50000 && medianIncome < 100000 ? 35 : 25, color: 'bg-slate-400' },
-    { range: '$100-150k', value: medianIncome >= 100000 && medianIncome < 150000 ? 30 : 20, color: 'bg-amber-500' },
-    { range: '$150k+', value: medianIncome >= 150000 ? 30 : 15, color: 'bg-amber-600' }
+    { range: '$100-150k', value: medianIncome >= 100000 && medianIncome < 150000 ? 30 : 20, color: 'bg-teal-500' },
+    { range: '$150k+', value: medianIncome >= 150000 ? 30 : 15, color: 'bg-teal-600' }
   ];
-  
+
   const income = incomeRanges;
 
   return (
     <div className="space-y-8">
       <div>
         <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-          <Users className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          <Users className="w-5 h-5 text-teal-600 dark:text-teal-400" />
           Population Demographics
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {demographics.map((demo, idx) => (
-            <motion.div
+            <MotionDiv
               key={demo.label}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -64,14 +66,14 @@ export const DemographicsTab: React.FC<DemographicsTabProps> = ({ locationName, 
               <div className={`text-xs font-bold whitespace-nowrap ${demo.trend.startsWith('+') ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                 {demo.trend} YoY
               </div>
-            </motion.div>
+            </MotionDiv>
           ))}
         </div>
       </div>
 
       <div>
         <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          <TrendingUp className="w-5 h-5 text-teal-600 dark:text-teal-400" />
           Household Income Distribution
         </h3>
         <div className="space-y-3">
@@ -82,7 +84,7 @@ export const DemographicsTab: React.FC<DemographicsTabProps> = ({ locationName, 
                 <span className="font-black text-slate-900 dark:text-white">{inc.value}%</span>
               </div>
               <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                <motion.div
+                <MotionDiv
                   initial={{ width: 0 }}
                   animate={{ width: `${inc.value}%` }}
                   transition={{ delay: idx * 0.1, duration: 0.6 }}
@@ -94,14 +96,14 @@ export const DemographicsTab: React.FC<DemographicsTabProps> = ({ locationName, 
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-xl p-6">
+      <div className="bg-gradient-to-br from-teal-50 to-teal-100/50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/30 rounded-xl p-6">
         <div className="flex items-start gap-3">
-          <MapPin className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <MapPin className="w-5 h-5 text-teal-600 dark:text-teal-400 flex-shrink-0 mt-0.5" />
           <div>
             <h4 className="font-black text-slate-900 dark:text-white mb-2">Key Insight</h4>
             <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-              {locationName} has a strong concentration of Gen Z and Millennial residents (76% combined), 
-              with 60% of households earning over $100k annually. This demographic profile aligns perfectly 
+              {locationName} has a strong concentration of Gen Z and Millennial residents (76% combined),
+              with 60% of households earning over $100k annually. This demographic profile aligns perfectly
               with boba tea shop target customers.
             </p>
           </div>

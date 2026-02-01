@@ -21,17 +21,16 @@ export const CompetitorCard: React.FC<CompetitorCardProps> = ({ competitor }) =>
         <div className="space-y-1 flex-1">
           <div className="flex items-center gap-2">
             <h4 className="text-sm font-semibold text-slate-900">{competitor.name}</h4>
-            <div className={`w-2 h-2 rounded-full ${competitor.status === 'Open' ? 'bg-[#10B981]' : 'bg-orange-500'}`} />
+            <div className={`w-2 h-2 rounded-full ${competitor.status === 'Open' ? 'bg-[#10B981]' : 'bg-red-500'}`} />
           </div>
           <div className="flex items-center gap-1">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`w-3.5 h-3.5 ${
-                  i < Math.floor(competitor.rating)
-                    ? 'text-yellow-400 fill-yellow-400'
-                    : 'text-slate-200'
-                }`}
+                className={`w-3.5 h-3.5 ${i < Math.floor(competitor.rating)
+                  ? 'text-yellow-400 fill-yellow-400'
+                  : 'text-slate-200'
+                  }`}
               />
             ))}
             <span className="text-xs font-medium text-slate-500 ml-1">
@@ -39,7 +38,7 @@ export const CompetitorCard: React.FC<CompetitorCardProps> = ({ competitor }) =>
             </span>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => console.log(`View ${competitor.name} details`)}
           className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-400 hover:text-slate-600 cursor-pointer"
         >
@@ -66,9 +65,8 @@ export const CompetitorCard: React.FC<CompetitorCardProps> = ({ competitor }) =>
           </div>
           <div className="flex flex-col">
             <span className="text-[10px] font-medium text-slate-500 uppercase">Status</span>
-            <span className={`text-xs font-semibold ${
-              competitor.status === 'Open' ? 'text-[#10B981]' : 'text-orange-600'
-            }`}>
+            <span className={`text-xs font-semibold ${competitor.status === 'Open' ? 'text-[#10B981]' : 'text-red-600'
+              }`}>
               {competitor.status}
             </span>
           </div>
