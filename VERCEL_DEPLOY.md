@@ -153,10 +153,12 @@ Production environment variables (edit with your backend URL).
 - [ ] Frontend deployed to Vercel
 - [ ] Backend deployed (Railway/Fly.io/Render)
 - [ ] VITE_API_URL environment variable set in Vercel
+- [ ] VITE_GOOGLE_MAPS_API_KEY environment variable set in Vercel
 - [ ] Visa API credentials set in backend environment
 - [ ] Test the deployed app
 - [ ] Check backend logs for any errors
 - [ ] Verify API calls work (check Network tab)
+- [ ] Verify Google Maps loads correctly
 
 ## 🐛 Troubleshooting
 
