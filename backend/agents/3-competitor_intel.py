@@ -11,6 +11,7 @@ class ScoreRequest(Model):
     target_demo: str
     latitude: float
     longitude: float
+    rent_estimate: float
 
 class ScoreResponse(Model):
     score: int
@@ -26,9 +27,9 @@ class Competitor(Model):
 
 competitor_intel = Agent(
     name="competitor_intel",
-    seed="competitor_intel_seed_phrase",
-    port=8003,
-    endpoint=["http://localhost:8003/submit"],
+    seed="compdawg",
+    port=8002,
+    endpoint=["http://localhost:8002/submit"],
     network="testnet",
 )
 
@@ -177,7 +178,7 @@ async def analyze_competitors(ctx: Context, sender: str, msg: ScoreRequest):
         confidence=confidence,
         breakdown={
             "competitors": competitors,
-            "saturation_score": saturation,
+            "saturation_score": 100-saturation,
             "gap_analysis": gap,
             "competitor_count": len(competitors),
             "confidence_basis": confidence_basis
@@ -185,6 +186,7 @@ async def analyze_competitors(ctx: Context, sender: str, msg: ScoreRequest):
     )
     
     await ctx.send(sender, response)
+
 
 if __name__ == "__main__":
     competitor_intel.run()
