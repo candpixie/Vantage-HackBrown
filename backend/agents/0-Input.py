@@ -8,6 +8,7 @@ class ScoreRequest(Model):
     target_demo: str
     latitude: float
     longitude: float
+    rent_estimate: float
 
 inputter = Agent(
     name="inputter",
@@ -36,11 +37,13 @@ async def startup_handler(ctx: Context):
         target_demo = "Young professionals, ages 25-35"
         latitude = 40.732132
         longitude = -73.998418
+        rent_estimate = 4000 # monthly
         print(f"\n✓ Using test data:")
         print(f"  Neighborhood: {neighborhood}")
         print(f"  Business: {business_type}")
         print(f"  Demographics: {target_demo}")
         print(f"  Location: ({latitude}, {longitude})\n")
+        print(f"  Rent Estimate: {rent_estimate}\n")
     else:
         # Get real user input
         neighborhood = input("Enter neighborhood: ")
@@ -48,6 +51,7 @@ async def startup_handler(ctx: Context):
         target_demo = input("Enter target demographic: ")
         latitude = float(input("Enter latitude: "))
         longitude = float(input("Enter longitude: "))
+        rent_estimate = float(input("Enter rent estimate: "))
     
     # Create and send the score request
     score_request = ScoreRequest(
@@ -55,7 +59,8 @@ async def startup_handler(ctx: Context):
         business_type=business_type,
         target_demo=target_demo,
         latitude=latitude,
-        longitude=longitude
+        longitude=longitude,
+        rent_estimate=rent_estimate
     )
     
     ctx.logger.info(f"Sending ScoreRequest for {neighborhood}")
