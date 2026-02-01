@@ -26,12 +26,12 @@ interface MapViewProps {
     propertyType?: string;
     demographics?: any;
   }>;
-  onMarkerClick: (id: number | null) => void;
+  onMarkerClick: (id: number) => void;
   selectedId: number | null;
 }
 
 export const MapView: React.FC<MapViewProps> = ({ markers, onMarkerClick, selectedId }) => {
-  const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(true);
+  const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
   const [bottomListCollapsed, setBottomListCollapsed] = useState(true);
   const [colorMode, setColorMode] = useState('none');
@@ -90,15 +90,6 @@ export const MapView: React.FC<MapViewProps> = ({ markers, onMarkerClick, select
     return { type: 'FeatureCollection', features };
   };
 
-  const normalizeConfidence = (value?: string): 'HIGH' | 'MEDIUM' | 'LOW' => {
-    if (!value) return 'LOW';
-    const upper = value.toUpperCase();
-    if (upper === 'HIGH' || upper === 'MEDIUM' || upper === 'LOW') {
-      return upper;
-    }
-    return 'LOW';
-  };
-
   // Convert markers to LocationResult format
   const locations: LocationResult[] = markers.map((marker) => ({
     id: marker.id,
@@ -107,22 +98,18 @@ export const MapView: React.FC<MapViewProps> = ({ markers, onMarkerClick, select
     x: marker.x,
     y: marker.y,
     status: marker.status,
-    metrics: (marker.metrics || []).map((m) => ({
-      label: m.label,
-      score: m.score,
-      confidence: normalizeConfidence(m.confidence),
-    })),
+    metrics: marker.metrics || [],
     competitors: marker.competitors || [],
     revenue: marker.revenue || [],
     checklist: [],
-    rent_price: marker.rent_price ?? 0,
-    address: marker.address || marker.name || 'Location',
-    lat: marker.lat ?? 0,
-    lng: marker.lng ?? 0,
-    sqft: marker.sqft ?? 0,
+    rent_price: marker.rent_price,
+    address: marker.address,
+    lat: marker.lat,
+    lng: marker.lng,
+    sqft: marker.sqft,
     bedrooms: marker.bedrooms,
     bathrooms: marker.bathrooms,
-    propertyType: marker.propertyType || 'Commercial',
+    propertyType: marker.propertyType,
     demographics: marker.demographics,
   }));
 

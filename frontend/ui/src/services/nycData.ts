@@ -95,11 +95,7 @@ function deterministicHash(str: string): number {
 // 1. NTA boundary shapes (GeoJSON)
 // ---------------------------------------------------------------------------
 export async function fetchNTAShapes(): Promise<NeighborhoodGeoJSON> {
-  const params = new URLSearchParams({ $limit: '500' });
-  if (NYC_TOKEN) {
-    params.set('$$app_token', NYC_TOKEN);
-  }
-  const url = `${NTA_GEOJSON_URL}?${params.toString()}`;
+  const url = `${NTA_GEOJSON_URL}?$limit=500&$$app_token=${NYC_TOKEN}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`NTA shapes fetch failed (${res.status})`);
   const geojson = await res.json();
@@ -114,12 +110,6 @@ export async function fetchNTAShapes(): Promise<NeighborhoodGeoJSON> {
   return geojson;
 }
 
-async function fetchLocalNTAShapes(): Promise<NeighborhoodGeoJSON> {
-  const res = await fetch('/data/neighborhoods.geojson');
-  if (!res.ok) throw new Error(`Local NTA shapes fetch failed (${res.status})`);
-  return res.json();
-}
-
 // ---------------------------------------------------------------------------
 // 2. Census Bureau ACS — borough-level demographics
 // ---------------------------------------------------------------------------
@@ -128,28 +118,23 @@ export async function fetchBoroughDemographics(): Promise<{
   incomeLookup: Record<string, number>;
   popLookup: Record<string, number>;
 }> {
-  try {
-    const res = await fetch(CENSUS_URL);
-    if (!res.ok) throw new Error(`Census Bureau fetch failed (${res.status})`);
-    const rows = await res.json();
+  const res = await fetch(CENSUS_URL);
+  if (!res.ok) throw new Error(`Census Bureau fetch failed (${res.status})`);
+  const rows = await res.json();
 
-    const ageLookup: Record<string, number> = {};
-    const incomeLookup: Record<string, number> = {};
-    const popLookup: Record<string, number> = {};
-    for (let i = 1; i < rows.length; i++) {
-      const [, ageStr, incomeStr, popStr, , countyFips] = rows[i];
-      const boro = FIPS_TO_BORO[countyFips];
-      if (boro) {
-        ageLookup[boro] = Number(ageStr) || 0;
-        incomeLookup[boro] = Number(incomeStr) || 0;
-        popLookup[boro] = Number(popStr) || 0;
-      }
+  const ageLookup: Record<string, number> = {};
+  const incomeLookup: Record<string, number> = {};
+  const popLookup: Record<string, number> = {};
+  for (let i = 1; i < rows.length; i++) {
+    const [, ageStr, incomeStr, popStr, , countyFips] = rows[i];
+    const boro = FIPS_TO_BORO[countyFips];
+    if (boro) {
+      ageLookup[boro] = Number(ageStr) || 0;
+      incomeLookup[boro] = Number(incomeStr) || 0;
+      popLookup[boro] = Number(popStr) || 0;
     }
-    return { ageLookup, incomeLookup, popLookup };
-  } catch (err) {
-    console.warn('Census Bureau unavailable — using empty borough demographics:', err);
-    return { ageLookup: {}, incomeLookup: {}, popLookup: {} };
   }
+  return { ageLookup, incomeLookup, popLookup };
 }
 
 // ---------------------------------------------------------------------------
@@ -358,25 +343,22 @@ export async function fetchAllNYCData(): Promise<{
   neighborhoods: NeighborhoodGeoJSON;
   listings: RentCastListing[];
 }> {
-  const [geojsonResult, boroDemographics, listings, tractData] = await Promise.all([
-    fetchNTAShapes().catch(async (err) => {
-      console.warn('Primary NTA shapes fetch failed — using local fallback:', err);
-      return fetchLocalNTAShapes();
-    }),
+  const [geojson, boroDemographics, listings, tractData] = await Promise.all([
+    fetchNTAShapes(),
     fetchBoroughDemographics(),
     fetchListings(),
-    fetchTractData().catch(() => null),
+    fetchTractData(),
   ]);
 
   let ntaDemographics = null;
   if (tractData) {
-    ntaDemographics = mapTractsToNTAs(tractData, geojsonResult.features);
+    ntaDemographics = mapTractsToNTAs(tractData, geojson.features);
     if (ntaDemographics) {
       console.log(`Mapped tract data to ${Object.keys(ntaDemographics).length} NTAs`);
     }
   }
 
-  const neighborhoods = mergeDataIntoGeoJSON(geojsonResult, boroDemographics, ntaDemographics);
+  const neighborhoods = mergeDataIntoGeoJSON(geojson, boroDemographics, ntaDemographics);
   console.log(`NYC Data: ${neighborhoods.features.length} neighborhoods, ${listings.length} listings`);
   return { neighborhoods, listings };
 }
