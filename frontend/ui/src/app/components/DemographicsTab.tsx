@@ -102,9 +102,9 @@ export const DemographicsTab: React.FC<DemographicsTabProps> = ({ locationName, 
           <div>
             <h4 className="font-black text-slate-900 dark:text-white mb-2">Key Insight</h4>
             <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-              {locationName} has a strong concentration of Gen Z and Millennial residents (76% combined),
-              with 60% of households earning over $100k annually. This demographic profile aligns perfectly
-              with boba tea shop target customers.
+              {locationName} has a strong concentration of Gen Z and Millennial residents ({genZ + millennials}% combined),
+              with {(incomeRanges.find(r => r.range === '$100-150k')?.value ?? 20) + (incomeRanges.find(r => r.range === '$150k+')?.value ??15)}% of households earning over $100k annually. This demographic profile aligns perfectly
+              with target customers.
             </p>
           </div>
         </div>
