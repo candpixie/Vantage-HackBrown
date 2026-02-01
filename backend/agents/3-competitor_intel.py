@@ -48,7 +48,7 @@ AGENT_METADATA = {
     "author": "Vantage Team"
 }
 
-GOOGLE_PLACES_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY", "AIzaSyD8miMgNXY0knfl3zPD4RroatsVKJRGGQc")
+GOOGLE_PLACES_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY", "AIzaSyD8miMgNXY0knfp3zPD9RroagsVKJRGGQc")
 
 def get_nearby_competitors(lat, lng, business_type, radius):
     """Fetch competitors from Google Places API with Caching"""

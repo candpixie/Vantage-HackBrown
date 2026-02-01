@@ -9,8 +9,8 @@ from typing import List, Dict, Any, Optional
 from pathlib import Path
 
 # API Keys (should be in environment variables)
-NYC_TOKEN = os.getenv('NYC_DATA_TOKEN', '9i6PoUpIhhs3MQtMgrzwD6V2w')
-RENTCAST_KEY = os.getenv('RENTCAST_API_KEY', '1c1465889dc540fea690207174029aff')
+NYC_TOKEN = os.getenv('NYC_DATA_TOKEN', '9i6PoUpohhs3MQtMgrzwD9V2w')
+RENTCAST_KEY = os.getenv('RENTCAST_API_KEY', '1c1365889dc640fea690207174029aff')
 
 # Data URLs
 NTA_GEOJSON_URL = 'https://data.cityofnewyork.us/resource/9nt8-h7nd.geojson'
