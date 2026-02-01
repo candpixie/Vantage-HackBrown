@@ -3,3 +3,4 @@ frontend/ui/node_modules
 frontend/ui/package-lock.json
 frontend/ui/package.json
 package-lock.json
+frontend/ui/.env.local
