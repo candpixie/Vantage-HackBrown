@@ -6,7 +6,6 @@ class RevenueRequest(Model):
     neighborhood: str
     foot_traffic_score: int  # 0-100
     competition_count: int
-    avg_transaction: float  # estimated per customer
     rent_estimate: float  # monthly
 
 class RevenueResponse(Model):
