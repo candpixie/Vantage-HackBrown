@@ -187,7 +187,7 @@ export default function DeckOverlay({
             },
             pickable: true,
             autoHighlight: true,
-            highlightColor: [245, 158, 11, 150],
+            highlightColor: [20, 184, 166, 150],
             onHover: (info: any) => {
               if (onHoverNeighborhood && info.object) {
                 onHoverNeighborhood(info.object.properties ?? null);
@@ -210,11 +210,17 @@ export default function DeckOverlay({
       });
     }
 
-    // Location markers
+    // Location markers — use real lat/lng when available, fall back to x/y percentages
     const locationPoints = locations
-      .filter((loc) => loc.x !== undefined && loc.y !== undefined)
+      .filter((loc) => (loc.lat && loc.lng) || (loc.x !== undefined && loc.y !== undefined))
       .map((loc) => {
-        const [lat, lng] = percentToLatLngArray(loc.x, loc.y);
+        let lat: number, lng: number;
+        if (loc.lat && loc.lng) {
+          lat = loc.lat;
+          lng = loc.lng;
+        } else {
+          [lat, lng] = percentToLatLngArray(loc.x, loc.y);
+        }
         return {
           id: loc.id,
           lat,
@@ -232,7 +238,7 @@ export default function DeckOverlay({
           getPosition: (d: { lat: number; lng: number }) => [d.lng, d.lat],
           getFillColor: (d: { id: number; status: string }) => {
             if (d.id === selectedLocationId) {
-              return [245, 158, 11, 255]; // Amber for selected
+              return [20, 184, 166, 255]; // Teal for selected
             }
             switch (d.status) {
               case 'HIGH':

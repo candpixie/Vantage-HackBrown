@@ -71,7 +71,7 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                   key={key}
                   className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
                     colorMode === key
-                      ? 'bg-amber-50 dark:bg-amber-500/20 border border-amber-300 dark:border-amber-500/30'
+                      ? 'bg-teal-50 dark:bg-teal-500/20 border border-teal-300 dark:border-teal-500/30'
                       : 'hover:bg-slate-50 dark:hover:bg-slate-700 border border-transparent'
                   }`}
                 >
@@ -81,9 +81,9 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                     value={key}
                     checked={colorMode === key}
                     onChange={() => setColorMode(key)}
-                    className="accent-amber-500 w-3.5 h-3.5"
+                    className="accent-teal-500 w-3.5 h-3.5"
                   />
-                  <span className={`text-sm ${colorMode === key ? 'text-amber-700 dark:text-amber-400 font-medium' : 'text-slate-600 dark:text-slate-300'}`}>
+                  <span className={`text-sm ${colorMode === key ? 'text-teal-700 dark:text-teal-400 font-medium' : 'text-slate-600 dark:text-slate-300'}`}>
                     {label}
                   </span>
                 </label>
@@ -112,7 +112,7 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                 <hr className="border-slate-200 dark:border-slate-700" />
                 <div className="rounded-lg bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 px-3 py-2.5">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <MapPin size={12} className="text-amber-500" />
+                    <MapPin size={12} className="text-teal-500" />
                     <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
                       {hoveredNeighborhood.ntaname || hoveredNeighborhood.name}
                     </span>
@@ -167,8 +167,8 @@ export const MapDetailPanel: React.FC<MapDetailPanelProps> = ({
   if (!location) return null;
 
   const coords = {
-    lat: 40.5 + (location.y / 100) * 0.4,
-    lng: -74.3 + (location.x / 100) * 0.6,
+    lat: location.lat || (40.5 + (location.y / 100) * 0.4),
+    lng: location.lng || (-74.3 + (location.x / 100) * 0.6),
   };
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`;
 
@@ -200,31 +200,74 @@ export const MapDetailPanel: React.FC<MapDetailPanelProps> = ({
             exit={{ opacity: 0 }}
             className="flex-1 overflow-y-auto"
           >
-            {/* Header */}
-            <div className="relative h-52 bg-gradient-to-br from-amber-500/20 to-amber-600/20 dark:from-amber-500/10 dark:to-amber-600/10 flex-none flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="w-12 h-12 text-amber-500 mx-auto mb-2" />
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">{location.name}</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Location Analysis</p>
+            {/* Header with Google Street View */}
+            <div className="relative h-52 flex-none overflow-hidden">
+              <img
+                src={`https://maps.googleapis.com/maps/api/streetview?size=600x400&location=${coords.lat},${coords.lng}&fov=90&pitch=10&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`}
+                alt={`Street view of ${location.name}`}
+                className="absolute inset-0 w-full h-full object-cover"
+                onError={(e) => {
+                  // Hide broken image and show fallback
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+              {/* Overlay gradient for text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute bottom-4 left-4 right-12">
+                <h2 className="text-lg font-bold text-white drop-shadow-lg">{location.name}</h2>
+                <p className="text-sm text-white/80 drop-shadow">Street View</p>
               </div>
               <button
                 onClick={onClose}
-                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-700/90 backdrop-blur-sm flex items-center justify-center hover:bg-white dark:hover:bg-slate-700 transition-colors shadow-sm"
+                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition-colors"
               >
-                <X size={16} className="text-slate-700 dark:text-slate-300" />
+                <X size={16} className="text-white" />
               </button>
             </div>
 
             {/* Content */}
             <div className="p-4 space-y-4">
               {/* Score */}
-              <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-500/10 dark:to-amber-600/10 rounded-xl p-4 border border-amber-200 dark:border-amber-500/30">
+              <div className="bg-gradient-to-br from-teal-50 to-emerald-100/50 dark:from-teal-500/10 dark:to-emerald-600/10 rounded-xl p-4 border border-teal-200 dark:border-teal-500/30">
                 <div className="text-center">
                   <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Vantage Score</p>
-                  <p className="text-4xl font-black text-amber-600 dark:text-amber-400">{location.score}</p>
+                  <p className="text-4xl font-black text-teal-600 dark:text-teal-400">{location.score}</p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Status: {location.status}</p>
                 </div>
               </div>
+
+              {/* Rent & Property Details */}
+              {(location.rent_price || location.address) && (
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 px-3 py-2.5 space-y-1.5">
+                  {location.rent_price && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1"><DollarSign size={10} />Rent</span>
+                      <span className="text-sm font-bold text-teal-600 dark:text-teal-400">${location.rent_price.toLocaleString()}/mo</span>
+                    </div>
+                  )}
+                  {location.sqft && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">Size</span>
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{location.sqft.toLocaleString()} sqft</span>
+                    </div>
+                  )}
+                  {location.bedrooms && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">Layout</span>
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{location.bedrooms}BR / {location.bathrooms || 1}BA</span>
+                    </div>
+                  )}
+                  {location.propertyType && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">Type</span>
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{location.propertyType}</span>
+                    </div>
+                  )}
+                  {location.address && (
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 pt-1 border-t border-slate-200 dark:border-slate-600 truncate">{location.address}</p>
+                  )}
+                </div>
+              )}
 
               {/* Metrics */}
               {location.metrics && location.metrics.length > 0 && (
@@ -272,7 +315,7 @@ export const MapDetailPanel: React.FC<MapDetailPanelProps> = ({
                   href={googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-500/20 border border-amber-200 dark:border-amber-500/30 text-sm font-medium text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-500/30 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-teal-50 dark:bg-teal-500/20 border border-teal-200 dark:border-teal-500/30 text-sm font-medium text-teal-600 dark:text-teal-400 hover:bg-amber-100 dark:hover:bg-amber-500/30 transition-colors"
                 >
                   <ExternalLink size={13} /> View on Google Maps
                 </a>

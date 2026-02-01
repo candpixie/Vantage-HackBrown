@@ -16,7 +16,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
     <div className="space-y-6">
       <div className="space-y-3">
         <label className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center">
             <Search className="w-4 h-4 text-white" />
           </div>
           Business Type
@@ -25,7 +25,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
           <select
             value={businessType}
             onChange={(e) => setBusinessType(e.target.value)}
-            className="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl px-5 py-4 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 appearance-none cursor-pointer hover:border-amber-400 transition-all"
+            className="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl px-5 py-4 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 appearance-none cursor-pointer hover:border-teal-400 transition-all"
           >
             <option>Boba Tea Shop</option>
             <option>Coffee Roastery</option>
@@ -49,7 +49,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
           <select
             value={targetDemo}
             onChange={(e) => setTargetDemo(e.target.value)}
-            className="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl px-5 py-4 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 appearance-none cursor-pointer hover:border-amber-400 transition-all"
+            className="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl px-5 py-4 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 appearance-none cursor-pointer hover:border-teal-400 transition-all"
           >
             <option>Gen Z Students</option>
             <option>Young Professionals</option>
@@ -73,7 +73,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
             key={budget}
             initial={{ scale: 1.2, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl flex-shrink-0 whitespace-nowrap"
+            className="px-4 py-2 bg-gradient-to-r from-teal-500 to-emerald-600 rounded-xl flex-shrink-0 whitespace-nowrap"
           >
             <span className="text-lg font-black text-white">${budget.toLocaleString()}</span>
           </motion.div>
@@ -89,8 +89,8 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
             className="w-full h-3 rounded-full appearance-none cursor-pointer hover:opacity-80 transition-opacity"
             style={{
               background: `linear-gradient(to right,
-                #F59E0B 0%,
-                #F59E0B ${((budget - 2000) / (15000 - 2000)) * 100}%,
+                #14B8A6 0%,
+                #14B8A6 ${((budget - 2000) / (15000 - 2000)) * 100}%,
                 rgba(226, 232, 240, 0.5) ${((budget - 2000) / (15000 - 2000)) * 100}%,
                 rgba(226, 232, 240, 0.5) 100%)`,
             }}
@@ -111,7 +111,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
         className={`w-full py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-3 transition-all ${
           isAnalyzing
             ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
-            : 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-sm hover:shadow-md hover:from-amber-600 hover:to-amber-700'
+            : 'bg-gradient-to-r from-teal-500 to-emerald-600 text-white shadow-sm hover:shadow-md hover:from-teal-600 hover:to-emerald-700'
         }`}
       >
         {isAnalyzing ? (

@@ -44,6 +44,12 @@ export interface LocationResult {
   // Additional fields from backend
   rent_price?: number;
   address?: string;
+  lat?: number;
+  lng?: number;
+  sqft?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  propertyType?: string;
   demographics?: {
     median_income?: number;
     median_age?: number;
@@ -132,6 +138,18 @@ class ApiService {
    * Transform backend response to frontend format
    */
   private transformBackendResponse(data: any): AnalysisResponse {
+    // Check if we have results from the orchestrator API
+    if (data.results && Array.isArray(data.results)) {
+      const locations = this.transformOrchestratorResults(data.results);
+      return {
+        status: 'completed',
+        progress: 100,
+        active_agent: undefined,
+        agent_statuses: [],
+        locations: locations.length > 0 ? locations : this.getMockLocations(),
+      };
+    }
+
     // Map backend data structure to frontend expected structure
     return {
       status: data.status || 'completed',
@@ -140,6 +158,121 @@ class ApiService {
       agent_statuses: data.agent_statuses || [],
       locations: data.locations || this.getMockLocations(),
     };
+  }
+
+  /**
+   * Transform orchestrator results from backend to LocationResult format
+   */
+  private transformOrchestratorResults(results: any[]): LocationResult[] {
+    return results.map((result) => {
+      const { id, request, location_analysis, competitor_analysis, revenue_projection, overall_score } = result;
+      
+      // Convert lat/lng to x/y percentage for map display
+      const x = Math.max(0, Math.min(100, ((request.longitude + 74.3) / 0.6) * 100));
+      const y = Math.max(0, Math.min(100, ((request.latitude - 40.5) / 0.4) * 100));
+      
+      // Determine status based on overall score
+      const status: 'HIGH' | 'MEDIUM' | 'LOW' = 
+        overall_score >= 75 ? 'HIGH' : overall_score >= 50 ? 'MEDIUM' : 'LOW';
+      
+      // Build metrics from location and competitor analysis
+      const metrics: LocationMetric[] = [
+        { 
+          label: 'Location Score', 
+          score: location_analysis?.score || 0, 
+          confidence: (location_analysis?.confidence?.toUpperCase() || 'LOW') as 'HIGH' | 'MEDIUM' | 'LOW'
+        },
+        { 
+          label: 'Foot Traffic', 
+          score: location_analysis?.breakdown?.foot_traffic?.score || 0, 
+          confidence: (location_analysis?.confidence?.toUpperCase() || 'LOW') as 'HIGH' | 'MEDIUM' | 'LOW'
+        },
+        { 
+          label: 'Transit Access', 
+          score: location_analysis?.breakdown?.transit_access?.score || 0, 
+          confidence: (location_analysis?.confidence?.toUpperCase() || 'LOW') as 'HIGH' | 'MEDIUM' | 'LOW'
+        },
+        { 
+          label: 'Competition', 
+          score: competitor_analysis?.score || 0, 
+          confidence: (competitor_analysis?.confidence?.toUpperCase() || 'LOW') as 'HIGH' | 'MEDIUM' | 'LOW'
+        },
+        { 
+          label: 'Overall', 
+          score: overall_score || 0, 
+          confidence: status
+        },
+      ];
+      
+      // Build competitors list from competitor analysis
+      const competitors: Competitor[] = (competitor_analysis?.breakdown?.competitors || []).map((c: any) => ({
+        name: c.name || 'Unknown',
+        rating: c.rating || 0,
+        reviews: c.reviews || 0,
+        distance: c.distance ? `${c.distance.toFixed(2)} mi` : 'N/A',
+        status: 'Open' as const,
+        weakness: c.weakness || 'N/A',
+      }));
+      
+      // Build revenue projections
+      const formatMoney = (n: number) => {
+        if (n >= 1000) return `$${(n / 1000).toFixed(1)}K`.replace('.0K', 'K');
+        return `$${n}`;
+      };
+      
+      const revenue: RevenueProjection[] = [
+        { 
+          scenario: 'Conservative', 
+          monthly: formatMoney(revenue_projection?.conservative || 0), 
+          annual: formatMoney((revenue_projection?.conservative || 0) * 12), 
+          margin: '20%' 
+        },
+        { 
+          scenario: 'Moderate', 
+          monthly: formatMoney(revenue_projection?.moderate || 0), 
+          annual: formatMoney((revenue_projection?.moderate || 0) * 12), 
+          margin: '28%', 
+          isRecommended: true 
+        },
+        { 
+          scenario: 'Optimistic', 
+          monthly: formatMoney(revenue_projection?.optimistic || 0), 
+          annual: formatMoney((revenue_projection?.optimistic || 0) * 12), 
+          margin: '34%' 
+        },
+      ];
+      
+      return {
+        id,
+        name: request.neighborhood || `Location ${id}`,
+        score: overall_score || 0,
+        x,
+        y,
+        status,
+        metrics,
+        competitors,
+        revenue,
+        checklist: [
+          { text: 'Verify zoning permits for food service', completed: false },
+          { text: 'Contact landlord for lease terms', completed: false },
+          { text: 'Check foot traffic data for peak hours', completed: false },
+          { text: 'Review competitor pricing strategy', completed: false },
+          { text: 'Schedule site visit with realtor', completed: false },
+        ],
+        rent_price: request.rent_estimate,
+        address: request.neighborhood,
+        lat: request.latitude,
+        lng: request.longitude,
+        sqft: 1000, // Default estimate for commercial space
+        propertyType: 'Commercial',
+        demographics: {
+          median_income: undefined,
+          median_age: undefined,
+          population_density: undefined,
+          household_size: undefined,
+        },
+      };
+    });
   }
 
   /**

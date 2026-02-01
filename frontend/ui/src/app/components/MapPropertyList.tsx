@@ -122,12 +122,12 @@ const LocationCard: React.FC<LocationCardProps> = ({ location, isSelected, onSel
       whileTap={{ scale: 0.98 }}
       className={`flex-none w-64 rounded-xl overflow-hidden border transition-all text-left ${
         isSelected
-          ? 'border-amber-400 dark:border-amber-500 ring-2 ring-amber-200 dark:ring-amber-500/30 shadow-lg shadow-amber-100 dark:shadow-amber-500/20'
+          ? 'border-teal-400 dark:border-teal-500 ring-2 ring-teal-200 dark:ring-teal-500/30 shadow-lg shadow-teal-100 dark:shadow-teal-500/20'
           : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md'
       } bg-white dark:bg-slate-800`}
     >
-      <div className="h-24 bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-500/10 dark:to-amber-600/10 relative overflow-hidden flex items-center justify-center">
-        <Building2 size={24} className="text-amber-500 dark:text-amber-400" />
+      <div className="h-24 bg-gradient-to-br from-teal-50 to-emerald-100/50 dark:from-teal-500/10 dark:to-emerald-600/10 relative overflow-hidden flex items-center justify-center">
+        <Building2 size={24} className="text-teal-500 dark:text-teal-400" />
         <span className="absolute top-1.5 right-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 shadow-sm">
           {location.status}
         </span>
@@ -136,7 +136,7 @@ const LocationCard: React.FC<LocationCardProps> = ({ location, isSelected, onSel
         <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">{location.name}</p>
         <div className="mt-1 flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
           {location.rent_price && (
-            <span className="text-amber-600 dark:text-amber-400 font-bold">
+            <span className="text-teal-600 dark:text-teal-400 font-bold">
               {formatPrice(location.rent_price)}/mo
             </span>
           )}
