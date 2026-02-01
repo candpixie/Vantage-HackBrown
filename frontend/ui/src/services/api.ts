@@ -1,11 +1,10 @@
 // API Service for backend agent communication
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8020';
 
 export interface AnalyzeRequest {
   business_type: string;
   target_demo: string;
   budget: number;
-  location_pref: string;
 }
 
 export interface LocationMetric {
@@ -42,6 +41,16 @@ export interface LocationResult {
   competitors: Competitor[];
   revenue: RevenueProjection[];
   checklist: { text: string; completed: boolean }[];
+  // Additional fields from backend
+  rent_price?: number;
+  address?: string;
+  demographics?: {
+    median_income?: number;
+    median_age?: number;
+    population_density?: number;
+    household_size?: number;
+  };
+  magic_number?: number;
 }
 
 export interface AgentProgress {
@@ -69,16 +78,22 @@ class ApiService {
   }
 
   /**
-   * Submit an analysis request to the orchestrator agent
+   * Submit an analysis request to the Flask bridge server
    */
   async submitAnalysis(request: AnalyzeRequest): Promise<AnalysisResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/submit`, {
-        method: 'POST',
+      // Build query string from request parameters
+      const params = new URLSearchParams({
+        type: request.business_type,
+        demo: request.target_demo,
+        budget: request.budget.toString(),
+      });
+
+      const response = await fetch(`${this.baseUrl}/submit?${params.toString()}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(request),
       });
 
       if (!response.ok) {

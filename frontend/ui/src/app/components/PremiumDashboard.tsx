@@ -96,8 +96,11 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
         optimistic: parseMoney(optimisticRevenue?.monthly || '0'),
         breakeven: Math.max(1, Math.ceil(parseMoney(moderateRevenue?.monthly || '0') / 3000)), // Rough estimate
       },
-      rent: 8500, // Default rent estimate
+      rent: loc.rent_price || 8500, // Use actual rent from backend
       dailyTraffic: Math.floor(loc.score * 150), // Estimate based on score
+      magicNumber: loc.magic_number, // Composite score from orchestrator
+      address: loc.address || loc.name, // Use address if available
+      demographics: loc.demographics, // Demographics data from backend
     };
   };
 
@@ -363,7 +366,7 @@ export const PremiumDashboard: React.FC<PremiumDashboardProps> = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                {loc.score}
+                {loc.magicNumber || loc.score}
               </motion.div>
               <p className="text-sm text-gray-400 mt-1">{loc.name}</p>
               <div className="flex items-center justify-center gap-1 mt-3">

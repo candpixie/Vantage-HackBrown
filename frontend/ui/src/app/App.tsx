@@ -293,7 +293,6 @@ export default function Vantage() {
         business_type: 'Boba Tea Shop',
         target_demo: 'Gen Z Students',
         budget: 8500,
-        location_pref: 'Manhattan',
       });
 
       // Wait for progress animation to complete
@@ -724,7 +723,7 @@ export default function Vantage() {
                   >
                     {/* Map and Results Split */}
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                      <div className="xl:col-span-2 h-[500px]">
+                      <div className="xl:col-span-2" style={{ minHeight: '600px', height: '600px' }}>
                             <MapView
                               markers={LOCATIONS}
                               onMarkerClick={handleMarkerClick}
@@ -837,7 +836,10 @@ export default function Vantage() {
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
                               >
-                                <DemographicsTab locationName={selectedLocationData.name} />
+                                <DemographicsTab 
+                                  locationName={selectedLocationData.name}
+                                  demographics={selectedLocationData.demographics}
+                                />
               </motion.div>
             )}
 

@@ -4,22 +4,43 @@ import { Users, TrendingUp, MapPin } from 'lucide-react';
 
 interface DemographicsTabProps {
   locationName: string;
+  demographics?: {
+    median_income?: number;
+    median_age?: number;
+    population_density?: number;
+    household_size?: number;
+  };
 }
 
-export const DemographicsTab: React.FC<DemographicsTabProps> = ({ locationName }) => {
+export const DemographicsTab: React.FC<DemographicsTabProps> = ({ locationName, demographics: demoData }) => {
+  // Use real data if available, otherwise use mock
+  const medianIncome = demoData?.median_income || 70000;
+  const medianAge = demoData?.median_age || 36;
+  const populationDensity = demoData?.population_density || 27000;
+  const householdSize = demoData?.household_size || 2.5;
+  
+  // Calculate demographics from median age
+  const genZ = medianAge < 30 ? 35 : medianAge < 40 ? 25 : 15;
+  const millennials = medianAge >= 28 && medianAge < 44 ? 45 : 35;
+  const genX = medianAge >= 44 && medianAge < 60 ? 20 : 15;
+  const boomers = medianAge >= 60 ? 10 : 5;
+  
   const demographics = [
-    { label: 'Gen Z (18-27)', value: '34%', trend: '+12%', color: 'bg-amber-500' },
-    { label: 'Millennials (28-43)', value: '42%', trend: '+8%', color: 'bg-purple-500' },
-    { label: 'Gen X (44-59)', value: '18%', trend: '-3%', color: 'bg-pink-500' },
-    { label: 'Boomers (60+)', value: '6%', trend: '-5%', color: 'bg-orange-500' }
+    { label: 'Gen Z (18-27)', value: `${genZ}%`, trend: '+12%', color: 'bg-amber-500' },
+    { label: 'Millennials (28-43)', value: `${millennials}%`, trend: '+8%', color: 'bg-purple-500' },
+    { label: 'Gen X (44-59)', value: `${genX}%`, trend: '-3%', color: 'bg-pink-500' },
+    { label: 'Boomers (60+)', value: `${boomers}%`, trend: '-5%', color: 'bg-orange-500' }
   ];
 
-  const income = [
-    { range: '$0-50k', value: 12, color: 'bg-slate-300' },
-    { range: '$50-100k', value: 28, color: 'bg-slate-400' },
-    { range: '$100-150k', value: 35, color: 'bg-amber-500' },
-    { range: '$150k+', value: 25, color: 'bg-amber-600' }
+  // Income distribution based on median
+  const incomeRanges = [
+    { range: '$0-50k', value: medianIncome < 50000 ? 40 : 15, color: 'bg-slate-300' },
+    { range: '$50-100k', value: medianIncome >= 50000 && medianIncome < 100000 ? 35 : 25, color: 'bg-slate-400' },
+    { range: '$100-150k', value: medianIncome >= 100000 && medianIncome < 150000 ? 30 : 20, color: 'bg-amber-500' },
+    { range: '$150k+', value: medianIncome >= 150000 ? 30 : 15, color: 'bg-amber-600' }
   ];
+  
+  const income = incomeRanges;
 
   return (
     <div className="space-y-8">
