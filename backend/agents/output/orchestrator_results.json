@@ -1,0 +1,621 @@
+{
+  "results": [
+    {
+      "id": 1,
+      "timestamp": "2026-02-01T07:05:01.101587",
+      "request": {
+        "neighborhood": "Flushing-Willets Point",
+        "business_type": "retail",
+        "target_demo": "diverse communities",
+        "latitude": 40.7536679,
+        "longitude": -73.8279815,
+        "rent_estimate": 5500.0
+      },
+      "location_analysis": {
+        "score": 36,
+        "confidence": "medium",
+        "breakdown": {
+          "foot_traffic": {
+            "score": 0,
+            "nearby_locations": [],
+            "average_pedestrians": 0,
+            "count": 0
+          },
+          "transit_access": {
+            "score": 60,
+            "nearby_stations": [
+              {
+                "name": "Flushing-Main St",
+                "distance": 0.42,
+                "routes": "7"
+              }
+            ],
+            "count": 1
+          }
+        }
+      },
+      "competitor_analysis": {
+        "score": 90,
+        "confidence": "low",
+        "breakdown": {
+          "competitors": [],
+          "saturation_score": 10,
+          "gap_analysis": "No direct competitors \u2014 unproven market. First-mover advantage but higher risk.",
+          "competitor_count": 0,
+          "confidence_basis": {
+            "confidence_score": 0,
+            "competitor_count": 0,
+            "total_reviews": 0,
+            "rating_coverage": 0,
+            "radius_meters": 1000
+          }
+        }
+      },
+      "revenue_projection": {
+        "conservative": 2700,
+        "moderate": 4500,
+        "optimistic": 6750,
+        "breakeven_months": 36,
+        "confidence": "low",
+        "assumptions": [
+          "Foot traffic score: 0/100",
+          "Nearby competitors: 0",
+          "Estimated rent: $5500/mo",
+          "Industry-standard conversion rates applied"
+        ]
+      },
+      "overall_score": 50
+    },
+    {
+      "id": 2,
+      "timestamp": "2026-02-01T07:05:01.105775",
+      "request": {
+        "neighborhood": "Midtown South-Flatiron-Union Square",
+        "business_type": "retail",
+        "target_demo": "young professionals",
+        "latitude": 40.748534,
+        "longitude": -73.984477,
+        "rent_estimate": 12000.0
+      },
+      "location_analysis": {
+        "score": 60,
+        "confidence": "medium",
+        "breakdown": {
+          "foot_traffic": {
+            "score": 0,
+            "nearby_locations": [],
+            "average_pedestrians": 0,
+            "count": 0
+          },
+          "transit_access": {
+            "score": 100,
+            "nearby_stations": [
+              {
+                "name": "Times Sq-42 St",
+                "distance": 0.44,
+                "routes": "N Q R W"
+              },
+              {
+                "name": "34 St-Herald Sq",
+                "distance": 0.2,
+                "routes": "N Q R W"
+              },
+              {
+                "name": "28 St",
+                "distance": 0.3,
+                "routes": "R W"
+              },
+              {
+                "name": "42 St-Bryant Pk",
+                "distance": 0.39,
+                "routes": "B D F M"
+              },
+              {
+                "name": "34 St-Herald Sq",
+                "distance": 0.19,
+                "routes": "B D F M"
+              },
+              {
+                "name": "Times Sq-42 St",
+                "distance": 0.49,
+                "routes": "1 2 3"
+              },
+              {
+                "name": "34 St-Penn Station",
+                "distance": 0.37,
+                "routes": "1 2 3"
+              },
+              {
+                "name": "28 St",
+                "distance": 0.47,
+                "routes": "1"
+              },
+              {
+                "name": "Grand Central-42 St",
+                "distance": 0.46,
+                "routes": "4 5 6"
+              },
+              {
+                "name": "33 St",
+                "distance": 0.21,
+                "routes": "6"
+              },
+              {
+                "name": "28 St",
+                "distance": 0.38,
+                "routes": "6"
+              },
+              {
+                "name": "Grand Central-42 St",
+                "distance": 0.48,
+                "routes": "7"
+              },
+              {
+                "name": "5 Av",
+                "distance": 0.39,
+                "routes": "7"
+              },
+              {
+                "name": "Grand Central-42 St",
+                "distance": 0.4,
+                "routes": "S"
+              }
+            ],
+            "count": 14
+          }
+        }
+      },
+      "competitor_analysis": {
+        "score": 90,
+        "confidence": "low",
+        "breakdown": {
+          "competitors": [],
+          "saturation_score": 10,
+          "gap_analysis": "No direct competitors \u2014 unproven market. First-mover advantage but higher risk.",
+          "competitor_count": 0,
+          "confidence_basis": {
+            "confidence_score": 0,
+            "competitor_count": 0,
+            "total_reviews": 0,
+            "rating_coverage": 0,
+            "radius_meters": 1000
+          }
+        }
+      },
+      "revenue_projection": {
+        "conservative": 2700,
+        "moderate": 4500,
+        "optimistic": 6750,
+        "breakeven_months": 36,
+        "confidence": "low",
+        "assumptions": [
+          "Foot traffic score: 0/100",
+          "Nearby competitors: 0",
+          "Estimated rent: $12000/mo",
+          "Industry-standard conversion rates applied"
+        ]
+      },
+      "overall_score": 60
+    },
+    {
+      "id": 3,
+      "timestamp": "2026-02-01T07:05:01.781086",
+      "request": {
+        "neighborhood": "Midtown-Times Square",
+        "business_type": "retail",
+        "target_demo": "young professionals",
+        "latitude": 40.7578506,
+        "longitude": -73.9761804,
+        "rent_estimate": 12000.0
+      },
+      "location_analysis": {
+        "score": 98,
+        "confidence": "high",
+        "breakdown": {
+          "foot_traffic": {
+            "score": 94,
+            "nearby_locations": [
+              {
+                "location": "Fifth Avenue",
+                "distance": 0.25,
+                "avg_count": 9297,
+                "borough": "Manhattan"
+              },
+              {
+                "location": "West 47th Street",
+                "distance": 0.21,
+                "avg_count": 4755,
+                "borough": "Manhattan"
+              },
+              {
+                "location": "Lexington Avenue",
+                "distance": 0.22,
+                "avg_count": 5772,
+                "borough": "Manhattan"
+              },
+              {
+                "location": "Park Avenue",
+                "distance": 0.12,
+                "avg_count": 5544,
+                "borough": "Manhattan"
+              },
+              {
+                "location": "Madison Avenue",
+                "distance": 0.05,
+                "avg_count": 4896,
+                "borough": "Manhattan"
+              },
+              {
+                "location": "Fifth Avenue",
+                "distance": 0.08,
+                "avg_count": 10607,
+                "borough": "Manhattan"
+              }
+            ],
+            "average_pedestrians": 6812,
+            "count": 6
+          },
+          "transit_access": {
+            "score": 100,
+            "nearby_stations": [
+              {
+                "name": "49 St",
+                "distance": 0.44,
+                "routes": "N R W"
+              },
+              {
+                "name": "57 St",
+                "distance": 0.43,
+                "routes": "M"
+              },
+              {
+                "name": "47-50 Sts-Rockefeller Ctr",
+                "distance": 0.28,
+                "routes": "B D F M"
+              },
+              {
+                "name": "Lexington Av/53 St",
+                "distance": 0.37,
+                "routes": "E F"
+              },
+              {
+                "name": "5 Av/53 St",
+                "distance": 0.17,
+                "routes": "E F"
+              },
+              {
+                "name": "7 Av",
+                "distance": 0.45,
+                "routes": "E B D"
+              },
+              {
+                "name": "50 St",
+                "distance": 0.48,
+                "routes": "1"
+              },
+              {
+                "name": "51 St",
+                "distance": 0.23,
+                "routes": "6"
+              },
+              {
+                "name": "Grand Central-42 St",
+                "distance": 0.42,
+                "routes": "4 5 6"
+              },
+              {
+                "name": "Grand Central-42 St",
+                "distance": 0.44,
+                "routes": "7"
+              },
+              {
+                "name": "5 Av",
+                "distance": 0.41,
+                "routes": "7"
+              },
+              {
+                "name": "Grand Central-42 St",
+                "distance": 0.38,
+                "routes": "S"
+              }
+            ],
+            "count": 12
+          }
+        }
+      },
+      "competitor_analysis": {
+        "score": 90,
+        "confidence": "low",
+        "breakdown": {
+          "competitors": [],
+          "saturation_score": 10,
+          "gap_analysis": "No direct competitors \u2014 unproven market. First-mover advantage but higher risk.",
+          "competitor_count": 0,
+          "confidence_basis": {
+            "confidence_score": 0,
+            "competitor_count": 0,
+            "total_reviews": 0,
+            "rating_coverage": 0,
+            "radius_meters": 1000
+          }
+        }
+      },
+      "revenue_projection": {
+        "conservative": 25542,
+        "moderate": 42570,
+        "optimistic": 63855,
+        "breakeven_months": 13,
+        "confidence": "medium",
+        "assumptions": [
+          "Foot traffic score: 94/100",
+          "Nearby competitors: 0",
+          "Estimated rent: $12000/mo",
+          "Industry-standard conversion rates applied"
+        ]
+      },
+      "overall_score": 81
+    },
+    {
+      "id": 4,
+      "timestamp": "2026-02-01T07:05:02.507158",
+      "request": {
+        "neighborhood": "Financial District-Battery Park City",
+        "business_type": "retail",
+        "target_demo": "young professionals",
+        "latitude": 40.7091224,
+        "longitude": -74.0084799,
+        "rent_estimate": 12000.0
+      },
+      "location_analysis": {
+        "score": 92,
+        "confidence": "high",
+        "breakdown": {
+          "foot_traffic": {
+            "score": 81,
+            "nearby_locations": [
+              {
+                "location": "Fulton Street",
+                "distance": 0.1,
+                "avg_count": 4362,
+                "borough": "Manhattan"
+              },
+              {
+                "location": "Fulton Street",
+                "distance": 0.22,
+                "avg_count": 3973,
+                "borough": "Manhattan"
+              },
+              {
+                "location": "Trinity Place",
+                "distance": 0.22,
+                "avg_count": 1977,
+                "borough": "Manhattan"
+              },
+              {
+                "location": "Wall Street",
+                "distance": 0.18,
+                "avg_count": 6014,
+                "borough": "Manhattan"
+              }
+            ],
+            "average_pedestrians": 4082,
+            "count": 4
+          },
+          "transit_access": {
+            "score": 100,
+            "nearby_stations": [
+              {
+                "name": "City Hall",
+                "distance": 0.3,
+                "routes": "R W"
+              },
+              {
+                "name": "Cortlandt St",
+                "distance": 0.17,
+                "routes": "R W"
+              },
+              {
+                "name": "Rector St",
+                "distance": 0.29,
+                "routes": "R W"
+              },
+              {
+                "name": "Whitehall St-South Ferry",
+                "distance": 0.48,
+                "routes": "R W"
+              },
+              {
+                "name": "Chambers St",
+                "distance": 0.39,
+                "routes": "J Z"
+              },
+              {
+                "name": "Fulton St",
+                "distance": 0.1,
+                "routes": "J Z"
+              },
+              {
+                "name": "Broad St",
+                "distance": 0.23,
+                "routes": "J Z"
+              },
+              {
+                "name": "Chambers St",
+                "distance": 0.34,
+                "routes": "A C"
+              },
+              {
+                "name": "World Trade Center",
+                "distance": 0.25,
+                "routes": "E"
+              },
+              {
+                "name": "Fulton St",
+                "distance": 0.08,
+                "routes": "A C"
+              },
+              {
+                "name": "Chambers St",
+                "distance": 0.44,
+                "routes": "1 2 3"
+              },
+              {
+                "name": "WTC Cortlandt",
+                "distance": 0.27,
+                "routes": "1"
+              },
+              {
+                "name": "Rector St",
+                "distance": 0.3,
+                "routes": "1"
+              },
+              {
+                "name": "Park Place",
+                "distance": 0.27,
+                "routes": "2 3"
+              },
+              {
+                "name": "Fulton St",
+                "distance": 0.1,
+                "routes": "2 3"
+              },
+              {
+                "name": "Wall St",
+                "distance": 0.16,
+                "routes": "2 3"
+              },
+              {
+                "name": "Brooklyn Bridge-City Hall",
+                "distance": 0.36,
+                "routes": "4 5 6"
+              },
+              {
+                "name": "Fulton St",
+                "distance": 0.1,
+                "routes": "4 5"
+              },
+              {
+                "name": "Wall St",
+                "distance": 0.21,
+                "routes": "4 5"
+              },
+              {
+                "name": "Bowling Green",
+                "distance": 0.42,
+                "routes": "4 5"
+              }
+            ],
+            "count": 20
+          }
+        }
+      },
+      "competitor_analysis": {
+        "score": 90,
+        "confidence": "low",
+        "breakdown": {
+          "competitors": [],
+          "saturation_score": 10,
+          "gap_analysis": "No direct competitors \u2014 unproven market. First-mover advantage but higher risk.",
+          "competitor_count": 0,
+          "confidence_basis": {
+            "confidence_score": 0,
+            "competitor_count": 0,
+            "total_reviews": 0,
+            "rating_coverage": 0,
+            "radius_meters": 1000
+          }
+        }
+      },
+      "revenue_projection": {
+        "conservative": 22383,
+        "moderate": 37305,
+        "optimistic": 55957,
+        "breakeven_months": 18,
+        "confidence": "medium",
+        "assumptions": [
+          "Foot traffic score: 81/100",
+          "Nearby competitors: 0",
+          "Estimated rent: $12000/mo",
+          "Industry-standard conversion rates applied"
+        ]
+      },
+      "overall_score": 78
+    },
+    {
+      "id": 5,
+      "timestamp": "2026-02-01T07:05:03.040048",
+      "request": {
+        "neighborhood": "Woodhaven",
+        "business_type": "retail",
+        "target_demo": "diverse communities",
+        "latitude": 40.6892028,
+        "longitude": -73.8462673,
+        "rent_estimate": 5500.0
+      },
+      "location_analysis": {
+        "score": 48,
+        "confidence": "medium",
+        "breakdown": {
+          "foot_traffic": {
+            "score": 0,
+            "nearby_locations": [],
+            "average_pedestrians": 0,
+            "count": 0
+          },
+          "transit_access": {
+            "score": 80,
+            "nearby_stations": [
+              {
+                "name": "104 St",
+                "distance": 0.43,
+                "routes": "J Z"
+              },
+              {
+                "name": "Woodhaven Blvd",
+                "distance": 0.43,
+                "routes": "J Z"
+              }
+            ],
+            "count": 2
+          }
+        }
+      },
+      "competitor_analysis": {
+        "score": 90,
+        "confidence": "low",
+        "breakdown": {
+          "competitors": [],
+          "saturation_score": 10,
+          "gap_analysis": "No direct competitors \u2014 unproven market. First-mover advantage but higher risk.",
+          "competitor_count": 0,
+          "confidence_basis": {
+            "confidence_score": 0,
+            "competitor_count": 0,
+            "total_reviews": 0,
+            "rating_coverage": 0,
+            "radius_meters": 1000
+          }
+        }
+      },
+      "revenue_projection": {
+        "conservative": 2700,
+        "moderate": 4500,
+        "optimistic": 6750,
+        "breakeven_months": 36,
+        "confidence": "low",
+        "assumptions": [
+          "Foot traffic score: 0/100",
+          "Nearby competitors: 0",
+          "Estimated rent: $5500/mo",
+          "Industry-standard conversion rates applied"
+        ]
+      },
+      "overall_score": 55
+    }
+  ],
+  "metadata": {
+    "created_at": "2026-02-01T07:05:01.101560",
+    "total_entries": 5,
+    "last_updated": "2026-02-01T07:05:03.040077"
+  }
+}

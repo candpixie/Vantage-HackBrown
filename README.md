@@ -322,4 +322,10 @@ This project was built for Hack@Brown 2026.
 
 ---
 
+## Disclaimer
+
+This project was developed with assistance from AI coding tools.
+
+---
+
 **Built with dedication at Hack@Brown 2026**
