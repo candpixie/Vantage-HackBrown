@@ -52,6 +52,7 @@ import { ScoreCard } from './components/ScoreCard';
 import { ScoreBreakdown } from './components/ScoreBreakdown';
 import { CompetitorCard } from './components/CompetitorCard';
 import { RevenueTable } from './components/RevenueTable';
+import { PremiumDashboard } from './components/PremiumDashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { apiService, type LocationResult } from '../services/api';
 
@@ -167,6 +168,45 @@ export default function SiteSelect() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [checklistStates, setChecklistStates] = useState<Record<number, boolean[]>>({});
+  const [usePremiumView, setUsePremiumView] = useState(true);
+
+  // Debug: Log when Premium Dashboard should render
+  useEffect(() => {
+    if (appState === 'results') {
+      console.log('✅ Results state active - Premium Dashboard should be visible', {
+        usePremiumView,
+        locationsCount: LOCATIONS.length,
+        selectedLocation
+      });
+    }
+  }, [appState, usePremiumView, selectedLocation]);
+
+  // Auto-select first location when results appear
+  useEffect(() => {
+    if (appState === 'results' && !selectedLocation && LOCATIONS.length > 0) {
+      setSelectedLocation(LOCATIONS[0].id);
+      console.log('📍 Auto-selected first location:', LOCATIONS[0].name);
+    }
+  }, [appState, selectedLocation]);
+
+  // Dev shortcut: Press 'P' to jump directly to Premium Dashboard
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'p' || e.key === 'P') {
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          console.log('🚀 Dev shortcut: Jumping to Premium Dashboard');
+          setAppState('results');
+          setSelectedLocation(LOCATIONS[0]?.id || null);
+          setUsePremiumView(true);
+          // Mark all agents as done for visual effect
+          setActiveAgent(null);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   const selectedLocationData = selectedLocation ? LOCATIONS.find(l => l.id === selectedLocation) : null;
 
@@ -536,6 +576,21 @@ export default function SiteSelect() {
             </motion.h2>
           </div>
           <div className="flex items-center gap-3">
+            {appState === 'results' && (
+              <motion.button
+                onClick={() => setUsePremiumView(!usePremiumView)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-4 py-2 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+                  usePremiumView
+                    ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/50'
+                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                }`}
+              >
+                <Sparkles className="w-4 h-4" />
+                {usePremiumView ? 'Premium View' : 'Classic View'}
+              </motion.button>
+            )}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -645,7 +700,30 @@ export default function SiteSelect() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <div className="space-y-6">
+              {usePremiumView ? (
+                <PremiumDashboard
+                  locations={LOCATIONS}
+                  selectedLocationId={selectedLocation}
+                  onLocationSelect={handleMarkerClick}
+                  agents={AGENTS.map((agent, idx) => ({
+                    id: agent.id,
+                    name: agent.name,
+                    status: activeAgent === agent.id ? 'active' : 
+                           AGENTS.findIndex(a => a.id === activeAgent) > idx ? 'done' : 'idle',
+                    time: idx === 0 ? '0.8s' : idx === 1 ? '1.2s' : idx === 2 ? '2.1s' : idx === 3 ? '1.5s' : '3.4s',
+                  }))}
+                  onReRun={startAnalysis}
+                  onExportPDF={() => {
+                    // TODO: Implement PDF export
+                    console.log('Exporting PDF...');
+                  }}
+                  onShare={() => {
+                    // TODO: Implement share functionality
+                    console.log('Sharing analysis...');
+                  }}
+                />
+              ) : (
+                <div className="space-y-6">
                       {/* Bento-Grid Dashboard Layout */}
                       <div className="grid grid-cols-12 gap-4">
                         {/* Neural Mesh Workflow - Large Card */}
@@ -937,13 +1015,14 @@ export default function SiteSelect() {
                           </div>
                                 );
                               })}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      </div>
-                    </div>
-                  </div>
-                    </motion.div>
-                  )}
+                </div>
+              )}
+            </motion.div>
+          )}
                   </AnimatePresence>
                 </div>
               </motion.div>
