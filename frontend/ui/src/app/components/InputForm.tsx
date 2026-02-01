@@ -16,7 +16,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
     <div className="space-y-6">
       <div className="space-y-3">
         <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3B82F6] to-[#0EA5E9] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-blue-300 flex items-center justify-center">
             <Search className="w-4 h-4 text-white" />
           </div>
           Business Type
@@ -40,7 +40,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
 
       <div className="space-y-3">
         <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0EA5E9] to-[#38BDF8] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-sky-300 flex items-center justify-center">
             <Users className="w-4 h-4 text-white" />
           </div>
           Target Demographic
@@ -64,7 +64,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#10B981] to-emerald-500 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-emerald-300 flex items-center justify-center">
               <DollarSign className="w-4 h-4 text-white" />
             </div>
             Monthly Budget
@@ -73,7 +73,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
             key={budget}
             initial={{ scale: 1.2, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="px-4 py-2 bg-gradient-to-r from-[#3B82F6] to-[#0EA5E9] rounded-xl"
+            className="px-4 py-2 bg-blue-400 rounded-xl"
           >
             <span className="text-lg font-black text-white">${budget.toLocaleString()}</span>
           </motion.div>
@@ -89,9 +89,8 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
             className="w-full h-3 rounded-full appearance-none cursor-pointer"
             style={{
               background: `linear-gradient(to right,
-                #3B82F6 0%,
-                #0EA5E9 ${((budget - 2000) / (15000 - 2000)) * 50}%,
-                #38BDF8 ${((budget - 2000) / (15000 - 2000)) * 100}%,
+                #93C5FD 0%,
+                #93C5FD ${((budget - 2000) / (15000 - 2000)) * 100}%,
                 rgba(226, 232, 240, 0.5) ${((budget - 2000) / (15000 - 2000)) * 100}%,
                 rgba(226, 232, 240, 0.5) 100%)`,
             }}
@@ -111,8 +110,8 @@ export const InputForm: React.FC<InputFormProps> = ({ onAnalyze, isAnalyzing }) 
         disabled={isAnalyzing}
         className={`w-full py-5 rounded-2xl font-black text-base flex items-center justify-center gap-3 transition-all relative overflow-hidden ${
           isAnalyzing
-            ? 'bg-gradient-to-r from-slate-200 to-slate-300 text-slate-400 cursor-not-allowed'
-            : 'bg-gradient-to-r from-[#3B82F6] via-[#0EA5E9] to-[#38BDF8] text-white shadow-2xl shadow-[#3B82F6]/50 hover:shadow-3xl hover:shadow-[#3B82F6]/70 neon-glow-hover'
+            ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+            : 'bg-blue-400 text-white shadow-2xl shadow-blue-300/50 hover:shadow-3xl hover:shadow-blue-400/70 neon-glow-hover'
         }`}
       >
         {!isAnalyzing && (

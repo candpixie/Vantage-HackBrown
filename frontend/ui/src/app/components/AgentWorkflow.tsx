@@ -103,13 +103,13 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({ agents }) => {
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
                       transition={{ duration: 0.6, ease: 'easeOut' }}
-                      className="absolute inset-0 bg-gradient-to-r from-[#10B981] via-[#3B82F6] to-[#2563EB] origin-left rounded-full"
+                      className="absolute inset-0 bg-blue-400 origin-left rounded-full"
                     />
                   )}
                   {agent.status === 'active' && (
                     <>
                       <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-[#3B82F6]/30 to-[#2563EB]/30 rounded-full"
+                        className="absolute inset-0 bg-blue-300/30 rounded-full"
                         animate={{ scaleX: [0, 1, 1, 0] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       />
@@ -150,7 +150,7 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({ agents }) => {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#10B981]/10 to-emerald-500/10 rounded-xl border border-[#10B981]/30"
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-100 rounded-xl border border-emerald-300"
           >
             <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
             <span className="text-xs font-bold text-[#10B981]">

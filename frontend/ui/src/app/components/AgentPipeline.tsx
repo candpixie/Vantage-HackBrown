@@ -69,7 +69,7 @@ export const AgentPipeline: React.FC<AgentPipelineProps> = ({ agents }) => {
             <React.Fragment key={agent.id}>
               <div className="flex flex-col items-center gap-3 group shrink-0 relative">
                 {/* Number Badge */}
-                <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-xs font-black shadow-lg z-10">
+                <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-black shadow-lg z-10">
                   {index + 1}
                 </div>
 
@@ -165,13 +165,13 @@ export const AgentPipeline: React.FC<AgentPipelineProps> = ({ agents }) => {
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
                       transition={{ duration: 0.6, ease: 'easeOut' }}
-                      className="absolute inset-0 bg-gradient-to-r from-green-500 via-blue-500 to-blue-600 origin-left rounded-full"
+                      className="absolute inset-0 bg-blue-400 origin-left rounded-full"
                     />
                   )}
                   {agent.status === 'running' && (
                     <>
                       <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-blue-600/30 rounded-full"
+                        className="absolute inset-0 bg-blue-300/30 rounded-full"
                         animate={{ scaleX: [0, 1, 1, 0] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       />
@@ -213,7 +213,7 @@ export const AgentPipeline: React.FC<AgentPipelineProps> = ({ agents }) => {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/30"
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-100 rounded-xl border border-emerald-300"
           >
             <CheckCircle2 className="w-4 h-4 text-green-500" />
             <span className="text-xs font-bold text-green-600">

@@ -320,13 +320,13 @@ export default function SiteSelect() {
 
             <div className="text-center mb-10 relative z-10">
               <motion.div
-                className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#3B82F6] via-[#0EA5E9] to-[#38BDF8] rounded-2xl mb-5 shadow-2xl neon-glow"
+                className="inline-flex items-center justify-center w-20 h-20 bg-blue-300 rounded-2xl mb-5 shadow-2xl neon-glow"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: 'spring', stiffness: 300 }}
               >
                 <Target className="w-10 h-10 text-white drop-shadow-lg" />
               </motion.div>
-              <h1 className="text-4xl font-black text-white mb-3 bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent">
+              <h1 className="text-4xl font-black text-white mb-3">
                 SiteSelect
               </h1>
               <p className="text-white/80 font-semibold">AI-Powered Retail Site Selection</p>
@@ -376,7 +376,7 @@ export default function SiteSelect() {
                 type="submit"
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
-                className="w-full py-4 bg-gradient-to-r from-[#3B82F6] via-[#0EA5E9] to-[#38BDF8] text-white rounded-2xl font-black text-lg shadow-2xl hover:shadow-3xl neon-glow-hover transition-all relative overflow-hidden"
+                className="w-full py-4 bg-blue-400 text-white rounded-2xl font-black text-lg shadow-2xl hover:shadow-3xl neon-glow-hover transition-all relative overflow-hidden"
                 >
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
@@ -429,7 +429,7 @@ export default function SiteSelect() {
               className="flex items-center gap-3"
             >
               <motion.div
-                className="w-12 h-12 bg-gradient-to-br from-[#3B82F6] via-[#0EA5E9] to-[#38BDF8] rounded-2xl flex items-center justify-center shadow-xl neon-glow"
+                className="w-12 h-12 bg-blue-300 rounded-2xl flex items-center justify-center shadow-xl neon-glow"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: 'spring', stiffness: 300 }}
               >
@@ -444,7 +444,7 @@ export default function SiteSelect() {
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="p-2.5 hover:bg-gradient-to-br hover:from-[#3B82F6]/10 hover:to-[#0EA5E9]/10 rounded-xl transition-all"
+            className="p-2.5 hover:bg-blue-100 rounded-xl transition-all"
           >
             <ChevronLeft className={`w-5 h-5 text-slate-600 transition-transform duration-300 ${sidebarCollapsed ? 'rotate-180' : ''}`} />
           </motion.button>
@@ -463,7 +463,7 @@ export default function SiteSelect() {
                 whileTap={{ scale: 0.97 }}
                 className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-bold relative overflow-hidden ${
                   isActive
-                    ? 'bg-gradient-to-r from-[#3B82F6] via-[#0EA5E9] to-[#38BDF8] text-white shadow-xl neon-glow'
+                    ? 'bg-blue-400 text-white shadow-xl neon-glow'
                     : 'text-slate-700 hover:bg-gradient-to-br hover:from-slate-100 hover:to-slate-50 hover:shadow-md'
                 }`}
               >
@@ -493,7 +493,7 @@ export default function SiteSelect() {
         <div className="p-4 border-t-2 border-white/30">
           <div className="flex items-center gap-3 mb-4">
             <motion.div
-              className="w-12 h-12 bg-gradient-to-br from-[#6366F1] via-[#8B5CF6] to-[#EC4899] rounded-2xl flex items-center justify-center text-white font-black shadow-lg neon-glow"
+              className="w-12 h-12 bg-blue-300 rounded-2xl flex items-center justify-center text-white font-black shadow-lg neon-glow"
               whileHover={{ scale: 1.1, rotate: 5 }}
             >
               {!sidebarCollapsed ? 'JD' : 'J'}
@@ -539,7 +539,7 @@ export default function SiteSelect() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="p-3 hover:bg-gradient-to-br hover:from-[#3B82F6]/10 hover:to-[#0EA5E9]/10 rounded-2xl transition-all relative"
+              className="p-3 hover:bg-blue-100 rounded-2xl transition-all relative"
             >
               <Bell className="w-5 h-5 text-slate-600" />
               <motion.span
@@ -551,7 +551,7 @@ export default function SiteSelect() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="p-3 hover:bg-gradient-to-br hover:from-[#6366F1]/10 hover:to-[#8B5CF6]/10 rounded-2xl transition-all"
+              className="p-3 hover:bg-blue-100 rounded-2xl transition-all"
             >
               <HelpCircle className="w-5 h-5 text-slate-600" />
             </motion.button>
@@ -584,7 +584,7 @@ export default function SiteSelect() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                       >
-                        <h1 className="text-5xl font-black tracking-tight bg-gradient-to-r from-[#3B82F6] via-[#0EA5E9] to-[#38BDF8] bg-clip-text text-transparent drop-shadow-lg">
+                        <h1 className="text-5xl font-black tracking-tight text-blue-600 drop-shadow-lg">
                           AI-Powered Retail Site Selection
                         </h1>
                         <p className="text-xl text-slate-700 font-semibold">Find the perfect location for your business in Manhattan</p>
@@ -659,7 +659,7 @@ export default function SiteSelect() {
               </div>
                               <button
                                 onClick={startAnalysis}
-                                className="px-6 py-3 bg-gradient-to-r from-[#3B82F6] to-[#0EA5E9] text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all flex items-center gap-2"
+                                className="px-6 py-3 bg-blue-400 text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all flex items-center gap-2"
                               >
                                 RE-RUN NEURAL MESH →
                           </button>
@@ -997,7 +997,7 @@ export default function SiteSelect() {
                   <div className="glass-card rounded-3xl p-8 premium-glow">
                     <h3 className="text-2xl font-bold mb-6">Analytics Dashboard</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="p-6 bg-gradient-to-br from-[#3B82F6] to-[#0EA5E9] rounded-2xl text-white">
+                      <div className="p-6 bg-blue-400 rounded-2xl text-white">
                         <p className="text-sm opacity-90 mb-2">Total Locations</p>
                         <p className="text-4xl font-bold">{LOCATIONS.length}</p>
                               </div>

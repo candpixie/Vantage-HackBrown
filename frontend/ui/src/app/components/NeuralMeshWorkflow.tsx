@@ -231,7 +231,7 @@ export const NeuralMeshWorkflow: React.FC<NeuralMeshWorkflowProps> = ({ agents, 
               onClick={onRun}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-5 py-2.5 bg-gradient-to-r from-[#3B82F6] via-[#2563EB] to-[#1D4ED8] text-white rounded-xl text-xs font-bold shadow-lg hover:shadow-2xl hover:shadow-[#3B82F6]/60 transition-all flex items-center gap-2 neon-glow-hover"
+              className="px-5 py-2.5 bg-blue-400 text-white rounded-xl text-xs font-bold shadow-lg hover:shadow-2xl hover:shadow-blue-300/60 transition-all flex items-center gap-2 neon-glow-hover"
             >
               <Play className="w-4 h-4" />
               RE-RUN ANALYSIS
