@@ -4,3 +4,35 @@ frontend/ui/package-lock.json
 frontend/ui/package.json
 package-lock.json
 frontend/ui/.env.local
+
+# Environment variables (NEVER commit these!)
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.local
+*.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Secrets and credentials
+*secret*
+*credential*
+*.pem
+*.key
+!*.example.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
