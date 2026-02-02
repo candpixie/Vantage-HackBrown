@@ -120,7 +120,7 @@ Every metric includes:
 ║                                                               ║
 ║  REVENUE PROJECTION                                           ║
 ║  Conservative: $28,500/mo | Moderate: $42,200/mo              ║
-║  Optimistic: $58,800/mo | Break-even: 6 months               ║
+║  Optimistic: $58,800/mo | Break-even: 6 months                ║
 ║                                                               ║
 ║  [Download PDF] [Compare Locations] [View Map]                ║
 ╚═══════════════════════════════════════════════════════════════╝
