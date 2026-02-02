@@ -5,4 +5,4 @@ flask>=2.3.0
 flask-cors>=4.0.0
 geopy>=2.4.0
 pyyaml>=6.0  # For agentverse_config.yaml parsing
-google-generativeai>=0.3.0  # Google Gemini API for AI insights
+google-genai>=0.3.0  # Google Gemini API for AI insights

@@ -1,15 +1,18 @@
 # Vantage
-
 **Location Intelligence Platform**
-![Vantage Platform Screenshot on startup](Assets/Screenshot1.png)
-![Vantage Platform Screenshot after selection](Assets/Screenshot2.png)
+
 > AI-powered multi-agent platform that transforms "I want to open a business" into a complete location intelligence report — with market analysis, revenue projections, competitor gaps, and demographic heatmaps — in 60 seconds.
 
-**Built by** TEAM CMYK: Candy Xie, Karen Yang, Michael Rostom, Yolanda Hu | Hack@Brown 2026 | Jan 31 – Feb 1
+**Hack@Brown 2026** | Jan 31 – Feb 1
+
+**Built by TEAM CMYK:** Candy Xie, Karen Yang, Michael Rostom, Yolanda Hu 
+
+![Vantage Platform Screenshot on startup](Assets/Screenshot1.png)
+![Vantage Platform Screenshot after selection](Assets/Screenshot2.png)
 
 >**Note:** This project was developed with significant assistance from AI tools. Please be aware that the code may contain security vulnerabilities or unexpected errors.
-
 ---
+
 
 ## The Problem
 
