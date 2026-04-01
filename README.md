@@ -198,5 +198,4 @@ Submit a location analysis request.
   "total_count": 1,
 }
 ```
-**NOTICE:** This project was developed with significant assistance from AI tools. Please be aware that the code may contain security vulnerabilities or unexpected errors.
 
